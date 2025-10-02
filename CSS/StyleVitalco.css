@@ -1,11 +1,13 @@
 /* Estilos Generales */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 body {
@@ -14,15 +16,16 @@ body {
     text-align: center;
 }
 
-/* Encabezado */
+/* ====== HEADER ====== */
 .header {
     background: white;
     color: black;
     position: fixed;
     width: 100%;
     top: 0;
-    border-bottom: 1px solid gray;
+    border-bottom: 1px solid #e0e0e0;
     z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .header a {
@@ -35,181 +38,183 @@ body {
     justify-content: center;
     align-items: center;
     max-width: 100%;
-    margin: 0;
+    margin: 0 auto;
     padding: 0 40px;
-    height: 100px;
-    gap: 50px; /* Espacio entre logo completo y navegación */
+    height: 90px;
+    gap: 80px;
 }
 
 .logo {
     letter-spacing: 2px;
     font-size: 1.3em;
     display: flex;
-    align-items: center; /* Asegura alineación vertical */
-    gap: 12px; /* Espacio entre imagen y texto */
+    align-items: center;
+    gap: 8px;
     flex-shrink: 0;
-    flex-direction: row; /* Forzar dirección horizontal */
 }
 
 .logo-img {
-    width: 250px; /* REDUCIDO de 200px a 80px */
+    width: 190px;
     height: auto;
     mix-blend-mode: multiply;
     display: block;
-    margin-top: 10px;
 }
 
 .logo-text {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Open Sans', sans-serif;
     font-weight: 700;
-    font-size: 1.5rem;
-    color: #00BF61;
+    font-size: 0.95rem;
+    color: #000;
     letter-spacing: 0.5px;
     white-space: nowrap;
+    text-transform: uppercase;
 }
 
 /* Navegación */
+.navigation {
+    display: flex;
+    align-items: center;
+}
+
 .navigation ul {
     list-style: none;
     display: flex;
-    flex-wrap: wrap;
+    gap: 2rem;
     margin: 0;
+    align-items: center;
 }
 
 .navigation ul li {
-    margin-left: 1rem;
+    margin: 0;
 }
 
 .navigation ul li a {
     display: block;
-    padding: 0.5rem 1rem;
-    transition: all 0.4s linear;
+    padding: 0;
+    transition: all 0.3s ease;
     border-radius: 5px;
+    font-size: 0.95rem;
+    font-weight: 400;
+    font-family: 'Open Sans', sans-serif;
+    color: #000;
 }
 
 .navigation ul li a:hover {
-    color: #00BF61; /* Color verde al pasar el mouse */
+    color: #00BF61;
 }
 
+/* Botón de Registrarme (header) */
+.navigation ul li a[href*="InciarSesion1.html"] {
+    color: #80CD29;
+    font-weight: 600;
+}
+
+/* Botón "Iniciar Sesión" en el header */
 .navigation ul li a.register-btn {
-    background-color: #00BF61; /* Color verde para el botón */
+    background-color: #00BF61;
     color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 10px;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .navigation ul li a.register-btn:hover {
-    background-color: #009e4f; /* Verde más oscuro al hover */
+    background-color: #009e4f;
     color: white;
+    transform: translateY(-1px);
 }
 
-@media (max-width: 768px) {
-    .logo-nav-container {
-        flex-direction: column;
-        height: auto;
-        padding: 10px 20px;
-        gap: 20px;
-    }
-
-    .logo-img {
-        width: 150px;
-    }
-
-    .navigation ul {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .navigation ul li {
-        margin: 0.5rem 0;
-    }
-}
-
-/* Sección de Contenido */
+/* ====== SECCIÓN DE CONTENIDO PRINCIPAL ====== */
 .content-section {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    padding: 2rem;
+    justify-content: space-between;
+    padding: 3rem 2rem;
     max-width: 1200px;
-    margin: 130px auto 0;
+    margin: 40px auto 0;
 }
+
 .text-container {
     flex: 1;
-    padding: 1rem;
+    padding: 2rem;
     text-align: center;
+    max-width: 700px;
 }
 
 .text-container h1 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
+   font-size: 2.8rem;
+  font-weight: 700;
+  color: #000;
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.2;
+}
+.text-container h1 .linea1 {
+  margin-right: 0.5rem;
+}
+.text-container h1 .destacado {
+   font-size: 2.8rem;
+  font-weight: 700;
+  color: #000000;
+  display: inline; /* ✅ CAMBIA esto de block a inline */
+  margin-top: 0.5rem;
 }
 
+
 .text-container p {
-    font-size: 1.1rem;
+    font-size: 1rem;
     line-height: 1.6;
-    color: black;
+    color: #333;
+    margin-bottom: 2rem;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+}
+
+/* Estilo del botón "Empieza ahora" - MANTIENE COLOR VERDE */
+.text-container .register-btn {
+    display: inline-block;
+    background-color: #00BF61;
+    color: white;
+    padding: 14px 32px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 191, 97, 0.25);
+    font-family: 'Poppins', sans-serif;
+    position: absolute;
+    top: 517px; /* distancia desde el borde superior */
+    left: 28%;
+ 
+}
+
+.text-container .register-btn:hover {
+    background-color: #009e4f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 191, 97, 0.35);
 }
 
 .image-container {
     flex: 1;
     display: flex;
     justify-content: center;
+    align-items: center;
     padding: 1rem;
 }
 
 .image-container img {
     width: 100%;
-    max-width: 500px;
-    height: auto;
-    border-radius: 10px;
-}
-
-.app-buttons {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.app-buttons .image-container {
-    width: 150px;
-}
-
-.app-buttons .content-img {
-    width: 100%;
+    max-width: 550px;
     height: auto;
 }
 
-.register-btn {
-    display: inline-block;
-    /* Para que tome forma de botón */
-    background-color: #147B2A;
-    /* Color de fondo verde */
-    color: white;
-    /* Color del texto en blanco */
-    padding: 0.5rem 1rem;
-    /* Espacio interno alrededor del texto */
-    border-radius: 5px;
-    /* Bordes redondeados */
-    text-decoration: none;
-    /* Sin subrayado */
-    font-weight: bold;
-    /* Negrita para el texto */
-    transition: background-color 0.3s ease;
-    /* Transición suave para el cambio de color */
-}
-
-.register-btn:hover {
-    background-color: #0f5a1d;
-    /* Color de fondo un poco más oscuro al pasar el mouse */
-    color: white;
-    /* Mantener el texto en blanco */
-}
 
 
-/* Cómo Lo Logramos */
+
+
+/* ====== CÓMO LO LOGRAMOS ====== */
 .how-we-achieve {
     padding: 2rem;
     text-align: center;
@@ -268,7 +273,7 @@ body {
     top: 0;
 }
 
-/* Preferencias Alimenticias */
+/* ====== PREFERENCIAS ALIMENTICIAS ====== */
 .food-preferences {
     padding: 3rem 1rem;
     text-align: center;
@@ -350,7 +355,7 @@ body {
     height: auto;
 }
 
-/* Sección de Opiniones */
+/* ====== SECCIÓN DE OPINIONES ====== */
 .container-1 {
     display: flex;
     flex-wrap: wrap;
@@ -398,12 +403,6 @@ body {
     text-align: left;
 }
 
-@media (max-width: 768px) {
-    .review-card {
-        width: 100%;
-    }
-}
-
 .review-card p {
     font-size: 14px;
     margin-bottom: 10px;
@@ -445,7 +444,7 @@ h2 {
     text-align: center;
 }
 
-/* Sección de Beneficios */
+/* ====== SECCIÓN DE BENEFICIOS ====== */
 .container-2 {
     display: flex;
     flex-wrap: wrap;
@@ -471,122 +470,7 @@ h2 {
     margin-bottom: 1rem;
 }
 
-@media (max-width: 768px) {
-    .cuadros-5 {
-        flex: 1 1 calc(50% - 2rem);
-    }
-}
-
-@media (max-width: 480px) {
-    .cuadros-5 {
-        flex: 1 1 100%;
-    }
-}
-
-footer {
-  background-color: #858585;
-  padding: 30px 20px;
-  color: white;
-  font-family: Arial, sans-serif;
-}
-
-.footer-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  max-width: 800px;
-  margin: 0 auto;
-  gap: 40px;
-  flex-wrap: wrap;
-}
-
-.footer-logo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-shrink: 0;
-  text-align: center;
-}
-
-.footer-logo img {
-  width: 150px;
-  height: auto;
-  filter: brightness(0) invert(1);
-}
-
-.footer-tagline {
-  margin-top: 10px;
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.footer-links {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  flex-grow: 1;
-}
-
-.help-links {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.help-links a {
-  color: white;
-  text-decoration: none;
-  font-size: 14px;
-  transition: color 0.3s;
-}
-
-.help-links a:hover {
-  color: #2a2c2b;
-}
-
-.complaints {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.complaints img {
-  width: 30px;
-  height: 30px;
-}
-
-.footer-social {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.footer-social span {
-  font-size: 14px;
-  margin-right: 10px;
-}
-
-.footer-social img {
-  width: 30px;
-  height: 30px;
-  transition: transform 0.3s;
-}
-
-.footer-social img:hover {
-  transform: scale(1.1);
-}
-
-.footer-copy {
-  text-align: center;
-  font-size: 12px;
-  margin-top: 20px;
-  color: #e0e0e0;
-}
-
-
-
-/* Nutricionistas */
+/* ====== NUTRICIONISTAS ====== */
 .nutricionistas {
     display: flex;
     flex-wrap: wrap;
@@ -611,8 +495,6 @@ footer {
     object-fit: cover;
 }
 
-
-
 .btn-detalle {
     display: inline-block;
     margin-top: 15px;
@@ -628,9 +510,7 @@ footer {
     background-color: #009f43;
 }
 
-
-
-/* Sección Premium */
+/* ====== SECCIÓN PREMIUM ====== */
 .todojunto {
     width: 100%;
     max-width: 1200px;
@@ -737,7 +617,7 @@ footer {
     font-weight: 700;
 }
 
-/* Características Premium */
+/* ====== CARACTERÍSTICAS PREMIUM ====== */
 .premium-features {
     max-width: 900px;
     margin: 0 auto;
@@ -788,12 +668,11 @@ footer {
     line-height: 1.4;
 }
 
-/* Barra de Búsqueda */
+/* ====== BARRA DE BÚSQUEDA ====== */
 .search-bar {
     text-align: center;
     margin: 2rem 0;
     position: relative;
-    /* Añadido para posicionar la bombilla */
 }
 
 .search-bar input {
@@ -818,22 +697,13 @@ footer {
     background-color: #0f5e1f;
 }
 
-/* Bombilla debajo del buscador */
 .lamp-icon {
     width: 70px;
     margin: 20px auto 0;
-    /* Aumentado el margen superior */
     display: block;
 }
 
-@media (min-width: 768px) {
-    .lamp-icon {
-        margin-top: 30px;
-        /* Aumentado para mayor separación en pantallas grandes */
-    }
-}
-
-/* Sección de Recetas */
+/* ====== SECCIÓN DE RECETAS ====== */
 .recipe-section {
     max-width: 1200px;
     margin: 0 auto;
@@ -908,23 +778,7 @@ footer {
     margin-top: 1rem;
 }
 
-@media (min-width: 768px) {
-    .recipe-content {
-        flex-wrap: nowrap;
-    }
-
-    .recipe-description,
-    .recipe-image {
-        flex: 1;
-    }
-
-    .recipe-image {
-        margin-left: 2rem;
-        margin-top: 0;
-    }
-}
-
-/* Últimos Artículos y Posts */
+/* ====== ÚLTIMOS ARTÍCULOS Y POSTS ====== */
 .ultimos-articulos,
 .ultimos-posts,
 .contacto {
@@ -984,7 +838,7 @@ footer {
     margin: 20px auto;
 }
 
-/* Sección de Contacto */
+/* ====== SECCIÓN DE CONTACTO ====== */
 .contacto-wrapper {
     display: flex;
     flex-wrap: wrap;
@@ -1086,4 +940,181 @@ button[type="submit"] {
 
 button[type="submit"]:hover {
     background-color: #80CD29;
+}
+
+/* ====== FOOTER ====== */
+footer {
+    background-color: #858585;
+    padding: 30px 20px;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    max-width: 800px;
+    margin: 0 auto;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.footer-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.footer-logo img {
+    width: 150px;
+    height: auto;
+    filter: brightness(0) invert(1);
+}
+
+.footer-tagline {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex-grow: 1;
+}
+
+.help-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.help-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s;
+}
+
+.help-links a:hover {
+    color: #2a2c2b;
+}
+
+.complaints {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.complaints img {
+    width: 30px;
+    height: 30px;
+}
+
+.footer-social {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.footer-social span {
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+.footer-social img {
+    width: 30px;
+    height: 30px;
+    transition: transform 0.3s;
+}
+
+.footer-social img:hover {
+    transform: scale(1.1);
+}
+
+.footer-copy {
+    text-align: center;
+    font-size: 12px;
+    margin-top: 20px;
+    color: #e0e0e0;
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 768px) {
+    .logo-nav-container {
+        flex-direction: column;
+        height: auto;
+        padding: 15px 20px;
+        gap: 15px;
+    }
+
+    .logo-img {
+        width: 150px;
+    }
+
+    .navigation ul {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .text-container {
+        text-align: center;
+    }
+    
+    .text-container h1 {
+        font-size: 2rem;
+    }
+
+    .review-card {
+        width: 100%;
+    }
+
+    .cuadros-5 {
+        flex: 1 1 calc(50% - 2rem);
+    }
+
+    .recipe-content {
+        flex-wrap: nowrap;
+    }
+
+    .recipe-description,
+    .recipe-image {
+        flex: 1;
+    }
+
+    .recipe-image {
+        margin-left: 2rem;
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .cuadros-5 {
+        flex: 1 1 100%;
+    }
+}
+
+@media (min-width: 768px) {
+    .lamp-icon {
+        margin-top: 30px;
+    }
+
+    .recipe-content {
+        flex-wrap: nowrap;
+    }
+
+    .recipe-description,
+    .recipe-image {
+        flex: 1;
+    }
+
+    .recipe-image {
+        margin-left: 2rem;
+        margin-top: 0;
+    }
 }
