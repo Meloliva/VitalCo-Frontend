@@ -1,4 +1,6 @@
 /* Estilos Generales */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -30,24 +32,40 @@ body {
 
 .logo-nav-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    height: 80px;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 40px;
+    height: 100px;
+    gap: 50px; /* Espacio entre logo completo y navegación */
 }
 
 .logo {
     letter-spacing: 2px;
     font-size: 1.3em;
+    display: flex;
+    align-items: center; /* Asegura alineación vertical */
+    gap: 12px; /* Espacio entre imagen y texto */
+    flex-shrink: 0;
+    flex-direction: row; /* Forzar dirección horizontal */
 }
 
 .logo-img {
-    width: 120px;
-    /* Ajustado de 150px a 120px */
+    width: 250px; /* REDUCIDO de 200px a 80px */
     height: auto;
     mix-blend-mode: multiply;
+    display: block;
+    margin-top: 10px;
+}
+
+.logo-text {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #00BF61;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
 }
 
 /* Navegación */
@@ -70,19 +88,19 @@ body {
 }
 
 .navigation ul li a:hover {
-    color: #147B2A;
+    color: #00BF61; /* Color verde al pasar el mouse */
 }
 
 .navigation ul li a.register-btn {
-    background-color: #147B2A;
+    background-color: #00BF61; /* Color verde para el botón */
     color: white;
     padding: 0.5rem 1rem;
-    border-radius: 5px;
+    border-radius: 10px;
 }
 
 .navigation ul li a.register-btn:hover {
-    background-color: #147B2A;
-    color: black;
+    background-color: #009e4f; /* Verde más oscuro al hover */
+    color: white;
 }
 
 @media (max-width: 768px) {
@@ -90,6 +108,11 @@ body {
         flex-direction: column;
         height: auto;
         padding: 10px 20px;
+        gap: 20px;
+    }
+
+    .logo-img {
+        width: 150px;
     }
 
     .navigation ul {
@@ -109,9 +132,8 @@ body {
     align-items: center;
     padding: 2rem;
     max-width: 1200px;
-    margin: 120px auto 0;
+    margin: 130px auto 0;
 }
-
 .text-container {
     flex: 1;
     padding: 1rem;
@@ -461,58 +483,108 @@ h2 {
     }
 }
 
-/* Pie de Página */
 footer {
-    background-color: #8d9796; /* Color similar al del fondo de la imagen */
-    padding: 20px;
-    color: white;
+  background-color: #858585;
+  padding: 30px 20px;
+  color: white;
+  font-family: Arial, sans-serif;
 }
 
 .footer-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 800px;
+  margin: 0 auto;
+  gap: 40px;
+  flex-wrap: wrap;
 }
 
 .footer-logo {
-    width: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    mix-blend-mode: multiply;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  text-align: center;
 }
 
 .footer-logo img {
-    width: 150px; /* Ajusta este valor al tamaño que desees */
-    height: auto; /* Mantiene la proporción de la imagen */
+  width: 150px;
+  height: auto;
+  filter: brightness(0) invert(1);
+}
+
+.footer-tagline {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: bold;
 }
 
 .footer-links {
-    display: flex;
-    gap: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  flex-grow: 1;
 }
 
-.footer-links a {
-    color: white;
-    text-decoration: none;
-    font-size: 14px;
+.help-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.help-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s;
+}
+
+.help-links a:hover {
+  color: #2a2c2b;
+}
+
+.complaints {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.complaints img {
+  width: 30px;
+  height: 30px;
 }
 
 .footer-social {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.footer-social span {
+  font-size: 14px;
+  margin-right: 10px;
 }
 
 .footer-social img {
-    width: 24px;
-    margin-left: 10px;
+  width: 30px;
+  height: 30px;
+  transition: transform 0.3s;
 }
 
-.footer-social a {
-    text-decoration: none;
+.footer-social img:hover {
+  transform: scale(1.1);
 }
+
+.footer-copy {
+  text-align: center;
+  font-size: 12px;
+  margin-top: 20px;
+  color: #e0e0e0;
+}
+
+
 
 /* Nutricionistas */
 .nutricionistas {
