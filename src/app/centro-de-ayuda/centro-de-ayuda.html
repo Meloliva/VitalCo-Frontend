@@ -23,7 +23,7 @@
 
           <div class="form-row">
             <label for="email">Correo electrónico</label>
-            <input id="email" formControlName="email" type="email" placeholder="tu@ejemplo.com" />
+            <input id="email" formControlName="email" type="email" placeholder="correo@ejemplo.com" />
             <div class="error" *ngIf="submitted && contactoForm.controls['email'].hasError('required')">
               El email es obligatorio.
             </div>

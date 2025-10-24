@@ -9,18 +9,23 @@
 
 .contacto-wrap {
   max-width: 1140px;
-  margin: 40px auto;
-  padding: 0 20px 48px;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  margin: 0 auto;
+  padding: 120px 20px 48px;
+  font-family: sans-serif;
   color: #111;
   text-align: center;
 }
 
+
 .contacto-wrap > h1 {
   font-size: 26px;
   font-weight: 800;
-  margin-bottom: 28px;
+  margin: 0 0 28px 0;
   letter-spacing: 0.2px;
+  color: #111;
+  display: block;
+  text-align: center;
+  width: 100%;
 }
 
 /* tarjeta principal */
