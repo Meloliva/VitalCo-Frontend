@@ -40,11 +40,14 @@
 /* lado izquierdo: imagen grande con esquinas redondeadas */
 .left img {
   width: 420px;
-  height: 520px;
+  height: 455px;
   object-fit: cover;
+  object-position: center center;
   border-radius: 18px;
   box-shadow: 0 8px 28px rgba(10,10,10,0.06);
   display: block;
+  padding: 8px 8px 2px;
+  box-sizing: border-box;
 }
 
 /* lado derecho: textos y formulario */
