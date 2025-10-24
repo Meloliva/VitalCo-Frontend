@@ -1,0 +1,228 @@
+/* File: src/app/centro-de-ayuda/centro-de-ayuda.css */
+/* Variables SCSS convertidas a valores CSS:
+   accent = #34b67a
+   accent-light = rgba(52,182,122,0.08)
+   muted = #8a8a8a
+   bg = #ffffff
+   darken(accent,6%) ≈ #31ab73
+*/
+
+.contacto-wrap {
+  max-width: 1140px;
+  margin: 40px auto;
+  padding: 0 20px 48px;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  color: #111;
+  text-align: center;
+}
+
+.contacto-wrap > h1 {
+  font-size: 26px;
+  font-weight: 800;
+  margin-bottom: 28px;
+  letter-spacing: 0.2px;
+}
+
+/* tarjeta principal */
+.contact-card {
+  display: flex;
+  gap: 36px;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 8px 12px;
+}
+
+/* lado izquierdo: imagen grande con esquinas redondeadas */
+.left img {
+  width: 420px;
+  height: 520px;
+  object-fit: cover;
+  border-radius: 18px;
+  box-shadow: 0 8px 28px rgba(10,10,10,0.06);
+  display: block;
+}
+
+/* lado derecho: textos y formulario */
+.right {
+  flex: 1;
+  max-width: 520px;
+  text-align: left;
+}
+
+.right h2 {
+  font-size: 20px;
+  margin: 0 0 6px;
+  font-weight: 800;
+  color: #0b0b0b;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #8a8a8a;
+  margin-bottom: 12px;
+}
+
+/* contenedor del formulario */
+.contact-container .card {
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+
+/* filas y labels */
+.form-row {
+  margin-bottom: 14px;
+}
+
+.form-row label {
+  display: block;
+  font-size: 13px;
+  color: #222;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+/* inputs y textarea - estilo pill con bordes más finos */
+.form-row input[type="text"],
+.form-row input[type="email"],
+.form-row textarea {
+  width: 100%;
+  border: 1px solid #34b67a;
+  border-radius: 28px;
+  padding: 12px 18px;
+  font-size: 14px;
+  background: #ffffff;
+  outline: none;
+  box-sizing: border-box;
+  transition: box-shadow .15s ease, border-color .15s ease;
+}
+
+/* textarea más alto y radio levemente menor para proporción */
+.form-row textarea {
+  min-height: 120px;
+  border-radius: 16px;
+  padding-top: 14px;
+  resize: vertical;
+}
+
+/* focus */
+.form-row input:focus,
+.form-row textarea:focus {
+  box-shadow: 0 0 0 8px rgba(52,182,122,0.08);
+  border-color: #31ab73;
+}
+
+/* estilos de errores */
+.error {
+  color: #d9534f;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+/* checkbox minimal */
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: #333;
+}
+
+.checkbox-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #00BF61;
+  margin-right: 8px;
+}
+
+/* acciones / boton enviar */
+.actions {
+  margin-top: 14px;
+}
+
+.btn.primary {
+  background: #00BF61;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(52,182,122,0.12);
+}
+
+.btn.primary[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* mensajes de notice/success */
+.notice, .success {
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.success {
+  color: #34b67a;
+}
+
+/* separador con botón circular centrado */
+.separator {
+  margin-top: 28px;
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.separator:before {
+  content: "";
+  position: absolute;
+  left: 36px;
+  right: 36px;
+  height: 2px;
+  background: rgba(52,182,122,0.18);
+  top: 18px;
+  border-radius: 2px;
+}
+
+.separator-dot {
+  position: relative;
+  z-index: 2;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #eaf9ee;
+  border: 2px solid #eaf9ee;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #34b67a;
+  font-weight: 800;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+}
+
+/* responsive: apilar en pantallas pequeñas */
+@media (max-width: 900px) {
+  .contact-card {
+    flex-direction: column;
+    align-items: center;
+  }
+  .left img {
+    width: 100%;
+    height: auto;
+    max-width: 520px;
+  }
+  .right {
+    width: 100%;
+    max-width: 520px;
+    padding: 8px 6px;
+  }
+  .separator:before {
+    left: 16px;
+    right: 16px;
+  }
+}

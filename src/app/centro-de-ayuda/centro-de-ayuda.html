@@ -1,1 +1,70 @@
-<p>centro-de-ayuda works!</p>
+<!-- File: `src/app/centro-de-ayuda/centro-de-ayuda.html` -->
+<div class="contacto-wrap">
+  <h1>¿No encuentras lo que buscas?</h1>
+
+  <div class="contact-card">
+    <div class="left">
+      <img src="/Images/iconos/contacto.png" alt="Contacto" />
+    </div>
+
+    <div class="right">
+      <h2>Contactanos para responder cualquier duda</h2>
+      <p class="subtitle">Déjanos tus datos para enviarte un correo sobre toda la información que necesites.</p>
+
+      <form [formGroup]="contactoForm" (ngSubmit)="onSubmit()" class="contact-container">
+        <div class="card">
+          <div class="form-row">
+            <label for="nombre">Nombre y apellidos</label>
+            <input id="nombre" formControlName="nombre" type="text" placeholder="Tu nombre completo" />
+            <div class="error" *ngIf="submitted && contactoForm.controls['nombre'].invalid">
+              El nombre es obligatorio.
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label for="email">Correo electrónico</label>
+            <input id="email" formControlName="email" type="email" placeholder="tu@ejemplo.com" />
+            <div class="error" *ngIf="submitted && contactoForm.controls['email'].hasError('required')">
+              El email es obligatorio.
+            </div>
+            <div class="error" *ngIf="submitted && contactoForm.controls['email'].hasError('email')">
+              Ingresa un email válido.
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label for="mensaje">Mensaje</label>
+            <textarea id="mensaje" formControlName="mensaje" placeholder="Escribe tu mensaje aquí..."></textarea>
+            <div class="error" *ngIf="submitted && contactoForm.controls['mensaje'].invalid">
+              El mensaje es obligatorio.
+            </div>
+          </div>
+
+          <div class="checkbox-row">
+            <label>
+              <input type="checkbox" formControlName="acepto" />
+              Acepto la Política de Privacidad.
+            </label>
+            <div class="error" *ngIf="submitted && contactoForm.controls['acepto'].invalid">
+              Debes aceptar para continuar.
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="submit" [disabled]="contactoForm.invalid || sending" class="btn primary">
+              <span *ngIf="!sending">Enviar</span>
+              <span *ngIf="sending" class="sending">Enviando…</span>
+            </button>
+          </div>
+
+          <div class="notice" *ngIf="!sending && !contactoForm.valid && submitted">
+            Corrige los campos marcados para poder enviar.
+          </div>
+          <div class="success" *ngIf="!sending && submitted && contactoForm.valid">
+            Solicitud enviada correctamente.
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
