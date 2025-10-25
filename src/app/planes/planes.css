@@ -1,0 +1,312 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* --- SECCIÓN DE BENEFICIOS PREMIUM (Cabecera superior) --- */
+
+#BeneficiosPremium {
+  max-width: 1000px;
+  margin: 50px auto;
+  padding: 20px;
+}
+
+.premium-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 50px;
+}
+
+.premium-text-container {
+  flex: 1;
+  max-width: 500px;
+  padding-right: 40px;
+  text-align: center;
+}
+
+.premium-text-container h2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.premium-text-container .destacado-verde {
+  color: #00BF61;
+}
+
+.premium-text-container p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.premium-image-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 100px;
+}
+
+.premium-img {
+  max-width: 450px;
+  width: 100%;
+  height: auto;
+}
+
+/* --- SECCIÓN DE PLANES Y PRECIOS (Las 3 tarjetas) --- */
+
+#PlanesPrecios {
+  max-width: 1200px;
+  margin: 80px auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.planes-title {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 40px;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.planes-title .check-icon {
+  content: "";
+  width: 65px;
+  height: 65px;
+  background-image: url('/Images/iconos/check_planes.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  margin-left: 10px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.pricing-container {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.pricing-card {
+  background-color: #fff;
+  border: 2px solid #e0e0e0;
+  border-radius: 15px;
+  padding: 30px;
+  width: 100%;
+  max-width: 350px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.pricing-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+}
+
+.monthly-plan, .annual-plan {
+  border-color: #00BF61;
+}
+
+.pricing-card h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.plan-subtitle {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.95rem;
+  color: #888;
+  min-height: 40px;
+  margin-bottom: 25px;
+  line-height: 1.4;
+}
+
+.pricing-card ul {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+  margin-bottom: 30px;
+  flex-grow: 1;
+}
+
+.pricing-card ul li {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 12px;
+  position: relative;
+  padding-left: 25px;
+}
+
+.pricing-card ul li::before {
+  content: "✓";
+  color: #00BF61;
+  font-weight: bold;
+  font-size: 1.2rem;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.pricing-card ul li .highlight {
+  font-weight: 700;
+  color: #00BF61;
+}
+
+.plan-btn {
+  display: block;
+  padding: 12px 25px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: auto;
+}
+
+.btn-gratis {
+  background-color: #E6E6E6;
+  color: #666;
+  border: 1px solid #ccc;
+}
+
+.btn-gratis:hover {
+  background-color: #dcdcdc;
+  transform: scale(1.02);
+}
+
+.btn-monthly, .btn-annual {
+  background-color: #00BF61;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 191, 97, 0.3);
+}
+
+.btn-monthly:hover, .btn-annual:hover {
+  background-color: #009e4f;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 191, 97, 0.4);
+}
+
+
+/* --- SECCIÓN ¿QUÉ INCLUYE EL PREMIUM? (Características) --- */
+
+#BeneficiosPremiumFeatures {
+  margin-bottom: 80px;
+}
+
+.que-incluye-premium {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.que-incluye-premium h2 {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 50px;
+  color: #333;
+}
+
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.feature-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.feature-icon {
+  flex-shrink: 0;
+  width: 90px;
+  height: 90px;
+  margin-right: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feature-icon img {
+  width: 100%;
+  height: auto;
+}
+
+.feature-content h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.feature-content p {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+
+@media (max-width: 1150px) {
+  .pricing-card {
+    max-width: 45%;
+  }
+}
+
+@media (max-width: 768px) {
+  #PlanesPrecios {
+  }
+
+  .pricing-container {
+    gap: 20px;
+  }
+
+  .pricing-card {
+    max-width: 95%;
+    width: 100%;
+    margin: 0 auto;
+    padding: 25px 20px;
+  }
+
+  .plan-subtitle {
+    min-height: auto;
+  }
+
+  .premium-image-container {
+    margin-top: 50px;
+  }
+
+  .premium-header {
+    flex-direction: column; /* Apila el texto y la imagen de la cabecera */
+    text-align: center;
+  }
+
+  .premium-text-container {
+    padding-right: 0;
+    max-width: 100%;
+  }
+}
