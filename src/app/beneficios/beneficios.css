@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
+
+/* Contenedor principal */
+#Beneficios {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 100px 20px 60px;
+}
+
+/* Cabecera con título */
+.beneficios-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.beneficios-header h1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #000;
+  margin: 0;
+}
+
+/* Contenedor de las 4 tarjetas */
+.beneficios-container {
+  background: linear-gradient(135deg, #a8e6cf 0%, #7ed6b8 100%);
+  border-radius: 20px;
+  padding: 60px 40px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+}
+
+/* Tarjeta individual de beneficio */
+.beneficio-card {
+  background: transparent;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Contenedor del ícono */
+.beneficio-icon {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.beneficio-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Título de cada beneficio */
+.beneficio-card h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #000;
+  margin: 0 0 15px 0;
+  text-transform: capitalize;
+}
+
+/* Descripción de cada beneficio */
+.beneficio-card p {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #333;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 250px;
+}
+
+/* Responsive para tablets */
+@media (max-width: 1024px) {
+  .beneficios-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 50px 30px;
+    padding: 50px 30px;
+  }
+}
+
+/* Responsive para móviles */
+@media (max-width: 640px) {
+  #Beneficios {
+    padding: 80px 15px 40px;
+  }
+
+  .beneficios-header h1 {
+    font-size: 2rem;
+  }
+
+  .beneficios-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 40px 20px;
+  }
+
+  .beneficio-icon {
+    width: 100px;
+    height: 100px;
+  }
+
+  .beneficio-card h3 {
+    font-size: 1.2rem;
+  }
+
+  .beneficio-card p {
+    font-size: 0.9rem;
+    max-width: 100%;
+  }
+}
