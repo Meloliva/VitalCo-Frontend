@@ -200,7 +200,7 @@
 }
 
 .btn-monthly:hover, .btn-annual:hover {
-  background-color: #009e4f;
+  background-color: #00BF61;
   transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(0, 191, 97, 0.4);
 }
