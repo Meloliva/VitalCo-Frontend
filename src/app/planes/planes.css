@@ -301,7 +301,7 @@
   }
 
   .premium-header {
-    flex-direction: column; /* Apila el texto y la imagen de la cabecera */
+    flex-direction: column;
     text-align: center;
   }
 

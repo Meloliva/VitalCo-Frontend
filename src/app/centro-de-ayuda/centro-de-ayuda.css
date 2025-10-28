@@ -28,7 +28,7 @@
   width: 100%;
 }
 
-/* tarjeta principal */
+
 .contact-card {
   display: flex;
   gap: 36px;
@@ -37,7 +37,7 @@
   padding: 8px 12px;
 }
 
-/* lado izquierdo: imagen grande con esquinas redondeadas */
+
 .left img {
   width: 420px;
   height: 455px;
@@ -50,7 +50,7 @@
   box-sizing: border-box;
 }
 
-/* lado derecho: textos y formulario */
+
 .right {
   flex: 1;
   max-width: 520px;
@@ -70,14 +70,14 @@
   margin-bottom: 12px;
 }
 
-/* contenedor del formulario */
+
 .contact-container .card {
   background: transparent;
   padding: 0;
   box-shadow: none;
 }
 
-/* filas y labels */
+
 .form-row {
   margin-bottom: 14px;
 }
@@ -90,7 +90,6 @@
   font-weight: 600;
 }
 
-/* inputs y textarea - estilo pill con bordes más finos */
 .form-row input[type="text"],
 .form-row input[type="email"],
 .form-row textarea {
@@ -105,7 +104,6 @@
   transition: box-shadow .15s ease, border-color .15s ease;
 }
 
-/* textarea más alto y radio levemente menor para proporción */
 .form-row textarea {
   min-height: 120px;
   border-radius: 16px;
@@ -113,21 +111,21 @@
   resize: vertical;
 }
 
-/* focus */
+
 .form-row input:focus,
 .form-row textarea:focus {
   box-shadow: 0 0 0 8px rgba(52,182,122,0.08);
   border-color: #31ab73;
 }
 
-/* estilos de errores */
+
 .error {
   color: #d9534f;
   font-size: 12px;
   margin-top: 6px;
 }
 
-/* checkbox minimal */
+
 .checkbox-row {
   display: flex;
   align-items: center;
@@ -144,7 +142,6 @@
   margin-right: 8px;
 }
 
-/* acciones / boton enviar */
 .actions {
   margin-top: 14px;
 }
@@ -166,7 +163,7 @@
   box-shadow: none;
 }
 
-/* mensajes de notice/success */
+
 .notice, .success {
   margin-top: 12px;
   font-size: 13px;
@@ -176,7 +173,7 @@
   color: #34b67a;
 }
 
-/* separador con botón circular centrado */
+
 .separator {
   margin-top: 28px;
   position: relative;
@@ -213,7 +210,7 @@
   box-shadow: 0 4px 10px rgba(0,0,0,0.04);
 }
 
-/* responsive: apilar en pantallas pequeñas */
+
 @media (max-width: 900px) {
   .contact-card {
     flex-direction: column;
