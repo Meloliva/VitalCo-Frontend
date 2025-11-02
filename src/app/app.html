@@ -1,5 +1,4 @@
-
-<header class="header">
+<header class="header" *ngIf="showHeaderFooter">
   <div class="logo-nav-container">
     <a href="#" class="logo">
       <img src="/Images/Logos/logo_7.png" alt="Logo" class="logo-img">
@@ -12,7 +11,7 @@
         <li><a routerLink="/testimonios">Testimonios</a></li>
         <li><a routerLink="/centro-de-ayuda">Centro de ayuda</a></li>
         <li><a routerLink="/registro">Registrarme</a></li>
-        <li><a href="/iniciosecion" target="_blank" class="register-btn">Iniciar sesión</a></li>
+        <li><a routerLink="/iniciarsesion" class="register-btn">Iniciar sesión</a></li>
       </ul>
     </nav>
   </div>
@@ -20,13 +19,11 @@
 
 <router-outlet />
 
-<footer class="footer">
+<footer class="footer" *ngIf="showHeaderFooter">
   <div class="footer-container">
-
     <div class="footer-column footer-logo">
       <img src="/Images/Logos/logo_pie.png" alt="Vitalco Logo" class="footer-logo-img">
     </div>
-
 
     <div class="footer-column">
       <h3>Centro de ayuda</h3>
@@ -53,14 +50,12 @@
       </div>
     </div>
 
-
     <div class="footer-column footer-libro">
       <a href="#" class="libro-link">
         <img src="/Images/iconos/libroreclamaciones.png" alt="Libro de reclamaciones">
         <span>Libro de reclamaciones</span>
       </a>
     </div>
-
   </div>
 
   <div class="footer-copyright">

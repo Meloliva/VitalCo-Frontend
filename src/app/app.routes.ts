@@ -17,5 +17,9 @@ export const routes: Routes = [
   { path: 'centro-de-ayuda', component: CentroDeAyuda },
   { path: 'iniciosecion', component: IniciarSecion },
   { path: 'registro', component: SeleccionRegistro },
-  { path: 'registro-nutricionista', component: Registro }
+  { path: 'registro-nutricionista', component: Registro },
+  {
+    path: 'perfil',
+    loadComponent: () => import('./perfilnutricionista/perfil').then(m => m.Perfil)
+  }
 ];
