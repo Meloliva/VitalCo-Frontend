@@ -1,0 +1,51 @@
+<div class="seleccion-container">
+  <div class="seleccion-card">
+    <!-- Círculos decorativos -->
+    <img src="/Images/iconos/shaperegistro.png" alt="" class="decorative-circle circle-1">
+    <img src="/Images/iconos/shaperegistro1.png" alt="" class="decorative-circle circle-2">
+
+    <div class="logo-container">
+      <img src="/Images/Logos/logoregistro.png" alt="VitalCo" class="logo">
+    </div>
+
+    <h1>¿Cómo deseas registrarte?</h1>
+    <p class="subtitle">Selecciona el tipo de cuenta que deseas crear</p>
+
+    <div class="opciones-container">
+      <!-- Opción Paciente -->
+      <div class="opcion-card" (click)="registrarPaciente()">
+        <div class="opcion-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#00BF61" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <h3>Paciente</h3>
+        <p>Accede a planes personalizados, recetas y seguimiento de tu salud</p>
+        <button class="btn-opcion">Registrarme como Paciente</button>
+      </div>
+
+      <!-- Opción Nutricionista -->
+      <div class="opcion-card" (click)="registrarNutricionista()">
+        <div class="opcion-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#00BF61" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            <path d="M12 11h.01"></path>
+            <path d="M12 14h.01"></path>
+            <path d="M12 17h.01"></path>
+          </svg>
+        </div>
+        <h3>Nutricionista</h3>
+        <p>Gestiona pacientes, crea planes alimenticios y realiza consultas virtuales</p>
+        <button class="btn-opcion nutricionista">Registrarme como Nutricionista</button>
+      </div>
+    </div>
+
+    <div class="login-link">
+      <p>¿Ya tienes una cuenta? <a href="/iniciosecion">Inicia sesión</a></p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,154 @@
+<div class="registro-container">
+  <!-- Paso 1: Crear cuenta de usuario -->
+  <div class="registro-card" *ngIf="step() === 1">
+    <!-- Círculos como imágenes -->
+    <img src="/Images/iconos/shaperegistro.png" alt="" class="decorative-circle circle-1">
+    <img src="/Images/iconos/shaperegistro1.png" alt="" class="decorative-circle circle-2">
+
+    <div class="logo-container">
+      <img src="/Images/Logos/logoregistro.png" alt="VitalCo" class="logo">
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill step-1"></div>
+    </div>
+
+    <h2>Crea su cuenta de usuario..</h2>
+
+    <form [formGroup]="registroForm" (ngSubmit)="nextStep()">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre:</label>
+          <input type="text" formControlName="nombre">
+        </div>
+        <div class="form-group">
+          <label>Genero:</label>
+          <select formControlName="genero">
+            <option value="">Seleccionar</option>
+            <option value="masculino">Masculino</option>
+            <option value="femenino">Femenino</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Apellido:</label>
+          <input type="text" formControlName="apellido">
+        </div>
+        <div class="form-group">
+          <label>Correo:</label>
+          <input type="email" formControlName="correo">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Dni:</label>
+          <input type="text" formControlName="dni" maxlength="8">
+        </div>
+        <div class="form-group">
+          <label>Password:</label>
+          <input type="password" formControlName="password">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-registrar" [disabled]="!registroForm.valid">
+        Registrar
+      </button>
+    </form>
+  </div>
+
+  <!-- Paso 2: Datos profesionales -->
+  <div class="registro-card" *ngIf="step() === 2">
+    <!-- Círculos como imágenes -->
+    <img src="/Images/iconos/shaperegistro.png" alt="" class="decorative-circle circle-1">
+    <img src="/Images/iconos/shaperegistro1.png" alt="" class="decorative-circle circle-2">
+
+    <div class="header-with-back">
+      <button class="btn-back" (click)="goBack()">←</button>
+      <div class="logo-container">
+        <img src="/Images/Logos/logoregistro.png" alt="VitalCo" class="logo">
+      </div>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill step-2"></div>
+    </div>
+
+    <form [formGroup]="registroProfesionalForm" (ngSubmit)="nextStep()">
+      <div class="form-group">
+        <label>Asociación:</label>
+        <input type="text" formControlName="asociacion" placeholder="Nombre de la asociación">
+      </div>
+
+      <div class="form-group">
+        <label>Universidad:</label>
+        <input type="text" formControlName="universidad" placeholder="Nombre de la universidad">
+      </div>
+
+      <div class="form-group">
+        <label>Turno:</label>
+        <select formControlName="turno">
+          <option value="">Seleccionar turno</option>
+          <option value="8:00 am-12:00 pm">8:00 am-12:00 pm</option>
+          <option value="2:00 pm-6:00 pm">2:00 pm-6:00 pm</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Ingrese una foto (opcional)</label>
+        <div class="photo-upload" (click)="triggerFileInput()">
+          <input
+            type="file"
+            id="fileInput"
+            accept="image/*"
+            (change)="onFileSelected($event)"
+            style="display: none">
+          <div class="upload-placeholder" *ngIf="!selectedImage()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00BF61" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+              <circle cx="12" cy="13" r="4"></circle>
+            </svg>
+            <p>Seleccionar foto de perfil</p>
+          </div>
+          <img *ngIf="selectedImage()" [src]="selectedImage()" alt="Preview" class="image-preview">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-registrar" [disabled]="!registroProfesionalForm.valid">
+        Completar Registro
+      </button>
+    </form>
+  </div>
+
+  <!-- Paso 3: Registro exitoso -->
+  <div class="registro-card success-card" *ngIf="step() === 3">
+    <!-- Círculos como imágenes -->
+    <img src="/Images/iconos/shaperegistro.png" alt="" class="decorative-circle circle-1">
+    <img src="/Images/iconos/shaperegistro1.png" alt="" class="decorative-circle circle-2">
+
+    <div class="header-with-back">
+      <button class="btn-back" (click)="goBack()">←</button>
+      <div class="logo-container">
+        <img src="/Images/Logos/logoregistro.png" alt="VitalCo" class="logo">
+      </div>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill step-3"></div>
+    </div>
+
+    <div class="success-content">
+      <div class="success-box">
+        <div class="success-icon">
+          <img src="/Images/iconos/comprobadoregistro.png" alt="Éxito" class="check-image">
+        </div>
+        <h2>¡Registro Exitoso!</h2>
+        <p>se ha enviado un correo de verificación</p>
+      </div>
+      <button class="btn-iniciar" (click)="iniciar()">Iniciar</button>
+    </div>
+  </div>
+</div>
