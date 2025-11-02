@@ -1,7 +1,6 @@
 <div class="registro-container">
   <!-- Paso 1: Crear cuenta de usuario -->
   <div class="registro-card" *ngIf="step() === 1">
-    <!-- Círculos como imágenes -->
     <img src="/Images/iconos/shaperegistro.png" alt="" class="decorative-circle circle-1">
     <img src="/Images/iconos/shaperegistro1.png" alt="" class="decorative-circle circle-2">
 
@@ -50,7 +49,17 @@
         </div>
         <div class="form-group">
           <label>Password:</label>
-          <input type="password" formControlName="password">
+          <div class="input-with-icon">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              class="password-input"
+            />
+            <span class="icon-eye" (click)="togglePasswordVisibility()">
+      <img src="/Images/iconos/eye-icon.png" alt="Mostrar/Ocultar">
+    </span>
+          </div>
+
         </div>
       </div>
 
@@ -62,7 +71,6 @@
 
   <!-- Paso 2: Datos profesionales -->
   <div class="registro-card" *ngIf="step() === 2">
-    <!-- Círculos como imágenes -->
     <img src="/Images/iconos/shaperegistro.png" alt="" class="decorative-circle circle-1">
     <img src="/Images/iconos/shaperegistro1.png" alt="" class="decorative-circle circle-2">
 
@@ -97,26 +105,6 @@
         </select>
       </div>
 
-      <div class="form-group">
-        <label>Ingrese una foto (opcional)</label>
-        <div class="photo-upload" (click)="triggerFileInput()">
-          <input
-            type="file"
-            id="fileInput"
-            accept="image/*"
-            (change)="onFileSelected($event)"
-            style="display: none">
-          <div class="upload-placeholder" *ngIf="!selectedImage()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00BF61" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-              <circle cx="12" cy="13" r="4"></circle>
-            </svg>
-            <p>Seleccionar foto de perfil</p>
-          </div>
-          <img *ngIf="selectedImage()" [src]="selectedImage()" alt="Preview" class="image-preview">
-        </div>
-      </div>
-
       <button type="submit" class="btn-registrar" [disabled]="!registroProfesionalForm.valid">
         Completar Registro
       </button>
@@ -125,7 +113,6 @@
 
   <!-- Paso 3: Registro exitoso -->
   <div class="registro-card success-card" *ngIf="step() === 3">
-    <!-- Círculos como imágenes -->
     <img src="/Images/iconos/shaperegistro.png" alt="" class="decorative-circle circle-1">
     <img src="/Images/iconos/shaperegistro1.png" alt="" class="decorative-circle circle-2">
 
@@ -146,9 +133,14 @@
           <img src="/Images/iconos/comprobadoregistro.png" alt="Éxito" class="check-image">
         </div>
         <h2>¡Registro Exitoso!</h2>
-        <p>se ha enviado un correo de verificación</p>
+        <p>Se ha registrado correctamente</p>
+
+        <div class="button-stack">
+          <button class="btn-iniciar" (click)="iniciar()">Iniciar</button>
+          <button class="btn-cancelar" (click)="cancelar()">Cancelar</button>
+        </div>
+
       </div>
-      <button class="btn-iniciar" (click)="iniciar()">Iniciar</button>
     </div>
   </div>
 </div>

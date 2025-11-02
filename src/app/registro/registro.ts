@@ -14,7 +14,7 @@ export class Registro {
   step = signal(1); // 1: datos usuario, 2: datos profesionales, 3: éxito
   registroForm: FormGroup;
   registroProfesionalForm: FormGroup;
-  selectedImage = signal<string | null>(null);
+  showPassword: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -30,7 +30,7 @@ export class Registro {
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
 
-    // Formulario paso 2 - foto ya NO es requerida
+    // Formulario paso 2
     this.registroProfesionalForm = this.fb.group({
       asociacion: ['', Validators.required],
       universidad: ['', Validators.required],
@@ -42,24 +42,8 @@ export class Registro {
     if (this.step() === 1 && this.registroForm.valid) {
       this.step.set(2);
     } else if (this.step() === 2 && this.registroProfesionalForm.valid) {
-      // Ya no requiere imagen para continuar
       this.step.set(3);
     }
-  }
-
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.selectedImage.set(e.target.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  triggerFileInput() {
-    document.getElementById('fileInput')?.click();
   }
 
   goBack() {
@@ -68,5 +52,12 @@ export class Registro {
 
   iniciar() {
     this.router.navigate(['/perfil-nutricionista']);
+  }
+  cancelar() {
+    this.router.navigate(['/inicio']);
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 }
