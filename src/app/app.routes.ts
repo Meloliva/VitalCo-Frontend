@@ -14,10 +14,24 @@ export const routes: Routes = [
       { path: 'testimonios', loadComponent: () => import('./testimonios/testimonios').then(m => m.Testimonios) },
       { path: 'centro-de-ayuda', loadComponent: () => import('./centro-de-ayuda/centro-de-ayuda').then(m => m.CentroDeAyuda) },
       { path: 'iniciosecion', loadComponent: () => import('./iniciarsecion/iniciarsecion').then(m => m.IniciarSecion) },
+      {path: 'registro', loadComponent: () => import('./registro/registro').then(m => m.Registro) },
       {
         path: 'perfil',
         loadComponent: () => import('./perfilnutricionista/perfil').then(m => m.Perfil)
       }
+    ]
+  },
+  {
+    path:' ',
+    component: PrivateLayout,
+    children:[
+      { path: '', redirectTo: 'progreso', pathMatch: 'full' },
+      /*{ path: 'progreso', loadComponent: () => import('./sistema/progreso/progreso').then(m => m.Progreso) },
+      { path: 'perfil', loadComponent: () => import('./sistema/perfil/perfil').then(m => m.Perfil) },
+      { path: 'recetas', loadComponent: () => import('./sistema/recetas/recetas').then(m => m.Recetas) },
+      { path: 'citas', loadComponent: () => import('./sistema/citas/citas').then(m => m.Citas) },
+      { path: 'cambiar-plan', loadComponent: () => import('./sistema/cambiar-plan/cambiar-plan').then(m => m.CambiarPlan) }
+*/
     ]
   }
 
