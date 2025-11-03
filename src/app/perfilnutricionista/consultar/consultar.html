@@ -1,0 +1,63 @@
+<div class="perfil-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo-section">
+      <img src="/Images/Logos/logoregistro.png" alt="VitalCo" class="sidebar-logo">
+      <div class="sidebar-title-group">
+        <span class="sidebar-title">VitalCo</span>
+        <span class="sidebar-subtitle">Nombre de Usuario</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/perfil" routerLinkActive="active" class="sidebar-link">
+        <img src="/Images/iconos/iconoperfil.png" alt="Perfil" class="sidebar-icon">
+        Perfil
+      </a>
+
+      <a routerLink="/progreso" routerLinkActive="active" class="sidebar-link">
+        <img src="/Images/iconos/iconoprogresopacientes.png" alt="Progreso" class="sidebar-icon">
+        Progreso de Pacientes
+      </a>
+
+      <a routerLink="/recetas" routerLinkActive="active" class="sidebar-link">
+        <img src="/Images/iconos/iconorecetas.png" alt="Recetas" class="sidebar-icon">
+        Recetas
+      </a>
+
+      <a routerLink="/citas" routerLinkActive="active" class="sidebar-link">
+        <img src="/Images/iconos/iconocitas.png" alt="Citas" class="sidebar-icon">
+        Citas
+      </a>
+
+      <a routerLink="/consultar" routerLinkActive="active" class="sidebar-link active">
+        <img src="/Images/iconos/iconoconsultar.png" alt="Consultar" class="sidebar-icon">
+        Consultar
+      </a>
+
+      <div class="sidebar-bottom">
+        <button type="button" (click)="salir()" class="sidebar-link salir-link">
+          <img src="/Images/iconos/iconosalir.png" alt="Salir" class="sidebar-icon">
+          Salir
+        </button>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="perfil-main">
+    <form class="consulta-form" (submit)="buscar($event)">
+      <div class="form-row">
+        <label>Fecha de consulta:</label>
+        <input type="date" [(ngModel)]="fechaConsulta" name="fechaConsulta">
+        <label>DNI:</label>
+        <input type="text" [(ngModel)]="dni" name="dni" placeholder="Ingrese DNI">
+        <button class="btn-buscar" type="submit">Buscar</button>
+      </div>
+    </form>
+
+    <div class="consulta-result">
+      <canvas id="grafico-consulta"></canvas>
+    </div>
+  </main>
+</div>
