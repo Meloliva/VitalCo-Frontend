@@ -15,10 +15,10 @@
   overflow: hidden;
   background-color: #ffffff;
   width: 50%;
-  max-width: 50%; /* Asegura que ocupe solo el 50% */
+  max-width: 50%;
 }
 
-/* Círculos decorativos - Estilo exacto */
+/* Círculos decorativos */
 .decoration-circles {
   position: absolute;
   top: 0;
@@ -33,6 +33,7 @@
 .circle {
   position: absolute;
   border-radius: 50%;
+  transition: all 0.3s ease;
 }
 
 .circle-1 {
@@ -67,8 +68,7 @@
   border-radius: 50%;
   object-fit: cover;
   position: relative;
-  top: 130px; /* Baja más el logo */
-
+  top: 130px;
 }
 
 .login-header h2 {
@@ -78,8 +78,9 @@
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   position: relative;
-  top: -10px; /* Sube bastante el título */
+  top: -10px;
 }
+
 /* Botones sociales */
 .social-buttons {
   display: flex;
@@ -104,14 +105,12 @@
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
 }
 
-/* Estilo para las imágenes dentro de los botones */
 .btn-social img {
   width: 28px;
   height: 28px;
   object-fit: contain;
 }
 
-/* Imagen de Facebook más grande */
 .btn-facebook img {
   width: 35px;
   height: 35px;
@@ -139,7 +138,9 @@
   transform: translateY(-3px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
   border-color: #d2d3d4;
-}/* Formulario */
+}
+
+/* Formulario */
 form {
   width: 100%;
   max-width: 420px;
@@ -251,7 +252,7 @@ form {
 }
 
 .forgot-password a {
-  color: #689f38;;
+  color: #689f38;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.3s ease;
@@ -284,65 +285,406 @@ form {
   filter: contrast(1.1) brightness(0.95);
 }
 
-/* Responsive */
+/* ========================================
+   RESPONSIVE DESIGN - TODAS LAS PANTALLAS
+   ======================================== */
+
+/* Tablets grandes y laptops pequeñas (1024px - 1280px) */
+@media (max-width: 1280px) {
+  .logo {
+    width: 260px;
+    height: 260px;
+    top: 100px;
+  }
+
+  .login-header h2 {
+    font-size: 1.65rem;
+  }
+
+  .btn-social {
+    width: 180px;
+    height: 52px;
+  }
+
+  form {
+    max-width: 380px;
+  }
+}
+
+/* Tablets medianas (768px - 1024px) */
+@media (max-width: 1024px) {
+  .login-card {
+    padding: 35px 30px;
+  }
+
+  .logo {
+    width: 220px;
+    height: 220px;
+    top: 80px;
+  }
+
+  .login-header h2 {
+    font-size: 1.5rem;
+    top: -5px;
+  }
+
+  .social-buttons {
+    gap: 15px;
+    margin-bottom: 30px;
+  }
+
+  .btn-social {
+    width: 170px;
+    height: 50px;
+    font-size: 0.95rem;
+  }
+
+  .circle-1 {
+    width: 280px;
+    height: 280px;
+    top: -60px;
+    left: -150px;
+  }
+
+  .circle-2 {
+    width: 220px;
+    height: 220px;
+    top: -80px;
+    left: 10px;
+  }
+}
+
+/* Tablets pequeñas (640px - 968px) */
 @media (max-width: 968px) {
   .login-container {
     flex-direction: column;
   }
 
-  .login-image {
-    position: relative; /* Cambia a relative en mobile */
-    width: 100%;
-    max-height: 250px;
-    order: 2;
-  }
-
   .login-card {
     width: 100%;
     max-width: 100%;
-    padding: 30px 20px;
+    padding: 40px 30px;
+    min-height: auto;
+  }
+
+  .login-image {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    max-height: 300px;
+    order: 2;
+  }
+
+  .logo {
+    width: 180px;
+    height: 180px;
+    top: 50px;
+    margin-bottom: 25px;
+  }
+
+  .login-header {
+    margin-bottom: 30px;
+  }
+
+  .login-header h2 {
+    font-size: 1.5rem;
+    top: 0;
   }
 
   .social-buttons {
     flex-direction: column;
     width: 100%;
     max-width: 420px;
+    gap: 15px;
   }
 
   .btn-social {
     width: 100%;
-  }
-}
-
-@media (max-width: 640px) {
-  .login-card {
-    padding: 20px 15px;
+    height: 55px;
   }
 
-  .login-header h2 {
-    font-size: 1.5rem;
+  form {
+    max-width: 420px;
   }
 
-  .logo {
-    width: 90px; /* Más grande en móvil también */
-    height: 90px;
-  }
-
+  /* Círculos ajustados para tablets */
   .circle-1 {
     width: 200px;
     height: 200px;
-    top: -70px;
-    left: -70px;
+    top: -100px;
+    left: -80px;
   }
 
   .circle-2 {
+    width: 160px;
+    height: 160px;
+    top: -60px;
+    left: 40px;
+  }
+}
+
+/* Móviles grandes (480px - 640px) */
+@media (max-width: 640px) {
+  .login-card {
+    padding: 30px 20px;
+  }
+
+  .logo {
     width: 150px;
     height: 150px;
     top: 30px;
-    left: 80px;
+    margin-bottom: 20px;
+  }
+
+  .login-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .login-image {
+    height: 250px;
+    max-height: 250px;
+  }
+
+  .social-buttons {
+    margin-bottom: 25px;
+  }
+
+  .btn-social {
+    height: 52px;
+    font-size: 0.95rem;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+  }
+
+  .form-control {
+    padding: 13px 16px;
+    font-size: 0.95rem;
+  }
+
+  .btn-submit {
+    padding: 13px;
+    font-size: 1rem;
+  }
+
+  /* Círculos más pequeños y mejor posicionados */
+  .circle-1 {
+    width: 150px;
+    height: 150px;
+    top: -75px;
+    left: -60px;
+  }
+
+  .circle-2 {
+    width: 120px;
+    height: 120px;
+    top: -40px;
+    left: 30px;
   }
 
   form {
     max-width: 100%;
+  }
+}
+
+/* Móviles medianos (375px - 480px) */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 25px 18px;
+  }
+
+  .logo {
+    width: 130px;
+    height: 130px;
+    top: 20px;
+    margin-bottom: 18px;
+  }
+
+  .login-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .login-header {
+    margin-bottom: 25px;
+  }
+
+  .login-image {
+    height: 220px;
+    max-height: 220px;
+  }
+
+  .btn-social {
+    height: 50px;
+    font-size: 0.9rem;
+    gap: 8px;
+  }
+
+  .btn-social img {
+    width: 24px;
+    height: 24px;
+  }
+
+  .btn-facebook img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .form-control {
+    padding: 12px 15px;
+    font-size: 0.9rem;
+  }
+
+  .btn-submit {
+    padding: 12px;
+    font-size: 0.95rem;
+  }
+
+  .forgot-password {
+    font-size: 0.9rem;
+    margin-top: 20px;
+  }
+
+  /* Círculos aún más pequeños */
+  .circle-1 {
+    width: 120px;
+    height: 120px;
+    top: -60px;
+    left: -50px;
+  }
+
+  .circle-2 {
+    width: 95px;
+    height: 95px;
+    top: -30px;
+    left: 20px;
+  }
+}
+
+/* Móviles pequeños (menos de 375px) */
+@media (max-width: 375px) {
+  .login-card {
+    padding: 20px 15px;
+  }
+
+  .logo {
+    width: 110px;
+    height: 110px;
+    top: 15px;
+    margin-bottom: 15px;
+  }
+
+  .login-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .login-header {
+    margin-bottom: 20px;
+  }
+
+  .login-image {
+    height: 200px;
+    max-height: 200px;
+  }
+
+  .social-buttons {
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .btn-social {
+    height: 48px;
+    font-size: 0.85rem;
+  }
+
+  .btn-social img {
+    width: 22px;
+    height: 22px;
+  }
+
+  .btn-facebook img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  .form-group label {
+    font-size: 0.85rem;
+  }
+
+  .form-control {
+    padding: 11px 14px;
+    font-size: 0.85rem;
+    border-radius: 8px;
+  }
+
+  .btn-submit {
+    padding: 11px;
+    font-size: 0.9rem;
+    border-radius: 8px;
+  }
+
+  .forgot-password {
+    font-size: 0.85rem;
+  }
+
+  /* Círculos mínimos para pantallas pequeñas */
+  .circle-1 {
+    width: 100px;
+    height: 100px;
+    top: -50px;
+    left: -40px;
+  }
+
+  .circle-2 {
+    width: 80px;
+    height: 80px;
+    top: -25px;
+    left: 15px;
+  }
+}
+
+/* Pantallas ultra anchas (más de 1920px) */
+@media (min-width: 1920px) {
+  .login-card {
+    padding: 60px;
+  }
+
+  .logo {
+    width: 350px;
+    height: 350px;
+    top: 150px;
+  }
+
+  .login-header h2 {
+    font-size: 2rem;
+  }
+
+  .btn-social {
+    width: 220px;
+    height: 60px;
+    font-size: 1.1rem;
+  }
+
+  form {
+    max-width: 480px;
+  }
+
+  .form-control {
+    padding: 16px 20px;
+    font-size: 1.05rem;
+  }
+
+  .btn-submit {
+    padding: 16px;
+    font-size: 1.1rem;
   }
 }

@@ -15,6 +15,7 @@ export const routes: Routes = [
       { path: 'centro-de-ayuda', loadComponent: () => import('./centro-de-ayuda/centro-de-ayuda').then(m => m.CentroDeAyuda) },
       { path: 'registro', loadComponent: () => import('./registro/registro').then(m => m.Registro) },
       { path: 'iniciarsesion', loadComponent: () => import('./iniciarsesion/iniciarsesion').then(m => m.Iniciarsesion) },
+      { path: 'recuperar-password', loadComponent: () => import('./recuperar-password/recuperar-password').then(m => m.RecuperarPasswordComponent) },
     ]
   },
 
