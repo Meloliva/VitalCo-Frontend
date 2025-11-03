@@ -40,15 +40,24 @@ export class PrivateLayout implements OnInit, OnDestroy {
           this.userAvatar = user.fotoPerfil ?? '/Images/default-avatar.png';
           this.isPremium = this.userService.isPremium();
         } else {
-          // Si no hay usuario en memoria, pedirlo al backend (una sola vez)
           this.userService.getCurrentUserProfile().subscribe({
-            next: () => { /* el servicio guarda en currentUserSubject */ },
-            error: () => { /* opcional: fallback a stored data o avatar por defecto */ }
+            next: (fetchedUser: UserProfile) => {
+              if (fetchedUser) {
+                this.userName = `${fetchedUser.nombre} ${fetchedUser.apellido}`.trim() || 'Nombre de Usuario';
+                this.userAvatar = fetchedUser.fotoPerfil ?? '/Images/default-avatar.png';
+                this.isPremium = this.userService.isPremium();
+              } else {
+                this.loadFromLocalStorage();
+              }
+            },
+            error: () => {
+              this.loadFromLocalStorage();
+            }
           });
         }
       },
       error: () => {
-        // opcional: fallback
+        this.loadFromLocalStorage();
       }
     });
   }
