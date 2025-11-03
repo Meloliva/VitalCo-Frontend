@@ -4,17 +4,17 @@ import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-iniciarsescion',
+  selector: 'app-iniciarsesion',
   standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
     RouterModule
   ],
-  templateUrl: './iniciarsecion.html',
-  styleUrl: './iniciarsecion.css',
+  templateUrl: './iniciarsesion.html',
+  styleUrl: './iniciarsesion.css',
 })
-export class IniciarSecion implements OnInit {
+export class Iniciarsesion implements OnInit {
   loginForm!: FormGroup;
   showPassword: boolean = false;
 
