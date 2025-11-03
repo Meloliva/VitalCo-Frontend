@@ -1,0 +1,134 @@
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.sidebar {
+  width: 240px;
+  background-color: #ffffff;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 16px;
+  position: fixed;
+  height: 100vh;
+  left: 0;
+  top: 0;
+}
+
+.sidebar-header {
+  margin-bottom: 30px;
+}
+
+.logo-brand {
+  width: 70px;
+  margin-bottom: 16px;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e0e0e0;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.user-name {
+  font-size: 12px;
+  color: #999;
+}
+
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: #333;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  opacity: 0.7;
+}
+
+.nav-item:hover {
+  background-color: #f5f5f5;
+}
+
+.nav-item:hover .nav-icon {
+  opacity: 1;
+}
+
+.nav-item.active {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.nav-item.active .nav-icon {
+  opacity: 1;
+  filter: brightness(0) saturate(100%) invert(28%) sepia(48%) saturate(1200%) hue-rotate(88deg) brightness(95%) contrast(94%);
+}
+
+.sidebar-logout {
+  margin-top: 20px;
+  padding: 12px 16px;
+  background-color: transparent;
+  border: none;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  width: 100%;
+  text-align: left;
+}
+
+.sidebar-logout:hover {
+  background-color: #f5f5f5;
+  color: #f44336;
+}
+
+.sidebar-logout:hover .nav-icon {
+  opacity: 1;
+}
+
+.main-content {
+  margin-left: 240px;
+  flex: 1;
+  padding: 20px;
+  width: calc(100% - 240px);
+}

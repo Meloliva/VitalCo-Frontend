@@ -1,25 +1,24 @@
 import { Routes } from '@angular/router';
-import { Inicio } from './inicio/inicio';
-import { Beneficios } from './beneficios/beneficios';
-import { Planes } from './planes/planes';
-import { Testimonios } from './testimonios/testimonios';
-import { CentroDeAyuda } from './centro-de-ayuda/centro-de-ayuda';
-import {IniciarSecion} from './iniciarsecion/iniciarsecion';
-import { SeleccionRegistro } from './seleccion-registro/seleccion-registro';
-import {Registro} from './registro/registro';
+import { PublicLayout } from './layouts/public-layout/public-layout';
+import { PrivateLayout } from './layouts/private-layout/private-layout';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/inicio', pathMatch: 'full' },
-  { path: 'inicio', component: Inicio },
-  { path: 'beneficios', component: Beneficios },
-  { path: 'planes', component: Planes },
-  { path: 'testimonios', component: Testimonios },
-  { path: 'centro-de-ayuda', component: CentroDeAyuda },
-  { path: 'iniciosecion', component: IniciarSecion },
-  { path: 'registro', component: SeleccionRegistro },
-  { path: 'registro-nutricionista', component: Registro },
   {
-    path: 'perfil',
-    loadComponent: () => import('./perfilnutricionista/perfil').then(m => m.Perfil)
+    path:'',
+    component: PublicLayout,
+    children:[
+      { path: '', redirectTo: '/inicio', pathMatch: 'full' },
+      { path: 'inicio', loadComponent: () => import('./inicio/inicio').then(m => m.Inicio) },
+      { path: 'beneficios', loadComponent: () => import('./beneficios/beneficios').then(m => m.Beneficios) },
+      { path: 'planes', loadComponent: () => import('./planes/planes').then(m => m.Planes) },
+      { path: 'testimonios', loadComponent: () => import('./testimonios/testimonios').then(m => m.Testimonios) },
+      { path: 'centro-de-ayuda', loadComponent: () => import('./centro-de-ayuda/centro-de-ayuda').then(m => m.CentroDeAyuda) },
+      { path: 'iniciosecion', loadComponent: () => import('./iniciarsecion/iniciarsecion').then(m => m.IniciarSecion) },
+      {
+        path: 'perfil',
+        loadComponent: () => import('./perfilnutricionista/perfil').then(m => m.Perfil)
+      }
+    ]
   }
+
 ];
