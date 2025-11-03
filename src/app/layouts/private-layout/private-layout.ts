@@ -32,16 +32,23 @@ export class PrivateLayout implements OnInit, OnDestroy {
     }
   }
 
-  loadUserData() {
+    loadUserData() {
     this.userSubscription = this.userService.getCurrentUser().subscribe({
-      next: (user: UserProfile) => {
-        this.userName = user.name;
-        this.userAvatar = user.avatar || '/Images/default-avatar.png';
-        this.isPremium = user.plan === 'premium';
+      next: (user) => {
+        if (user) {
+          this.userName = `${user.nombre} ${user.apellido}`;
+          this.userAvatar = user.fotoPerfil ?? '/Images/default-avatar.png';
+          this.isPremium = this.userService.isPremium();
+        } else {
+          // Si no hay usuario en memoria, pedirlo al backend (una sola vez)
+          this.userService.getCurrentUserProfile().subscribe({
+            next: () => { /* el servicio guarda en currentUserSubject */ },
+            error: () => { /* opcional: fallback a stored data o avatar por defecto */ }
+          });
+        }
       },
-      error: (error: any) => {
-        console.error('Error al cargar usuario:', error);
-        this.loadFromLocalStorage();
+      error: () => {
+        // opcional: fallback
       }
     });
   }
@@ -65,7 +72,7 @@ export class PrivateLayout implements OnInit, OnDestroy {
   updateUserAvatar(newAvatarUrl: string) {
     this.userService.updateAvatar(newAvatarUrl).subscribe({
       next: (user: UserProfile) => {
-        this.userAvatar = user.avatar || '/Images/default-avatar.png';
+        this.userAvatar = user.fotoPerfil || '/Images/iconos/iconoSistemas/image 18.png';
       },
       error: (error: any) => {
         console.error('Error al actualizar avatar:', error);

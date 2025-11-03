@@ -30,6 +30,22 @@ export class UserService {
   constructor(private http: HttpClient) {
     this.loadUserFromStorage();
   }
+  getCurrentUser(): Observable<UserProfile | null> {
+    return this.currentUser$;
+  }
+
+  setCurrentUser(user: UserProfile | null): void {
+    this.currentUserSubject.next(user);
+    if (user) {
+      this.saveUserToStorage(user);
+    } else {
+      localStorage.removeItem('userId');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('userAvatar');
+    }
+  }
+
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
