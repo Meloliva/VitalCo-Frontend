@@ -32,6 +32,10 @@ export const routes: Routes = [
     path: 'perfil',
     loadComponent: () => import('./perfilnutricionista/perfil').then(m => m.Perfil)
   },
+  {
+    path: 'recetas',
+    loadComponent: () => import('./recetas/recetas').then(m => m.RecetasComponent)
+  },
 
   {
     path: 'sistema',
