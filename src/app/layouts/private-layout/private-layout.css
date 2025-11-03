@@ -15,6 +15,7 @@ html, body {
   display: flex;
   flex-direction: column;
   border-right: 1px solid #e5e7eb;
+  border-radius: 0 12px 12px 0;
 }
 
 .sidebar-header {
@@ -81,8 +82,8 @@ html, body {
 }
 
 .user-avatar {
-  width: 40px;
-  height: 40px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -93,13 +94,13 @@ html, body {
 }
 
 .brand-name {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 600;
   color: #80CD29;
 }
 
 .user-name {
-  font-size: 12px;
+  font-size: 15px;
   color: #6b7280;
 }
 
@@ -116,10 +117,12 @@ html, body {
   align-items: center;
   gap: 12px;
   padding: 12px 20px;
+  margin: 0 8px;
   text-decoration: none;
   color: #374151;
   font-size: 14px;
   transition: background-color 0.2s;
+  border-radius: 8px;
 }
 
 .nav-item:hover {
@@ -153,6 +156,7 @@ html, body {
   transition: background-color 0.2s;
   text-align: left;
   width: 100%;
+  border-radius: 8px;
 }
 
 .sidebar-logout:hover {
