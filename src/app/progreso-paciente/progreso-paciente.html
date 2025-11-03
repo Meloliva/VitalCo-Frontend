@@ -1,1 +1,53 @@
-<p>progreso-paciente works!</p>
+<div class="progress-container">
+
+  <div class="date-header" (click)="picker.open()">
+    <mat-form-field class="datepicker-hidden-input">
+      <input
+        matInput
+        [matDatepicker]="picker"
+        [(ngModel)]="selectedDate"
+        (dateChange)="onDateChange($event)">
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <span class="icon">&#x1F4C5;</span>
+    {{ selectedDate | date:'EEEE, d \'de\' MMMM \'de\' yyyy' | titlecase }}
+  </div>
+
+  <div class="summary-section">
+
+    <div class="calorie-chart">
+      <div class="circle-progress" [style.background]="getCalorieGradient()">
+        <div class="calorie-display">
+          <span>{{ calories.current }} / {{ calories.total }}</span>
+          <small>kcal</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="macro-details">
+      <div class="macro-item" *ngFor="let macro of macros">
+        <div class="macro-label">
+          <span>{{ macro.name }}</span>
+          <span>{{ macro.current }} / {{ macro.total }} g</span>
+        </div>
+        <div class="progress-bar-container">
+          <div
+            class="progress-bar"
+            [style.width.%]="(macro.current / macro.total) * 100">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="meals-section">
+    <div class="meal-category" *ngFor="let meal of meals">
+      <h3 class="meal-name">{{ meal.name }}</h3>
+      <span class="meal-kcal">{{ meal.kcal }} kcal</span>
+    </div>
+  </div>
+
+</div>
