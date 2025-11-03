@@ -1,28 +1,24 @@
 .layout-container {
   display: flex;
-  min-height: 100vh;
-  background-color: #f5f5f5;
+  height: 100vh;
 }
 
 .sidebar {
   width: 240px;
-  background-color: #ffffff;
-  border-right: 1px solid #e0e0e0;
+  background: #ffffff;
   display: flex;
   flex-direction: column;
-  padding: 20px 16px;
-  position: fixed;
-  height: 100vh;
-  left: 0;
-  top: 0;
+  border-right: 1px solid #e5e7eb;
 }
 
 .sidebar-header {
-  margin-bottom: 30px;
+  padding: 20px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .logo-brand {
-  width: 70px;
+  width: 40px;
+  height: 40px;
   margin-bottom: 16px;
 }
 
@@ -33,11 +29,10 @@
 }
 
 .user-avatar {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #e0e0e0;
 }
 
 .user-info {
@@ -48,16 +43,17 @@
 .brand-name {
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: #80CD29;
 }
 
 .user-name {
   font-size: 12px;
-  color: #999;
+  color: #6b7280;
 }
 
 .sidebar-nav {
   flex: 1;
+  padding: 16px 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -67,68 +63,53 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
-  color: #333;
+  padding: 12px 20px;
   text-decoration: none;
-  border-radius: 8px;
-  transition: all 0.2s;
+  color: #374151;
   font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.nav-item:hover {
+  background-color: #f3f4f6;
+}
+
+.nav-item.active {
+  background-color: rgba(128, 205, 41, 0.4);
+  color: #065f46;
+  font-weight: 500;
 }
 
 .nav-icon {
   width: 20px;
   height: 20px;
-  opacity: 0.7;
-}
-
-.nav-item:hover {
-  background-color: #f5f5f5;
-}
-
-.nav-item:hover .nav-icon {
-  opacity: 1;
-}
-
-.nav-item.active {
-  background-color: #c8e6c9;
-  color: #2e7d32;
-  font-weight: 500;
-}
-
-.nav-item.active .nav-icon {
-  opacity: 1;
-  filter: brightness(0) saturate(100%) invert(28%) sepia(48%) saturate(1200%) hue-rotate(88deg) brightness(95%) contrast(94%);
+  flex-shrink: 0;
 }
 
 .sidebar-logout {
-  margin-top: 20px;
-  padding: 12px 16px;
-  background-color: transparent;
-  border: none;
-  color: #666;
   display: flex;
   align-items: center;
   gap: 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
+  padding: 12px 20px;
+  border: none;
+  background: none;
+  color: #374151;
   font-size: 14px;
-  width: 100%;
+  cursor: pointer;
+  border-top: 1px solid #e5e7eb;
+  margin-top: auto;
+  transition: background-color 0.2s;
   text-align: left;
+  width: 100%;
 }
 
 .sidebar-logout:hover {
-  background-color: #f5f5f5;
-  color: #f44336;
-}
-
-.sidebar-logout:hover .nav-icon {
-  opacity: 1;
+  background-color: #f3f4f6;
 }
 
 .main-content {
-  margin-left: 240px;
   flex: 1;
+  overflow-y: auto;
+  background: #f9fafb;
   padding: 20px;
-  width: calc(100% - 240px);
 }
