@@ -1,17 +1,15 @@
-import { Component, signal, OnInit } from '@angular/core';
-import { Router, RouterOutlet, RouterLink, NavigationEnd } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { filter } from 'rxjs/operators';
+import { Component, signal } from '@angular/core';
+import { RouterOutlet, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, CommonModule],
+  imports: [RouterOutlet, RouterLink],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App implements OnInit {
-  protected readonly title = signal('VitalCoFrontend');
-  showHeaderFooter: boolean = true;
+export class App {
+  protected readonly title = signal('VitalCo');
+  /*showHeaderFooter: boolean = true; corregir esto
 
   constructor(private router: Router) {}
 
@@ -34,5 +32,5 @@ export class App implements OnInit {
     // Debug: puedes ver en consola qué está pasando
     console.log('URL actual:', url);
     console.log('Mostrar header/footer:', this.showHeaderFooter);
-  }
+  }*/
 }
