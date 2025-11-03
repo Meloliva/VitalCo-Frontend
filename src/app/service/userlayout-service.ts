@@ -16,6 +16,14 @@ export interface UserProfile {
     id: number;
     nombre: string;
   };
+  paciente?: {
+    idPlan?: {
+      premium?: boolean;
+      tipo?: string;
+      [key: string]: any;
+    };
+    [key: string]: any;
+  };
 }
 
 @Injectable({
@@ -60,7 +68,22 @@ export class UserService {
     return this.http.get<UserProfile[]>(`${this.apiUrl}/listarUsuarios`, {
       headers: this.getHeaders()
     }).pipe(
-      map(usuarios => usuarios[0]),
+      map(usuarios => {
+        if (!usuarios || usuarios.length === 0) {
+          throw new Error('No hay usuarios disponibles');
+        }
+        if (typeof window !== 'undefined') {
+          const storedId = localStorage.getItem('userId');
+          if (storedId) {
+            const idNum = parseInt(storedId, 10);
+            const foundById = usuarios.find(u => u.id === idNum);
+            if (foundById) return foundById;
+          }
+          const pacienteUser = usuarios.find(u => u.rol?.nombre?.toUpperCase() === 'PACIENTE');
+          if (pacienteUser) return pacienteUser;
+        }
+        return usuarios[0];
+      }),
       tap(user => {
         this.currentUserSubject.next(user);
         if (typeof window !== 'undefined') this.saveUserToStorage(user);
@@ -74,7 +97,7 @@ export class UserService {
 
   updateAvatar(avatarUrl: string): Observable<UserProfile> {
     return this.http.patch<UserProfile>(
-      `${this.apiUrl}/actualizarFoto`,
+      `${this.apiUrl}/editarPaciente`,
       { fotoPerfil: avatarUrl },
       { headers: this.getHeaders() }
     ).pipe(
@@ -91,7 +114,19 @@ export class UserService {
 
   isPremium(): boolean {
     const user = this.currentUserSubject.value;
-    return user?.rol?.nombre === 'PREMIUM' || false;
+    if (!user) return false;
+
+    const roleName = user.rol?.nombre?.toUpperCase() || '';
+
+    if (roleName !== 'PACIENTE') {
+      return false;
+    }
+    const plan = user.paciente?.idPlan;
+    if (plan?.premium === true) return true;
+    const tipo = plan?.tipo;
+    if (typeof tipo === 'string' && tipo.toLowerCase().includes('premium')) return true;
+
+    return false;
   }
 
   getUserFullName(): string {
@@ -114,9 +149,16 @@ export class UserService {
     localStorage.setItem('userId', user.id.toString());
     localStorage.setItem('userName', `${user.nombre} ${user.apellido}`);
     localStorage.setItem('userRole', user.rol.nombre);
+    const plan = user.paciente?.idPlan;
+    const isPremium = plan?.premium === true || (typeof plan?.tipo === 'string' && plan!.tipo!.toLowerCase().includes('premium'));
+    localStorage.setItem('userPlan', isPremium ? 'premium' : 'free');
+
     if (user.fotoPerfil) {
       localStorage.setItem('userAvatar', user.fotoPerfil);
     }
+    //else {
+    //       localStorage.removeItem('userAvatar');
+    //     }
   }
 
   private loadUserFromStorage(): void {
@@ -126,6 +168,7 @@ export class UserService {
     const userName = localStorage.getItem('userName');
     const userRole = localStorage.getItem('userRole');
     const userAvatar = localStorage.getItem('userAvatar');
+    const userPlan = localStorage.getItem('userPlan');
 
     if (userId && userName && userRole) {
       const [nombre, apellido] = userName.split(' ');
@@ -141,6 +184,12 @@ export class UserService {
         rol: {
           id: 0,
           nombre: userRole
+        },
+        paciente: {
+          idPlan: {
+            premium: userPlan === 'premium',
+            tipo: userPlan === 'premium' ? 'Plan premium' : 'Plan free'
+          }
         }
       });
     }
@@ -153,5 +202,6 @@ export class UserService {
     localStorage.removeItem('userName');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userAvatar');
+    localStorage.removeItem('userPlan');
   }
 }
