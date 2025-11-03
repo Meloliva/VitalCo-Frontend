@@ -1,4 +1,4 @@
-<header class="header">
+<header class="header" *ngIf="showHeaderFooter">
   <div class="logo-nav-container">
     <a href="#" class="logo">
       <img src="/Images/Logos/logo_7.png" alt="Logo" class="logo-img">
@@ -19,8 +19,8 @@
 
 <router-outlet />
 
-<footer class="footer">
-  <div class="footer-container">
+<footer class="footer " *ngIf="showHeaderFooter">
+  <div class="footer-container" >
 
     <div class="footer-column footer-logo">
       <img src="/Images/Logos/logo_pie.png" alt="Vitalco Logo" class="footer-logo-img">
