@@ -16,6 +16,29 @@ export const routes: Routes = [
       { path: 'registro', loadComponent: () => import('./registro/registro').then(m => m.Registro) },
       { path: 'iniciarsesion', loadComponent: () => import('./iniciarsesion/iniciarsesion').then(m => m.Iniciarsesion) },
       { path: 'recuperar-password', loadComponent: () => import('./recuperar-password/recuperar-password').then(m => m.RecuperarPasswordComponent) },
+      {
+        path: 'recuperar-password',
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./recuperar-password/recuperar-password').then(m => m.RecuperarPasswordComponent)
+          },
+          {
+            path: 'verificar-codigo',
+            loadComponent: () => import('./recuperar-password/verificar-codigo/verificar-codigo').then(m => m.VerificarCodigoComponent)
+          },
+          {
+            path: 'nueva-password',
+            loadComponent: () => import('./recuperar-password/nueva-password/nueva-password').then(m => m.NuevaPasswordComponent)
+          }
+        ]
+      },
+
+      {
+        path: 'password-success',
+        loadComponent: () => import('./recuperar-password/password-success/password-success').then(m => m.PasswordSuccessComponent)
+      }
+
     ]
   },
 

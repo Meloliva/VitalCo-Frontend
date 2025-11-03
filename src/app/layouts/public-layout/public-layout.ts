@@ -27,7 +27,7 @@ export class PublicLayout {
   }
 
   private checkRoute(url: string) {
-    const hiddenRoutes = ['/registro', '/perfil','iniciarsesion'];
+    const hiddenRoutes = ['/registro', '/perfil','iniciarsesion','verificar-codigo','nueva-password','password-success'];
     this.showHeaderFooter = !hiddenRoutes.some(route => url.includes(route));
 
   }
