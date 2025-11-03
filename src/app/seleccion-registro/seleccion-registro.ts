@@ -18,6 +18,6 @@ export class SeleccionRegistro {
   }
 
   registrarNutricionista() {
-    this.router.navigate(['/registro-nutricionista']);
+    this.router.navigate(['/registro']);
   }
 }

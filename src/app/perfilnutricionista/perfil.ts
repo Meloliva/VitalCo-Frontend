@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import {RouterLink, RouterLinkActive} from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-perfil',
@@ -13,7 +13,10 @@ import {RouterLink, RouterLinkActive} from '@angular/router';
 export class Perfil {
   perfilForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router
+  ) {
     this.perfilForm = this.fb.group({
       asociacion: [''],
       grado: [''],
@@ -33,6 +36,23 @@ export class Perfil {
   }
 
   eliminarCuenta() {
-    console.log('Cuenta eliminada');
+    const confirmar = confirm('¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.');
+    if (confirmar) {
+      console.log('Cuenta eliminada');
+      // Aquí puedes agregar la lógica para eliminar la cuenta del backend
+      this.salir();
+    }
+  }
+
+  salir() {
+    // Limpiar cualquier dato de sesión
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userAvatar');
+
+    // Redirigir a la página de inicio
+    this.router.navigate(['/inicio']);
   }
 }
