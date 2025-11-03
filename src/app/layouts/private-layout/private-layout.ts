@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { UserService, UserProfile } from '../../service/userlayout-service';
 import { Subscription } from 'rxjs';
 
@@ -19,10 +19,13 @@ export class PrivateLayout implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit() {
+    // Carga el usuario desde storage (solo navegador)
+    this.userService.initUserFromStorage();
     this.loadUserData();
   }
 
@@ -32,7 +35,7 @@ export class PrivateLayout implements OnInit, OnDestroy {
     }
   }
 
-    loadUserData() {
+  loadUserData() {
     this.userSubscription = this.userService.getCurrentUser().subscribe({
       next: (user) => {
         if (user) {
@@ -63,6 +66,8 @@ export class PrivateLayout implements OnInit, OnDestroy {
   }
 
   private loadFromLocalStorage() {
+    if (!isPlatformBrowser(this.platformId)) return; // ✅ Evita error SSR
+
     const userPlan = localStorage.getItem('userPlan');
     const userName = localStorage.getItem('userName');
     const userAvatar = localStorage.getItem('userAvatar');
@@ -73,8 +78,10 @@ export class PrivateLayout implements OnInit, OnDestroy {
   }
 
   logout() {
-    this.userService.clearUser();
-    localStorage.removeItem('token');
+    if (isPlatformBrowser(this.platformId)) {
+      this.userService.clearUser();
+      localStorage.removeItem('token');
+    }
     this.router.navigate(['/login']);
   }
 

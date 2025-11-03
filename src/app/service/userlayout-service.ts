@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators';
-import { throwError } from 'rxjs';
 
 export interface UserProfile {
   id: number;
@@ -27,28 +26,30 @@ export class UserService {
   private currentUserSubject = new BehaviorSubject<UserProfile | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient) {}
+
+  /** 🔹 Inicializa el usuario desde el storage solo si estamos en navegador */
+  initUserFromStorage(): void {
+    if (typeof window === 'undefined') return;
     this.loadUserFromStorage();
   }
+
   getCurrentUser(): Observable<UserProfile | null> {
     return this.currentUser$;
   }
 
   setCurrentUser(user: UserProfile | null): void {
     this.currentUserSubject.next(user);
+    if (typeof window === 'undefined') return;
     if (user) {
       this.saveUserToStorage(user);
     } else {
-      localStorage.removeItem('userId');
-      localStorage.removeItem('userName');
-      localStorage.removeItem('userRole');
-      localStorage.removeItem('userAvatar');
+      this.clearUser();
     }
   }
 
-
   private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
+    const token = (typeof window !== 'undefined') ? localStorage.getItem('token') : null;
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
@@ -62,7 +63,7 @@ export class UserService {
       map(usuarios => usuarios[0]),
       tap(user => {
         this.currentUserSubject.next(user);
-        this.saveUserToStorage(user);
+        if (typeof window !== 'undefined') this.saveUserToStorage(user);
       }),
       catchError(error => {
         console.error('Error al obtener usuario:', error);
@@ -79,7 +80,7 @@ export class UserService {
     ).pipe(
       tap(user => {
         this.currentUserSubject.next(user);
-        this.saveUserToStorage(user);
+        if (typeof window !== 'undefined') this.saveUserToStorage(user);
       }),
       catchError(error => {
         console.error('Error al actualizar avatar:', error);
@@ -108,6 +109,8 @@ export class UserService {
   }
 
   private saveUserToStorage(user: UserProfile): void {
+    if (typeof window === 'undefined') return;
+
     localStorage.setItem('userId', user.id.toString());
     localStorage.setItem('userName', `${user.nombre} ${user.apellido}`);
     localStorage.setItem('userRole', user.rol.nombre);
@@ -117,6 +120,8 @@ export class UserService {
   }
 
   private loadUserFromStorage(): void {
+    if (typeof window === 'undefined') return;
+
     const userId = localStorage.getItem('userId');
     const userName = localStorage.getItem('userName');
     const userRole = localStorage.getItem('userRole');
@@ -143,6 +148,7 @@ export class UserService {
 
   clearUser(): void {
     this.currentUserSubject.next(null);
+    if (typeof window === 'undefined') return;
     localStorage.removeItem('userId');
     localStorage.removeItem('userName');
     localStorage.removeItem('userRole');
