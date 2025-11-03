@@ -24,10 +24,10 @@ export const routes: Routes = [
     ]
   },
   {
-    path:' ',
+    path:'sistema',
     component: PrivateLayout,
     children:[
-      { path: '', redirectTo: '/progreso-paciente', pathMatch: 'full' },
+      { path: '', redirectTo: 'progreso-paciente', pathMatch: 'full' },
       { path: 'progreso-paciente', loadComponent: () => import('./progreso-paciente/progreso-paciente').then(m=>m.ProgresoPaciente) },
       /*{ path: 'perfil', loadComponent: () => import('./sistema/perfil/perfil').then(m => m.Perfil) },
       { path: 'recetas', loadComponent: () => import('./sistema/recetas/recetas').then(m => m.Recetas) },
