@@ -8,6 +8,7 @@
   background: linear-gradient(135deg, #f5f5f5 0%, #e8f5e9 100%);
   padding: 50px;
   font-family: 'Poppins', sans-serif;
+
 }
 
 .seleccion-card {
@@ -36,8 +37,8 @@
 }
 
 .circle-2 {
-  width: 350px;
-  height: 350px;
+  width: 200px;
+  height: 200px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -206,4 +207,14 @@ h1 {
     bottom: -50px;
     right: -50px;
   }
+}
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden; /* evita scroll vertical y horizontal */
+}
+
+.seleccion-container {
+  height: 100vh;
+  overflow: hidden; /* evita que el contenido interno genere scroll */
 }

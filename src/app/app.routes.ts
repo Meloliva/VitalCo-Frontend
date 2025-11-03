@@ -19,34 +19,33 @@ export const routes: Routes = [
     ]
   },
 
-
+  // Rutas públicas específicas
   {
     path: 'seleccion-registro',
     loadComponent: () => import('./seleccion-registro/seleccion-registro').then(m => m.SeleccionRegistro)
   },
-  {
-    path: 'consultar',
-    loadComponent: () => import('./perfilnutricionista/consultar/consultar').then(m => m.Consultar)
-  },
-  {
-    path: 'perfil',
-    loadComponent: () => import('./perfilnutricionista/perfil').then(m => m.Perfil)
-  },
 
+  // Layout privado (sistema)
   {
     path: 'sistema',
     component: PrivateLayout,
     children: [
-      { path: '', redirectTo: '/progreso-paciente', pathMatch: 'full' },
+      { path: '', redirectTo: '/sistema/progreso-paciente', pathMatch: 'full' },
       {
         path: 'progreso-paciente',
-        loadComponent: () => import('./progreso-paciente/progreso-paciente').then(m => m.ProgresoPaciente)
+        loadComponent: () =>
+          import('./progreso-paciente/progreso-paciente').then(m => m.ProgresoPaciente)
+      },
+      {
+        path: 'perfilnutricionista',
+        loadComponent: () =>
+          import('./perfilnutricionista/perfil').then(m => m.Perfil)
+      },
+      {
+        path: 'consultar',
+        loadComponent: () =>
+          import('./consultar/consultar').then(m => m.Consultar)
       }
-      /*
-      { path: 'recetas', loadComponent: () => import('./recetas/recetas').then(m => m.Recetas) },
-      { path: 'citas', loadComponent: () => import('./sistema/citas/citas').then(m => m.Citas) },
-      { path: 'cambiar-plan', loadComponent: () => import('./sistema/cambiar-plan/cambiar-plan').then(m => m.CambiarPlan) }
-      */
     ]
   }
 ];

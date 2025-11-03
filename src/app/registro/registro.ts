@@ -51,8 +51,7 @@ export class Registro {
   }
 
   iniciar() {
-    this.router.navigate(['/perfil']);
-  }
+    this.router.navigate(['/sistema/perfilnutricionista']);  }
   cancelar() {
     this.router.navigate(['/inicio']);
   }

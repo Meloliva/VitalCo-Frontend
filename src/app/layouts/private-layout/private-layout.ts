@@ -15,6 +15,7 @@ export class PrivateLayout implements OnInit, OnDestroy {
   userAvatar: string = '/Images/iconos/iconoSistemas/image 18.png';
   userName: string = 'Nombre de Usuario';
   isPremium: boolean = false;
+  userType: 'paciente' | 'nutricionista' = 'paciente'; // 👈 tipo de usuario
   private userSubscription?: Subscription;
 
   constructor(
@@ -24,15 +25,18 @@ export class PrivateLayout implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // Carga el usuario desde storage (solo navegador)
     this.userService.initUserFromStorage();
     this.loadUserData();
+
+    // Verificamos tipo de usuario guardado
+    if (isPlatformBrowser(this.platformId)) {
+      const tipo = localStorage.getItem('userType');
+      if (tipo === 'nutricionista') this.userType = 'nutricionista';
+    }
   }
 
   ngOnDestroy() {
-    if (this.userSubscription) {
-      this.userSubscription.unsubscribe();
-    }
+    if (this.userSubscription) this.userSubscription.unsubscribe();
   }
 
   loadUserData() {
@@ -43,56 +47,27 @@ export class PrivateLayout implements OnInit, OnDestroy {
           this.userAvatar = user.fotoPerfil ?? '/Images/iconos/iconoSistemas/image 18.png';
           this.isPremium = this.userService.isPremium();
         } else {
-          this.userService.getCurrentUserProfile().subscribe({
-            next: (fetchedUser: UserProfile) => {
-              if (fetchedUser) {
-                this.userName = `${fetchedUser.nombre} ${fetchedUser.apellido}`.trim() || 'Nombre de Usuario';
-                this.userAvatar = fetchedUser.fotoPerfil ?? '/Images/iconos/iconoSistemas/image 18.png';
-                this.isPremium = this.userService.isPremium();
-              } else {
-                this.loadFromLocalStorage();
-              }
-            },
-            error: () => {
-              this.loadFromLocalStorage();
-            }
-          });
+          this.loadFromLocalStorage();
         }
       },
-      error: () => {
-        this.loadFromLocalStorage();
-      }
+      error: () => this.loadFromLocalStorage(),
     });
   }
 
   private loadFromLocalStorage() {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    const userPlan = localStorage.getItem('userPlan');
-    const userName = localStorage.getItem('userName');
-    const userAvatar = localStorage.getItem('userAvatar');
-
-    this.isPremium = userPlan === 'premium';
-    this.userName = userName || 'Nombre de Usuario';
-    this.userAvatar = userAvatar || '/Images/iconos/iconoSistemas/image 18.png';
+    this.isPremium = localStorage.getItem('userPlan') === 'premium';
+    this.userName = localStorage.getItem('userName') || 'Nombre de Usuario';
+    this.userAvatar = localStorage.getItem('userAvatar') || '/Images/iconos/iconoSistemas/image 18.png';
   }
 
   logout() {
     if (isPlatformBrowser(this.platformId)) {
       this.userService.clearUser();
       localStorage.removeItem('token');
+      localStorage.removeItem('userType');
     }
-    this.router.navigate(['/login']);
-  }
-
-  updateUserAvatar(newAvatarUrl: string) {
-    this.userService.updateAvatar(newAvatarUrl).subscribe({
-      next: (user: UserProfile) => {
-        this.userAvatar = user.fotoPerfil || '/Images/iconos/iconoSistemas/image 18.png';
-      },
-      error: (error: any) => {
-        console.error('Error al actualizar avatar:', error);
-      }
-    });
+    this.router.navigate(['/iniciarsesion']);
   }
 }

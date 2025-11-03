@@ -13,11 +13,15 @@ export class SeleccionRegistro {
   constructor(private router: Router) {}
 
   registrarPaciente() {
-    // Por ahora solo muestra un mensaje, después implementarás esta ruta
-    alert('Registro de paciente - Próximamente');
+    // Guarda el tipo en localStorage (opcional, si lo usas luego)
+    localStorage.setItem('userType', 'paciente');
+    // Redirige al registro de paciente
+    this.router.navigate(['/registro-paciente']);
   }
 
   registrarNutricionista() {
+    localStorage.setItem('userType', 'nutricionista');
+    // Redirige al registro de nutricionista
     this.router.navigate(['/registro']);
   }
 }

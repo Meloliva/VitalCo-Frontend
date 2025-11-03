@@ -1,112 +1,58 @@
-<div class="perfil-container">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="logo-section">
-      <img src="/Images/Logos/logoregistro.png" alt="VitalCo" class="sidebar-logo">
-      <div class="sidebar-title-group">
-        <span class="sidebar-title">VitalCo</span>
-        <span class="sidebar-subtitle">Nombre de Usuario</span>
-      </div>
+<div class="perfil-main">
+  <div class="foto-section">
+    <div class="foto-icono">
+      <img src="/Images/iconos/iconoSistemas/iconocambiarfoto.png" alt="Foto de perfil">
     </div>
+    <button type="button" class="btn-cambiar-foto">Cambiar foto</button>
+  </div>
 
-    <nav class="sidebar-nav">
-      <a
-        routerLink="/perfil"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-        class="sidebar-link">
-        <img src="/Images/iconos/iconoperfil.png" alt="Perfil" class="sidebar-icon">
-        Perfil
-      </a>
-
-      <a routerLink="/progreso" routerLinkActive="active" class="sidebar-link">
-        <img src="/Images/iconos/iconoprogresopacientes.png" alt="Progreso" class="sidebar-icon">
-        Progreso de Pacientes
-      </a>
-
-      <a routerLink="/recetas" routerLinkActive="active" class="sidebar-link">
-        <img src="/Images/iconos/iconorecetas.png" alt="Recetas" class="sidebar-icon">
-        Recetas
-      </a>
-
-      <a routerLink="/citas" routerLinkActive="active" class="sidebar-link">
-        <img src="/Images/iconos/iconocitas.png" alt="Citas" class="sidebar-icon">
-        Citas
-      </a>
-
-      <a routerLink="/consultar" routerLinkActive="active" class="sidebar-link">
-        <img src="/Images/iconos/iconoconsultar.png" alt="Consultar" class="sidebar-icon">
-        Consultar
-      </a>
-
-      <!-- Botón salir al final -->
-      <div class="sidebar-bottom">
-        <button type="button" (click)="salir()" class="sidebar-link salir-link">
-          <img src="/Images/iconos/iconosalir.png" alt="Salir" class="sidebar-icon">
-          Salir
-        </button>
+  <form [formGroup]="perfilForm" class="perfil-form">
+    <fieldset class="seccion">
+      <legend>Datos Personales</legend>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Asociaciones</label>
+          <input formControlName="asociacion" type="text">
+        </div>
+        <div class="form-group">
+          <label>Grado Académico</label>
+          <input formControlName="grado" type="text">
+        </div>
       </div>
-    </nav>
-  </aside>
 
-  <!-- Main Content -->
-  <main class="perfil-main">
-    <div class="foto-section">
-      <div class="foto-icono">
-        <img src="/Images/iconos/iconocambiarfoto.png" alt="Foto de perfil">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Universidad</label>
+          <input formControlName="universidad" type="text">
+        </div>
+        <div class="form-group">
+          <label>Turno</label>
+          <select formControlName="turno">
+            <option value="">Seleccionar</option>
+            <option value="8:00 am-12:00 pm">8:00 am-12:00 pm</option>
+            <option value="2:00 pm-6:00 pm">2:00 pm-6:00 pm</option>
+          </select>
+        </div>
       </div>
-      <button type="button" class="btn-cambiar-foto">Cambiar foto</button>
+    </fieldset>
+
+    <fieldset class="seccion">
+      <legend>Cuenta</legend>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Correo</label>
+          <input formControlName="correo" type="email">
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input formControlName="password" type="password">
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="button-row">
+      <button type="button" class="btn-guardar" (click)="guardar()">Guardar</button>
+      <button type="button" class="btn-eliminar" (click)="eliminarCuenta()">Eliminar cuenta</button>
     </div>
-
-    <form [formGroup]="perfilForm" class="perfil-form">
-      <fieldset class="seccion">
-        <legend>Datos Personales</legend>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Asociaciones</label>
-            <input formControlName="asociacion" type="text">
-          </div>
-          <div class="form-group">
-            <label>Grado Académico</label>
-            <input formControlName="grado" type="text">
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Universidad</label>
-            <input formControlName="universidad" type="text">
-          </div>
-          <div class="form-group">
-            <label>Turno</label>
-            <select formControlName="turno">
-              <option value="">Seleccionar</option>
-              <option value="mañana">Mañana</option>
-              <option value="tarde">Tarde</option>
-              <option value="noche">Noche</option>
-            </select>
-          </div>
-        </div>
-      </fieldset>
-
-      <fieldset class="seccion">
-        <legend>Cuenta</legend>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Correo</label>
-            <input formControlName="correo" type="email">
-          </div>
-          <div class="form-group">
-            <label>Contraseña</label>
-            <input formControlName="password" type="password">
-          </div>
-        </div>
-      </fieldset>
-
-      <div class="button-row">
-        <button type="button" class="btn-guardar" (click)="guardar()">Guardar</button>
-        <button type="button" class="btn-eliminar" (click)="eliminarCuenta()">Eliminar cuenta</button>
-      </div>
-    </form>
-  </main>
+  </form>
 </div>
