@@ -43,7 +43,7 @@ export const routes: Routes = [
         loadComponent: () => import('./progreso-paciente/progreso-paciente').then(m => m.ProgresoPaciente)
       }
       /*
-      { path: 'recetas', loadComponent: () => import('./sistema/recetas/recetas').then(m => m.Recetas) },
+      { path: 'recetas', loadComponent: () => import('./recetas/recetas').then(m => m.Recetas) },
       { path: 'citas', loadComponent: () => import('./sistema/citas/citas').then(m => m.Citas) },
       { path: 'cambiar-plan', loadComponent: () => import('./sistema/cambiar-plan/cambiar-plan').then(m => m.CambiarPlan) }
       */
