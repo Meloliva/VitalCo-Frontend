@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { PublicLayout } from './layouts/public-layout/public-layout';
 import { PrivateLayout } from './layouts/private-layout/private-layout';
-import {Iniciarsesion} from './iniciarsesion/iniciarsesion';
+
 
 export const routes: Routes = [
   {
