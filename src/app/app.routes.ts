@@ -39,9 +39,10 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: '/progreso-paciente', pathMatch: 'full' },
       {
-        path: 'progreso-paciente',
-        loadComponent: () => import('./progreso-paciente/progreso-paciente').then(m => m.ProgresoPaciente)
-      }
+        path: 'progreso-paciente', loadComponent: () => import('./progreso-paciente/progreso-paciente').then(m => m.ProgresoPaciente)
+
+      },
+      { path: 'receta-paciente', loadComponent: () => import('./receta-paciente/receta-paciente').then(m => m.RecetaPaciente)}
       /*
       { path: 'recetas', loadComponent: () => import('./recetas/recetas').then(m => m.Recetas) },
       { path: 'citas', loadComponent: () => import('./sistema/citas/citas').then(m => m.Citas) },
