@@ -13,7 +13,8 @@ export const routes: Routes = [
       { path: 'planes', loadComponent: () => import('./planes/planes').then(m => m.Planes) },
       { path: 'testimonios', loadComponent: () => import('./testimonios/testimonios').then(m => m.Testimonios) },
       { path: 'centro-de-ayuda', loadComponent: () => import('./centro-de-ayuda/centro-de-ayuda').then(m => m.CentroDeAyuda) },
-      { path: 'registro', loadComponent: () => import('./registro/registro').then(m => m.Registro) }
+      { path: 'registro', loadComponent: () => import('./registro/registro').then(m => m.Registro) },
+      { path: 'iniciarsesion', loadComponent: () => import('./iniciarsesion/iniciarsesion').then(m => m.Iniciarsesion) },
     ]
   },
 
