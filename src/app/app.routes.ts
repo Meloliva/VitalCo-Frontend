@@ -25,9 +25,9 @@ export const routes: Routes = [
     path:' ',
     component: PrivateLayout,
     children:[
-      { path: '', redirectTo: 'progreso', pathMatch: 'full' },
-      /*{ path: 'progreso', loadComponent: () => import('./sistema/progreso/progreso').then(m => m.Progreso) },
-      { path: 'perfil', loadComponent: () => import('./sistema/perfil/perfil').then(m => m.Perfil) },
+      { path: '', redirectTo: '/progreso-paciente', pathMatch: 'full' },
+      { path: 'progreso-paciente', loadComponent: () => import('./progreso-paciente/progreso-paciente').then(m=>m.ProgresoPaciente) },
+      /*{ path: 'perfil', loadComponent: () => import('./sistema/perfil/perfil').then(m => m.Perfil) },
       { path: 'recetas', loadComponent: () => import('./sistema/recetas/recetas').then(m => m.Recetas) },
       { path: 'citas', loadComponent: () => import('./sistema/citas/citas').then(m => m.Citas) },
       { path: 'cambiar-plan', loadComponent: () => import('./sistema/cambiar-plan/cambiar-plan').then(m => m.CambiarPlan) }
