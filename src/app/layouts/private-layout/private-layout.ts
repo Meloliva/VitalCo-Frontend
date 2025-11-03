@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
   styleUrl: './private-layout.css',
 })
 export class PrivateLayout implements OnInit, OnDestroy {
-  userAvatar: string = '/Images/default-avatar.png';
+  userAvatar: string = '/Images/iconos/iconoSistemas/image 18.png';
   userName: string = 'Nombre de Usuario';
   isPremium: boolean = false;
   private userSubscription?: Subscription;

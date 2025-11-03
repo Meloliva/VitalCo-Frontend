@@ -32,7 +32,7 @@ export const routes: Routes = [
   },
 
   {
-    path: '',
+    path: 'sistema',
     component: PrivateLayout,
     children: [
       { path: '', redirectTo: '/progreso-paciente', pathMatch: 'full' },
