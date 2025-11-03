@@ -40,14 +40,14 @@ export class PrivateLayout implements OnInit, OnDestroy {
       next: (user) => {
         if (user) {
           this.userName = `${user.nombre} ${user.apellido}`;
-          this.userAvatar = user.fotoPerfil ?? '/Images/default-avatar.png';
+          this.userAvatar = user.fotoPerfil ?? '/Images/iconos/iconoSistemas/image 18.png';
           this.isPremium = this.userService.isPremium();
         } else {
           this.userService.getCurrentUserProfile().subscribe({
             next: (fetchedUser: UserProfile) => {
               if (fetchedUser) {
                 this.userName = `${fetchedUser.nombre} ${fetchedUser.apellido}`.trim() || 'Nombre de Usuario';
-                this.userAvatar = fetchedUser.fotoPerfil ?? '/Images/default-avatar.png';
+                this.userAvatar = fetchedUser.fotoPerfil ?? '/Images/iconos/iconoSistemas/image 18.png';
                 this.isPremium = this.userService.isPremium();
               } else {
                 this.loadFromLocalStorage();
@@ -66,7 +66,7 @@ export class PrivateLayout implements OnInit, OnDestroy {
   }
 
   private loadFromLocalStorage() {
-    if (!isPlatformBrowser(this.platformId)) return; // ✅ Evita error SSR
+    if (!isPlatformBrowser(this.platformId)) return;
 
     const userPlan = localStorage.getItem('userPlan');
     const userName = localStorage.getItem('userName');
@@ -74,7 +74,7 @@ export class PrivateLayout implements OnInit, OnDestroy {
 
     this.isPremium = userPlan === 'premium';
     this.userName = userName || 'Nombre de Usuario';
-    this.userAvatar = userAvatar || '/Images/default-avatar.png';
+    this.userAvatar = userAvatar || '/Images/iconos/iconoSistemas/image 18.png';
   }
 
   logout() {
