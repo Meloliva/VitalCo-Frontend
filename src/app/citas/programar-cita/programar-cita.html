@@ -1,0 +1,52 @@
+<div class="main-content-area">
+  <div class="schedule-appointment-container wide-card">
+    <h1 class="form-title">Programar Cita</h1>
+
+    <form class="appointment-form" [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
+
+      <div class="form-group">
+        <label for="dni">DNI</label>
+        <input type="text" id="dni" name="dni" placeholder="Ingresa tu DNI" formControlName="dni" />
+      </div>
+
+      <div class="form-group">
+        <label for="nutritionist">Seleccionar Nutricionista</label>
+        <select id="nutritionist" name="nutritionist" formControlName="nutritionist">
+          <option value="" disabled selected>Elige un nutricionista</option>
+          <option value="nutri1">Juan Perez Rojas</option>
+          <option value="nutri2">Maria Carmen Urtecho</option>
+          <option value="nutri3">Roberto Quispe Ruiz</option>
+        </select>
+      </div>
+
+      <div class="form-group date-time-group">
+        <label>Fecha y Hora</label>
+        <div class="date-time-inputs">
+          <input type="date" id="appointmentDate" name="appointmentDate" formControlName="appointmentDate" />
+          <input type="time" id="appointmentTime" name="appointmentTime" formControlName="appointmentTime" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Descripción</label>
+        <textarea
+          id="description"
+          name="description"
+          rows="6"
+          placeholder="Describe el motivo de tu cita"
+          formControlName="description"
+        ></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn-programar"
+          [disabled]="appointmentForm.invalid"
+        >
+          Programar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

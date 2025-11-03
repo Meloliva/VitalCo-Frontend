@@ -1,0 +1,107 @@
+/* schedule-appointment.css - Versión Compacta */
+
+.schedule-appointment-container {
+  padding: 15px 0; /* Menos padding vertical en el contenedor principal */
+  max-width: 80%; /* CLAVE: Reducir un poco el ancho total */
+  margin: 0 auto;
+  font-family: 'Arial', sans-serif;
+}
+
+.form-title {
+  font-size: 24px; /* Título ligeramente más pequeño */
+  color: #333;
+  margin-bottom: 25px; /* Menos espacio debajo del título */
+  font-weight: 600;
+}
+
+/* El borde verde del formulario se mantiene, pero ajustamos su padding */
+.appointment-form {
+  border: 2px solid #3cbe82;
+  border-radius: 10px; /* Bordes un poco menos redondeados */
+  padding: 25px 30px; /* CLAVE: Reducir el padding interno (horizontal y vertical) */
+}
+
+.form-group {
+  margin-bottom: 18px; /* CLAVE: Reducir el espacio entre campos */
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px; /* Menos espacio entre la etiqueta y el input */
+  color: #333;
+  font-size: 15px; /* Etiqueta ligeramente más pequeña */
+}
+
+/* 1. Bloque principal SIN el input[type="url"] */
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="time"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  box-sizing: border-box;
+  background-color: #f9f9f9;
+}
+
+/* 2. Bloque del select SOLO con los estilos que le personalizan (la flecha) */
+.form-group select {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22%23555%22%20d%3D%22M7%2010l5%205%205-5z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px;
+  padding-right: 40px; /* Se mantiene para no solapar el texto con la flecha */
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #27d079;
+  box-shadow: 0 0 0 2px rgba(39, 208, 121, 0.2);
+  background-color: #fff;
+  outline: none;
+}
+
+.date-time-group .date-time-inputs {
+  display: flex;
+  gap: 15px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 25px;
+}
+
+.btn-programar {
+  background-color: #27d079;
+  color: white;
+  padding: 12px 30px; /* CLAVE: Botón más pequeño */
+  border: none;
+  border-radius: 8px;
+  font-size: 16px; /* Fuente del botón más pequeña */
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  min-width: 160px; /* Ancho mínimo ligeramente menor */
+}
+
+.btn-programar:hover {
+  background-color: #1fc06a;
+  transform: translateY(-1px); /* Menos elevación al pasar el ratón */
+  box-shadow: 0 2px 4px rgba(39, 208, 121, 0.3); /* Sombra más sutil */
+}
+
+.btn-programar:disabled {
+  background-color: #83a883;
+  cursor: not-allowed;
+  opacity: 0.7;
+  transform: none;
+  box-shadow: none;
+}
