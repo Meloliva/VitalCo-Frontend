@@ -688,3 +688,15 @@ form {
     font-size: 1.1rem;
   }
 }
+.error-message {
+  background-color: #fee2e2;
+  color: #991b1b;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  text-align: center;
+  border: 1px solid #fca5a5;
+  font-weight: 500;
+}
+

@@ -51,9 +51,12 @@
           </button>
         </div>
       </div>
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
 
-      <button type="submit" class="btn-submit" [disabled]="!loginForm.valid">
-        Inicia sesión
+      <button type="submit" class="btn-submit" [disabled]="!loginForm.valid || isLoading">
+        {{ isLoading ? 'Iniciando...' : 'Inicia sesión' }}
       </button>
     </form>
 

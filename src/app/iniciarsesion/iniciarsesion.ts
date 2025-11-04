@@ -2,6 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+
+interface AuthResponse {
+  token: string;
+  roles: string[];
+}
 
 @Component({
   selector: 'app-iniciarsesion',
@@ -17,10 +23,13 @@ import { CommonModule } from '@angular/common';
 export class Iniciarsesion implements OnInit {
   loginForm!: FormGroup;
   showPassword: boolean = false;
+  errorMessage: string = '';
+  isLoading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -36,8 +45,32 @@ export class Iniciarsesion implements OnInit {
 
   onSubmit(): void {
     if (this.loginForm.valid) {
+      this.isLoading = true;
+      this.errorMessage = '';
+
       const { usuario, password } = this.loginForm.value;
-      console.log('Login:', usuario, password);
+
+      this.http.post<AuthResponse>('http://localhost:8080/api/authenticate', {
+        dni: usuario,
+        contraseña: password
+      }).subscribe({
+        next: (response) => {
+          localStorage.setItem('token', response.token);
+          localStorage.setItem('roles', JSON.stringify(response.roles));
+          this.router.navigate(['/sistema/progreso-paciente']);
+        },
+        error: (error) => {
+          this.isLoading = false;
+          if (error.status === 401) {
+            this.errorMessage = 'DNI o contraseña incorrectos';
+          } else if (error.status === 0) {
+            this.errorMessage = 'No se pudo conectar con el servidor';
+          } else {
+            this.errorMessage = error.error?.message || 'Error al iniciar sesión';
+          }
+          console.error('Error de autenticación:', error);
+        },
+      });
     }
   }
 
