@@ -2,3 +2,92 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* Material Override para Recetas */
+.mat-mdc-tab-label {
+  color: #6b7280 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  padding: 0 16px !important;
+  min-width: auto !important;
+  height: 32px !important;
+  min-height: 32px !important;
+}
+
+.mat-mdc-tab-label.mdc-tab--active {
+  color: #10b981 !important;
+  font-weight: 600 !important;
+}
+
+.mat-mdc-tab-header {
+  margin-bottom: 8px !important;
+}
+
+.mat-mdc-tab-group {
+  margin-bottom: 16px !important;
+}
+
+.mdc-tab-indicator__content--underline {
+  border-color: #10b981 !important;
+  border-width: 2px !important;
+}
+
+.mat-mdc-chip-option {
+  background: #fef08a !important;
+  color: #854d0e !important;
+  border-radius: 20px !important;
+  font-size: 12px !important;
+  height: 28px !important;
+  padding: 0 14px !important;
+  font-weight: 600 !important;
+  border: none !important;
+  outline: none !important;
+}
+
+.mat-mdc-chip-option:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.mat-mdc-chip-option .mdc-evolution-chip__action--primary {
+  border: none !important;
+  outline: none !important;
+}
+
+.mat-mdc-chip-option.mat-mdc-chip-selected {
+  background: #fde047 !important;
+  color: #713f12 !important;
+  border: none !important;
+  outline: none !important;
+}
+
+.mat-mdc-raised-button.search-btn {
+  background: #10b981 !important;
+  color: white !important;
+}
+
+.mat-mdc-raised-button.ver-btn {
+  background: #10b981 !important;
+  color: white !important;
+}
+
+.mat-mdc-form-field-flex {
+  background-color: #f3f4f6 !important;
+  border-radius: 8px !important;
+  height: 38px !important;
+}
+
+.mat-mdc-form-field .mdc-notched-outline {
+  display: none !important;
+}
+
+.mat-mdc-form-field .mat-mdc-form-field-infix {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  min-height: 38px !important;
+}
+
+/* Títulos a 16px */
+h1, h2 {
+  font-size: 16px !important;
+}

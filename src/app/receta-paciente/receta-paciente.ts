@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+// File: `src/app/receta-paciente/receta-paciente.ts`
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { HttpClient } from '@angular/common/http';
 import { MatTabGroup, MatTab } from '@angular/material/tabs';
@@ -49,6 +50,8 @@ interface PlanRecetaDTO {
   styleUrls: ['./receta-paciente.css']
 })
 export class RecetaPaciente implements OnInit {
+  @ViewChild('searchInput') searchInput?: ElementRef<HTMLInputElement>;
+
   searchQuery = '';
   selectedTab = 0;
   selectedFilters: string[] = [];
@@ -56,6 +59,7 @@ export class RecetaPaciente implements OnInit {
   totalRecetas = 0;
   pageSize = 3;
   pageIndex = 0;
+  isSearching = false;
   private apiUrl = 'http://localhost:8080/api';
 
   constructor(private http: HttpClient) {}
@@ -65,6 +69,7 @@ export class RecetaPaciente implements OnInit {
   }
 
   cargarRecetas() {
+    this.isSearching = false;
     if (this.selectedTab === 0) {
       this.http.get<PlanRecetaDTO[]>(`${this.apiUrl}/listarPlanRecetas`).subscribe({
         next: (data) => {
@@ -82,9 +87,9 @@ export class RecetaPaciente implements OnInit {
         error: (error) => console.error('Error al cargar favoritos:', error)
       });
     } else if (this.selectedTab === 2) {
-      this.http.get<any[]>(`${this.apiUrl}/listarRecetasAgregadasHoy`).subscribe({
+      this.http.get<PlanRecetaDTO[]>(`${this.apiUrl}/listarRecetasAgregadasHoy`).subscribe({
         next: (data) => {
-          this.recetas = data as PlanRecetaDTO[];
+          this.recetas = data;
           this.totalRecetas = data.length;
         },
         error: (error) => console.error('Error al cargar recetas del día:', error)
@@ -93,17 +98,37 @@ export class RecetaPaciente implements OnInit {
   }
 
   buscar() {
-    if (this.searchQuery.trim()) {
-      this.http.get<PlanRecetaDTO[]>(`${this.apiUrl}/buscarRecetas/${this.searchQuery}`).subscribe({
-        next: (data) => {
-          this.recetas = data;
-          this.totalRecetas = data.length;
-        },
-        error: (error) => console.error('Error en búsqueda:', error)
-      });
-    } else {
+    const q = this.searchQuery.trim();
+    if (!q) {
+      this.isSearching = false;
       this.cargarRecetas();
+      return;
     }
+
+    this.isSearching = true;
+    this.http.get<PlanRecetaDTO[]>(`${this.apiUrl}/buscarRecetas/${encodeURIComponent(q)}`).subscribe({
+      next: (data) => {
+        this.recetas = data;
+        this.totalRecetas = data.length;
+        this.pageIndex = 0;
+
+        // limpiar el modelo y el input nativo, quitar foco para que no muestre el texto
+        this.searchQuery = '';
+        if (this.searchInput && this.searchInput.nativeElement) {
+          this.searchInput.nativeElement.value = '';
+          this.searchInput.nativeElement.blur();
+        }
+      },
+      error: (error) => {
+        console.error('Error en búsqueda:', error);
+        // también limpiar en caso de error si se desea
+        this.searchQuery = '';
+        if (this.searchInput && this.searchInput.nativeElement) {
+          this.searchInput.nativeElement.value = '';
+          this.searchInput.nativeElement.blur();
+        }
+      }
+    });
   }
 
   toggleFavorito(receta: PlanRecetaDTO) {
@@ -143,5 +168,16 @@ export class RecetaPaciente implements OnInit {
     } else {
       this.cargarRecetas();
     }
+  }
+
+  eliminarReceta(receta: PlanRecetaDTO) {
+    if (!confirm('¿Eliminar esta receta de tus recetas del día?')) return;
+    this.http.delete(`${this.apiUrl}/eliminarReceta/${receta.id}`).subscribe({
+      next: () => {
+        this.recetas = this.recetas.filter(r => r.id !== receta.id);
+        this.totalRecetas = this.recetas.length;
+      },
+      error: (error) => console.error('Error al eliminar receta:', error)
+    });
   }
 }
