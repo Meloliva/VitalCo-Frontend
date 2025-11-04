@@ -1,0 +1,58 @@
+/* CSS "limpio".
+  Se eliminaron todas las clases de .perfil-container, .sidebar,
+  .logo-section, .sidebar-link, y .perfil-main.
+*/
+
+/* Main content */
+.consulta-form {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap; /* Añadido para responsividad */
+  margin-bottom: 30px;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap; /* Añadido para responsividad */
+  gap: 15px;
+}
+
+.form-row label {
+  font-weight: 500;
+  color: #374151;
+}
+
+input[type="date"],
+input[type="text"] {
+  padding: 10px 14px;
+  border: 2px solid #00BF61; /* Combinado con el estilo de tus otros forms */
+  border-radius: 25px; /* Combinado con el estilo de tus otros forms */
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.btn-buscar {
+  background-color: #00BF61; /* Verde principal */
+  color: white;
+  border: none;
+  padding: 10px 20px; /* Tamaño consistente */
+  border-radius: 25px; /* Combinado con el estilo de tus otros forms */
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.btn-buscar:hover {
+  background-color: #009e4f; /* Verde más oscuro */
+}
+
+/* Chart */
+.consulta-result {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  max-width: 800px;
+  margin: 0 auto;
+}

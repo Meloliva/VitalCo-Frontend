@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { RouterLink, RouterLinkActive } from '@angular/router'; // Importaciones no necesarias aquí
 
 @Component({
   selector: 'app-recetas',
   standalone: true,
+  // Los imports de RouterLink y RouterLinkActive no son necesarios aquí
+  // ya que la navegación está en el layout principal.
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './recetas.html',
   styleUrls: ['./recetas.css']
@@ -50,12 +53,14 @@ export class RecetasComponent {
       };
 
       console.log('Receta guardada:', nuevaReceta);
-      alert('✅ Receta guardada exitosamente');
+      // REEMPLAZADO: alert() no está permitido y bloquea la UI.
+      console.log('✅ Receta guardada exitosamente');
       this.recetaForm.reset();
       this.imageFile = undefined;
       this.imagePreview = undefined;
     } else {
-      alert('⚠️ Por favor, completa los campos obligatorios.');
+      // REEMPLAZADO: alert() no está permitido.
+      console.warn('⚠️ Por favor, completa los campos obligatorios.');
     }
   }
 

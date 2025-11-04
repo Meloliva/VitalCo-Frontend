@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { PublicLayout } from './layouts/public-layout/public-layout';
 import { PrivateLayout } from './layouts/private-layout/private-layout';
+import {Perfil} from './perfilnutricionista/perfil';
+import {PrivateLayoutNutricionista} from './layouts/private-layout-nutricionista/private-layout-nutricionista';
 
 export const routes: Routes = [
   {
@@ -42,24 +44,29 @@ export const routes: Routes = [
     ]
   },
 
-
   {
     path: 'seleccion-registro',
     loadComponent: () => import('./seleccion-registro/seleccion-registro').then(m => m.SeleccionRegistro)
   },
-  {
-    path: 'consultar',
-    loadComponent: () => import('./perfilnutricionista/consultar/consultar').then(m => m.Consultar)
-  },
-  {
-    path: 'perfil',
-    loadComponent: () => import('./perfilnutricionista/perfil').then(m => m.Perfil)
-  },
-  {
-    path: 'recetas',
-    loadComponent: () => import('./recetas/recetas').then(m => m.RecetasComponent)
-  },
 
+  {
+    path: 'nutricionista',
+    component: PrivateLayoutNutricionista,
+    children: [
+      {
+        path: 'perfil',
+        loadComponent: () => import('./perfilnutricionista/perfil').then(m => m.Perfil)
+      },
+      {
+        path: 'recetas',
+        loadComponent: () => import('./recetas/recetas').then(m => m.RecetasComponent)
+      },
+      {
+        path: 'consultar',
+        loadComponent: () => import('./consultar/consultar').then(m => m.Consultar)
+      },
+    ]
+  },
   {
     path: 'sistema',
     component: PrivateLayout,

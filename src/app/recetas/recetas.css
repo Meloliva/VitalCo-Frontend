@@ -1,40 +1,7 @@
-/* ---- Estructura---- */
-.perfil-container {
-  display: flex;
-  min-height: 100vh;
-  background-color: #f2f4f7;
-  font-family: 'Poppins', sans-serif;
-}
-
-/* Sidebar */
-.sidebar {
-  width: 240px;
-  background: #f5f5f5;
-  padding: 30px 20px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.05);
-  display: flex;
-  flex-direction: column;
-}
-.logo-section { display:flex; align-items:center; gap:10px; margin-bottom:30px; }
-.sidebar-logo{ width:40px; height:40px; }
-.sidebar-title-group { display:flex; flex-direction:column; }
-.sidebar-title{ font-size:1.1rem; font-weight:600; color:#00BF61; }
-.sidebar-subtitle{ font-size:0.8rem; color:#666; }
-.sidebar-nav{ display:flex; flex-direction:column; gap:15px; height:100%; }
-.sidebar-bottom { margin-top:auto; }
-.sidebar-link { text-decoration:none; color:#333; font-size:0.95rem; padding:10px; border-radius:8px; display:flex; align-items:center; gap:10px; transition:background 0.3s, color 0.3s; }
-.sidebar-link.active { background:#00BF61; color:white; font-weight:600; }
-.sidebar-link:hover { background:#e0f7e9; }
-.sidebar-icon{ width:20px; height:20px; }
-
-/* ---- Contenido ---- */
-.perfil-main {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 40px;
-}
+/* Estilos "limpios", solo para el formulario de recetas.
+  Se eliminaron todas las clases de .perfil-container, .sidebar,
+  .logo-section, .sidebar-link, y .perfil-main.
+*/
 
 /* ---- Formulario Crear receta (idéntico al prototipo) ---- */
 .container {
@@ -44,6 +11,9 @@
   max-width: 800px;
   width: 100%;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  /* Añadido para centrar el formulario dentro del 'page-card' del layout */
+  margin: 0 auto;
 }
 
 h1 {
@@ -90,12 +60,24 @@ select,
 textarea {
   padding: 12px 16px;
   border: none;
-  background-color: #d1d5db;
+  background-color: #d1d5db; /* Gris claro para el fondo del input */
   border-radius: 8px;
   font-size: 14px;
   color: #1f2937;
   outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: box-shadow 0.2s;
 }
+
+/* Añadido: Resaltar el input cuando está enfocado */
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.3);
+}
+
 
 select {
   appearance: none;
@@ -125,13 +107,15 @@ textarea {
 
 .nutrition-grid {
   display: grid;
-  grid-template-columns: auto 140px auto 140px;
+  /* Columnas: [label] [input] [label] [input] */
+  grid-template-columns: auto 1fr auto 1fr;
   gap: 12px 20px;
   margin-bottom: 24px;
   align-items: center;
 }
 
 .nutrition-item {
+  /* Esto permite que label e input sean hijos directos del grid */
   display: contents;
 }
 
@@ -140,6 +124,14 @@ textarea {
   white-space: nowrap;
   margin: 0;
   text-align: right;
+  color: #4b5563; /* Color de label más suave */
+}
+
+.nutrition-item input {
+  /* Hacemos los inputs de nutrición más pequeños */
+  padding: 8px 12px;
+  font-size: 13px;
+  /* El ancho es 1fr, definido en el grid */
 }
 
 .image-upload {
@@ -212,18 +204,26 @@ button {
   background-color: #059669;
 }
 
-@media (max-width: 640px) {
-  .form-row,
+/* --- Media Queries para Responsividad --- */
+@media (max-width: 768px) {
   .nutrition-grid {
-    grid-template-columns: 1fr;
+    /* 2 columnas en tablet: [label] [input] */
+    grid-template-columns: auto 1fr;
   }
+}
 
+@media (max-width: 640px) {
   .container {
     padding: 20px;
   }
 
   .form-card {
     padding: 20px;
+  }
+
+  .form-row {
+    /* 1 columna en móvil */
+    grid-template-columns: 1fr;
   }
 
   .button-group {

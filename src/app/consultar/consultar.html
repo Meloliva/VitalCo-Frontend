@@ -1,0 +1,18 @@
+<div class="perfil-container">
+  <!-- Contenido principal -->
+  <main class="perfil-main">
+    <form class="consulta-form" (submit)="buscar($event)">
+      <div class="form-row">
+        <label>Fecha de consulta:</label>
+        <input type="date" [(ngModel)]="fechaConsulta" name="fechaConsulta">
+        <label>DNI:</label>
+        <input type="text" [(ngModel)]="dni" name="dni" placeholder="Ingrese DNI">
+        <button class="btn-buscar" type="submit">Buscar</button>
+      </div>
+    </form>
+
+    <div class="consulta-result">
+      <canvas id="grafico-consulta"></canvas>
+    </div>
+  </main>
+</div>
