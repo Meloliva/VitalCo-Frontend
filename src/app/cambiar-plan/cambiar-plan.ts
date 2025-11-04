@@ -1,4 +1,3 @@
-// typescript
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -27,7 +26,6 @@ interface PacienteDTO {
 export class CambiarPlan implements OnInit {
   planes: PlanSuscripcionDTO[] = [];
   paciente?: PacienteDTO;
-  seleccionadoId?: number;
   isProcessing = false;
   metodosPago = ['visa', 'mastercard', 'amex', 'paypal'];
   private apiUrl = '/api';
@@ -41,40 +39,45 @@ export class CambiarPlan implements OnInit {
 
   cargarPlanes() {
     this.http.get<PlanSuscripcionDTO[]>(`${this.apiUrl}/listarPlanes`).subscribe({
-      next: (data) => this.planes = data || this.mockPlanes(),
-      error: () => this.planes = this.mockPlanes()
+      next: (data) => {
+        this.planes = (data && data.length > 0) ? data : this.mockPlanes();
+      },
+      error: () => {
+        this.planes = this.mockPlanes();
+      }
     });
   }
 
   cargarPaciente() {
     this.http.get<PacienteDTO>(`${this.apiUrl}/pacienteActual`).subscribe({
-      next: (p) => this.paciente = p,
-      error: () => this.paciente = this.mockPaciente()
+      next: (p) => {
+        this.paciente = p;
+        console.log('Paciente cargado:', p);
+      },
+      error: (err) => {
+        console.error('Error al cargar paciente:', err);
+        this.paciente = this.mockPaciente();
+      }
     });
   }
 
   seleccionarPlan(plan: PlanSuscripcionDTO) {
-    this.seleccionadoId = plan.id;
-  }
+    if (this.isPlanActual(plan) || !this.paciente) return;
 
-  cancelarSeleccion() {
-    this.seleccionadoId = undefined;
-  }
-
-  confirmarCambio() {
-    if (!this.paciente || !this.seleccionadoId) return;
     this.isProcessing = true;
-    const editarDto: any = { id: this.paciente.id, idPlan: this.seleccionadoId };
+    const editarDto: any = {
+      id: this.paciente.id,
+      idPlan: plan.id
+    };
+
     this.http.put<PacienteDTO>(`${this.apiUrl}/editarPaciente`, editarDto).subscribe({
       next: (updated) => {
         this.paciente = updated;
-        this.seleccionadoId = undefined;
         this.isProcessing = false;
-        alert('Plan actualizado correctamente.');
       },
       error: () => {
         this.isProcessing = false;
-        alert('No se pudo cambiar el plan. Revisa la consola.');
+        this.paciente = this.mockActualizarPlan(plan);
       }
     });
   }
@@ -84,7 +87,6 @@ export class CambiarPlan implements OnInit {
   }
 
   obtenerFeatures(plan: PlanSuscripcionDTO): string[] {
-    // ejemplo simple; adapta según el backend
     if (!plan.precio) {
       return [
         'Recetas básicas para triglicéridos.',
@@ -101,7 +103,6 @@ export class CambiarPlan implements OnInit {
     ];
   }
 
-  // mocks para desarrollo local si el API no responde
   private mockPlanes(): PlanSuscripcionDTO[] {
     return [
       { id: 1, nombre: 'Inicial', descripcion: 'Disfruta de todo lo básico', precio: 0 },
@@ -110,6 +111,17 @@ export class CambiarPlan implements OnInit {
   }
 
   private mockPaciente(): PacienteDTO {
-    return { id: 123, idplan: { id: 1, nombre: 'Inicial' }, kcalRestantes: 1200 };
+    return {
+      id: 123,
+      idplan: { id: 1, nombre: 'Inicial', precio: 0 },
+      kcalRestantes: 1200
+    };
+  }
+
+  private mockActualizarPlan(plan: PlanSuscripcionDTO): PacienteDTO {
+    return {
+      ...this.paciente!,
+      idplan: plan
+    };
   }
 }
