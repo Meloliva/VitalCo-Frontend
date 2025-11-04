@@ -142,6 +142,10 @@ export class UserService {
   getUserId(): number | null {
     return this.currentUserSubject.value?.id || null;
   }
+  eliminarCuenta(): Observable<void> {
+    const headers = this.getHeaders();
+    return this.http.delete<void>(`${this.apiUrl}/eliminarUsuario`, { headers });
+  }
 
   private saveUserToStorage(user: UserProfile): void {
     if (typeof window === 'undefined') return;
