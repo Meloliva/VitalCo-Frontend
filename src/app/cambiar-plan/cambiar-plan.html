@@ -1,1 +1,49 @@
-<p>cambiar-plan works!</p>
+
+<div class="cambiar-plan-root">
+  <header class="cp-header">
+    <h1>Cambiar Suscripción</h1>
+    <p class="subtitle">Selecciona un nuevo plan para tu cuenta. El cambio se aplicará al perfil del paciente.</p>
+  </header>
+
+  <section class="current-plan" *ngIf="paciente">
+    <div class="cp-left">
+      <div class="label">Plan actual</div>
+      <div class="plan-card current">
+        <div class="plan-title">{{ paciente.idplan?.nombre || 'Sin plan' }}</div>
+        <div class="plan-desc">{{ paciente.idplan?.descripcion || '-' }}</div>
+      </div>
+    </div>
+
+    <div class="cp-right">
+      <div class="stats-circle">
+        <div class="kcal">{{ paciente.kcalRestantes ?? '0' }}<span> KCAL</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="planes-list">
+    <div class="label">Planes disponibles</div>
+    <div class="cards">
+      <div class="plan-card" *ngFor="let plan of planes">
+        <div class="plan-info">
+          <div class="plan-title">{{ plan.nombre }}</div>
+          <div class="plan-desc">{{ plan.descripcion }}</div>
+        </div>
+        <div class="plan-actions">
+          <div class="plan-price">{{ plan.precio ? ('S/ ' + plan.precio) : '' }}</div>
+          <button mat-stroked-button color="primary" (click)="seleccionarPlan(plan)" [disabled]="isProcessing || plan.id === seleccionadoId">
+            {{ plan.id === seleccionadoId ? 'Seleccionado' : 'Seleccionar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="confirm-row" *ngIf="seleccionadoId">
+      <button mat-flat-button color="primary" (click)="confirmarCambio()" [disabled]="isProcessing">Confirmar cambio de plan</button>
+      <button mat-button (click)="cancelarSeleccion()" [disabled]="isProcessing">Cancelar</button>
+    </div>
+  </section>
+</div>
+
+
+
