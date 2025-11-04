@@ -49,7 +49,7 @@ export class PrivateLayout implements OnInit, OnDestroy {
   }
 
   private checkRoute() {
-    this.hidePageCard = this.router.url.includes('/cambiar-plan');
+    this.hidePageCard = this.router.url.includes('/cambiar-escoger-plan');
   }
 
   loadUserData() {
