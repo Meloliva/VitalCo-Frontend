@@ -1,5 +1,4 @@
 // typescript
-// File: `src/app/cambiar-plan/cambiar-plan.ts`
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -16,7 +15,6 @@ interface PacienteDTO {
   id: number;
   idplan?: PlanSuscripcionDTO;
   kcalRestantes?: number;
-  // otros campos opcionales...
 }
 
 @Component({
@@ -31,6 +29,7 @@ export class CambiarPlan implements OnInit {
   paciente?: PacienteDTO;
   seleccionadoId?: number;
   isProcessing = false;
+  metodosPago = ['visa', 'mastercard', 'amex', 'paypal'];
   private apiUrl = '/api';
 
   constructor(private http: HttpClient) {}
@@ -41,25 +40,16 @@ export class CambiarPlan implements OnInit {
   }
 
   cargarPlanes() {
-    // Ajusta endpoint real si es otro
     this.http.get<PlanSuscripcionDTO[]>(`${this.apiUrl}/listarPlanes`).subscribe({
-      next: (data) => this.planes = data || [],
-      error: (err) => {
-        console.error('No se pudo cargar planes', err);
-        this.planes = [];
-      }
+      next: (data) => this.planes = data || this.mockPlanes(),
+      error: () => this.planes = this.mockPlanes()
     });
   }
 
   cargarPaciente() {
-    // Endpoint de ejemplo para obtener datos del paciente autenticado.
-    // Cambia por el endpoint real (por ejemplo: /api/mis-datos, /api/paciente/me, etc.)
     this.http.get<PacienteDTO>(`${this.apiUrl}/pacienteActual`).subscribe({
       next: (p) => this.paciente = p,
-      error: (err) => {
-        console.error('No se pudo cargar paciente', err);
-        // fallback: si no existe, puede cargarse por otro endpoint o requerir login
-      }
+      error: () => this.paciente = this.mockPaciente()
     });
   }
 
@@ -74,13 +64,7 @@ export class CambiarPlan implements OnInit {
   confirmarCambio() {
     if (!this.paciente || !this.seleccionadoId) return;
     this.isProcessing = true;
-
-    const editarDto: any = {
-      id: this.paciente.id,
-      idPlan: this.seleccionadoId
-      // incluye otros campos requeridos por tu EditarPacienteDTO si aplica
-    };
-
+    const editarDto: any = { id: this.paciente.id, idPlan: this.seleccionadoId };
     this.http.put<PacienteDTO>(`${this.apiUrl}/editarPaciente`, editarDto).subscribe({
       next: (updated) => {
         this.paciente = updated;
@@ -88,12 +72,44 @@ export class CambiarPlan implements OnInit {
         this.isProcessing = false;
         alert('Plan actualizado correctamente.');
       },
-      error: (err) => {
-        console.error('Error actualizando plan', err);
+      error: () => {
         this.isProcessing = false;
         alert('No se pudo cambiar el plan. Revisa la consola.');
       }
     });
   }
-}
 
+  isPlanActual(plan: PlanSuscripcionDTO) {
+    return this.paciente?.idplan?.id === plan.id;
+  }
+
+  obtenerFeatures(plan: PlanSuscripcionDTO): string[] {
+    // ejemplo simple; adapta según el backend
+    if (!plan.precio) {
+      return [
+        'Recetas básicas para triglicéridos.',
+        'Registro manual de alimentos.',
+        'Gráfica simple de progreso.'
+      ];
+    }
+    return [
+      'Todo el plan free.',
+      'Consultas virtuales con nutricionistas.',
+      'Recetas exclusivas y personalizadas.',
+      'Soporte personalizado.',
+      'Gráfica simple del progreso.'
+    ];
+  }
+
+  // mocks para desarrollo local si el API no responde
+  private mockPlanes(): PlanSuscripcionDTO[] {
+    return [
+      { id: 1, nombre: 'Inicial', descripcion: 'Disfruta de todo lo básico', precio: 0 },
+      { id: 2, nombre: 'Premium', descripcion: 'Disfruta de todo el contenido', precio: 49.90 }
+    ];
+  }
+
+  private mockPaciente(): PacienteDTO {
+    return { id: 123, idplan: { id: 1, nombre: 'Inicial' }, kcalRestantes: 1200 };
+  }
+}

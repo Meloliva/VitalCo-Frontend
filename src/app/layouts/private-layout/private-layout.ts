@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
-import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import {Router, RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd} from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { UserService, UserProfile } from '../../service/userlayout-service';
 import { Subscription } from 'rxjs';
+import {filter} from 'rxjs/operators';
 
 @Component({
   selector: 'app-private-layout',
@@ -15,7 +16,9 @@ export class PrivateLayout implements OnInit, OnDestroy {
   userAvatar: string = '/Images/iconos/iconoSistemas/image 18.png';
   userName: string = 'Nombre de Usuario';
   isPremium: boolean = false;
+  hidePageCard: boolean = false;
   private userSubscription?: Subscription;
+  private routerSubscription?: Subscription;
 
   constructor(
     private router: Router,
@@ -27,12 +30,26 @@ export class PrivateLayout implements OnInit, OnDestroy {
     // Carga el usuario desde storage (solo navegador)
     this.userService.initUserFromStorage();
     this.loadUserData();
+    this.checkRoute();
+
+    this.routerSubscription = this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.checkRoute();
+      });
   }
 
   ngOnDestroy() {
     if (this.userSubscription) {
       this.userSubscription.unsubscribe();
     }
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
+  }
+
+  private checkRoute() {
+    this.hidePageCard = this.router.url.includes('/cambiar-plan');
   }
 
   loadUserData() {

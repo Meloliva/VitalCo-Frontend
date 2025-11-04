@@ -1,49 +1,50 @@
-
 <div class="cambiar-plan-root">
-  <header class="cp-header">
-    <h1>Cambiar Suscripción</h1>
-    <p class="subtitle">Selecciona un nuevo plan para tu cuenta. El cambio se aplicará al perfil del paciente.</p>
-  </header>
+  <div class="plans-container">
+    <div class="plans-grid">
+      <!-- Plan Gratuito -->
+      <div class="plan-card"
+           *ngFor="let plan of planes"
+           [class.current]="isPlanActual(plan)"
+           [class.premium]="plan.precio && plan.precio > 0">
 
-  <section class="current-plan" *ngIf="paciente">
-    <div class="cp-left">
-      <div class="label">Plan actual</div>
-      <div class="plan-card current">
-        <div class="plan-title">{{ paciente.idplan?.nombre || 'Sin plan' }}</div>
-        <div class="plan-desc">{{ paciente.idplan?.descripcion || '-' }}</div>
-      </div>
-    </div>
+        <div class="plan-badge" *ngIf="isPlanActual(plan)">Gratis</div>
 
-    <div class="cp-right">
-      <div class="stats-circle">
-        <div class="kcal">{{ paciente.kcalRestantes ?? '0' }}<span> KCAL</span></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="planes-list">
-    <div class="label">Planes disponibles</div>
-    <div class="cards">
-      <div class="plan-card" *ngFor="let plan of planes">
-        <div class="plan-info">
-          <div class="plan-title">{{ plan.nombre }}</div>
-          <div class="plan-desc">{{ plan.descripcion }}</div>
+        <div class="plan-header">
+          <h2 class="plan-title">{{ plan.nombre }}</h2>
+          <p class="plan-subtitle">{{ plan.descripcion }}</p>
         </div>
+
+        <div class="plan-price">{{ plan.precio ? 'S/. ' + plan.precio : 'Gratuito' }}</div>
+
+        <ul class="plan-features">
+          <li *ngFor="let f of obtenerFeatures(plan)">
+            <span class="check-icon">{{ plan.precio ? '⊕' : '●' }}</span>
+            {{ f }}
+          </li>
+        </ul>
+
         <div class="plan-actions">
-          <div class="plan-price">{{ plan.precio ? ('S/ ' + plan.precio) : '' }}</div>
-          <button mat-stroked-button color="primary" (click)="seleccionarPlan(plan)" [disabled]="isProcessing || plan.id === seleccionadoId">
-            {{ plan.id === seleccionadoId ? 'Seleccionado' : 'Seleccionar' }}
+          <button class="btn-plan"
+                  [class.btn-current]="isPlanActual(plan)"
+                  (click)="!isPlanActual(plan) && seleccionarPlan(plan)"
+                  [disabled]="isProcessing">
+            {{ isPlanActual(plan) ? 'Plan actual' : 'Cambiar Plan' }}
           </button>
+          <a class="terms-link">Términos y condiciones</a>
         </div>
       </div>
     </div>
 
-    <div class="confirm-row" *ngIf="seleccionadoId">
-      <button mat-flat-button color="primary" (click)="confirmarCambio()" [disabled]="isProcessing">Confirmar cambio de plan</button>
-      <button mat-button (click)="cancelarSeleccion()" [disabled]="isProcessing">Cancelar</button>
-    </div>
-  </section>
+    <section class="payment-methods">
+      <h3>Métodos de Pago</h3>
+      <div class="payment-logos">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='40' viewBox='0 0 60 40'%3E%3Crect width='60' height='40' rx='4' fill='%231434CB'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='Arial' font-size='16' font-weight='bold'%3EVISA%3C/text%3E%3C/svg%3E" alt="Visa">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='40' viewBox='0 0 60 40'%3E%3Crect width='60' height='40' rx='4' fill='%23EB001B'/%3E%3Crect x='20' width='40' height='40' rx='4' fill='%23FF5F00'/%3E%3Crect x='32' width='28' height='40' rx='4' fill='%23F79E1B'/%3E%3C/svg%3E" alt="Mastercard">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='40' viewBox='0 0 60 40'%3E%3Crect width='60' height='40' rx='4' fill='%23016FD0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='Arial' font-size='12' font-weight='bold'%3EAE%3C/text%3E%3C/svg%3E" alt="American Express">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='40' viewBox='0 0 60 40'%3E%3Crect width='60' height='40' rx='4' fill='%23003087'/%3E%3Ctext x='50%25' y='35%25' dominant-baseline='middle' text-anchor='middle' fill='%23009CDE' font-family='Arial' font-size='10' font-weight='bold'%3EPay%3C/text%3E%3Ctext x='50%25' y='65%25' dominant-baseline='middle' text-anchor='middle' fill='%23009CDE' font-family='Arial' font-size='10' font-weight='bold'%3EPal%3C/text%3E%3C/svg%3E" alt="PayPal">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='40' viewBox='0 0 60 40'%3E%3Crect width='60' height='40' rx='4' fill='%235469D4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='Arial' font-size='11' font-weight='bold'%3ED%3C/text%3E%3C/svg%3E" alt="Diners">
+      </div>
+      <p class="payment-text">Aceptamos Visa, American Express, Mastercard y Paypal</p>
+    </section>
+  </div>
 </div>
-
-
-

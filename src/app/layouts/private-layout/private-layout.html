@@ -52,9 +52,10 @@
   </aside>
 
   <main class="main-content">
-    <div class="page-card">
+    <div class="page-card" *ngIf="!hidePageCard">
       <router-outlet></router-outlet>
     </div>
+    <router-outlet *ngIf="hidePageCard"></router-outlet>
   </main>
 </div>
 
