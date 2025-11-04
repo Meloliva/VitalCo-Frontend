@@ -4,31 +4,23 @@
 */
 
 /* ---- Formulario Crear receta (idéntico al prototipo) ---- */
-.container {
-  background-color: #f5f5f5;
-  border-radius: 24px;
-  padding: 40px;
-  max-width: 800px;
-  width: 100%;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.main-content {
+  flex-grow: 1;
+  padding: 48px 28px; /* ← añade espacio arriba y abajo */
+  background: linear-gradient(180deg, #eef1f4 0%, #e8ebef 100%);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* ← alinea arriba, no al centro */
+  overflow-y: auto;
   box-sizing: border-box;
-  /* Añadido para centrar el formulario dentro del 'page-card' del layout */
-  margin: 0 auto;
 }
+
 
 h1 {
   color: #16a34a;
   font-size: 24px;
   font-weight: 600;
   margin-bottom: 24px;
-}
-
-.form-card {
-  background-color: white;
-  border: 2px solid #16a34a;
-  border-radius: 16px;
-  padding: 32px;
-  margin-bottom: 20px;
 }
 
 .form-row {
