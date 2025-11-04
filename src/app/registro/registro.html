@@ -56,15 +56,19 @@
               class="password-input"
             />
             <span class="icon-eye" (click)="togglePasswordVisibility()">
-      <img src="/Images/iconos/eye-icon.png" alt="Mostrar/Ocultar">
-    </span>
+              <img src="/Images/iconos/eye-icon.png" alt="Mostrar/Ocultar">
+            </span>
           </div>
-
         </div>
       </div>
 
-      <button type="submit" class="btn-registrar" [disabled]="!registroForm.valid">
-        Registrar
+      <div *ngIf="errorMessage" style="color: red; margin-bottom: 15px; text-align: center;">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="btn-registrar" [disabled]="!registroForm.valid || isLoading">
+        <span *ngIf="!isLoading">Registrar</span>
+        <span *ngIf="isLoading">Cargando...</span>
       </button>
     </form>
   </div>
@@ -85,6 +89,8 @@
       <div class="progress-fill step-2"></div>
     </div>
 
+    <h2>Datos Profesionales</h2>
+
     <form [formGroup]="registroProfesionalForm" (ngSubmit)="nextStep()">
       <div class="form-group">
         <label>Asociación:</label>
@@ -97,16 +103,28 @@
       </div>
 
       <div class="form-group">
+        <label>Grado Académico:</label>
+        <input type="text" formControlName="gradoAcademico" placeholder="Ej: Licenciado, Magíster">
+      </div>
+
+      <div class="form-group">
         <label>Turno:</label>
         <select formControlName="turno">
           <option value="">Seleccionar turno</option>
-          <option value="8:00 am-12:00 pm">8:00 am-12:00 pm</option>
-          <option value="2:00 pm-6:00 pm">2:00 pm-6:00 pm</option>
+          <option *ngFor="let turno of turnos" [value]="turno.id">
+            {{ turno.inicioTurno }} - {{ turno.finTurno }}
+          </option>
         </select>
       </div>
 
-      <button type="submit" class="btn-registrar" [disabled]="!registroProfesionalForm.valid">
-        Completar Registro
+      <div *ngIf="errorMessage" style="color: red; margin-bottom: 15px; text-align: center;">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="btn-registrar"
+              [disabled]="!registroProfesionalForm.valid || isLoading">
+        <span *ngIf="!isLoading">Completar Registro</span>
+        <span *ngIf="isLoading">Registrando...</span>
       </button>
     </form>
   </div>
@@ -139,7 +157,6 @@
           <button class="btn-iniciar" (click)="iniciar()">Iniciar</button>
           <button class="btn-cancelar" (click)="cancelar()">Cancelar</button>
         </div>
-
       </div>
     </div>
   </div>
