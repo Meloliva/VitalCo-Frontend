@@ -119,12 +119,12 @@ export const routes: Routes = [
             loadComponent: () => import('./citas/listar-citas/listar-citas').then(m => m.ListarCitas)
           }
         ]
-      }
+      },
 
-      /*
-      { path: 'recetas', loadComponent: () => import('./recetas/recetas').then(m => m.Recetas) },
-      { path: 'cambiar-plan', loadComponent: () => import('./sistema/cambiar-plan/cambiar-plan').then(m => m.CambiarPlan) }
-      */
+
+      { path: 'receta-paciente', loadComponent: () => import('./receta-paciente/receta-paciente').then(m => m.RecetaPaciente) },
+      { path: 'cambiar-plan', loadComponent: () => import('./cambiar-plan/cambiar-plan').then(m => m.CambiarPlan) }
+
     ]
   }
 ];
