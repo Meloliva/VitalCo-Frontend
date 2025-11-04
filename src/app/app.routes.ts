@@ -7,6 +7,7 @@ import {Perfil} from './perfilnutricionista/perfil';
 import {PrivateLayoutNutricionista} from './layouts/private-layout-nutricionista/private-layout-nutricionista';
 import {DatosSaludComponent} from './registro-usuario/datos-salud/datos-salud';
 import {RegistroUsuarioComponent} from './registro-usuario/registro-usuario';
+import {NutriProgresoPacientes} from './nutri-progreso-pacientes/nutri-progreso-pacientes';
 export const routes: Routes = [
   {
     path: '',
@@ -77,8 +78,26 @@ export const routes: Routes = [
         path: 'consultar',
         loadComponent: () => import('./consultar/consultar').then(m => m.Consultar)
       },
+      {
+        path: 'progreso-pacientes',
+        loadComponent: () => import('./nutri-progreso-pacientes/nutri-progreso-pacientes').then(m => m.NutriProgresoPacientes)
+      },
+      {
+        path: 'citas',
+        children: [
+          {
+            path: 'programar',
+            loadComponent: () => import('./citas-nutricionista/programar/programar').then(m => m.Programar)
+          },
+          {
+            path: 'listar',
+            loadComponent: () => import('./citas-nutricionista/listar/listar').then(m => m.Listar)
+          }
+        ]
+      }
     ]
   },
+
   {
     path: 'sistema',
     component: PrivateLayout,
