@@ -342,7 +342,7 @@ html, body {
   transform: scale(0.98);
 }
 
-/* Cuando el plan está seleccionado, el botón se vuelve VERDE */
+/* Cuando el escoger-plan está seleccionado, el botón se vuelve VERDE */
 .plan-card.selected .btn-plan {
   background: #10B981;
   color: white;

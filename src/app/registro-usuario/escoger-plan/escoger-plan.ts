@@ -4,13 +4,13 @@ import {MatProgressBar} from '@angular/material/progress-bar';
 
 @Component({
   selector: 'app-planes',
-  templateUrl: './plan.html',
+  templateUrl: './escoger-plan.html',
   imports: [
     MatProgressBar
   ],
-  styleUrls: ['./plan.css']
+  styleUrls: ['./escoger-plan.css']
 })
-export class PlanComponent implements OnInit {
+export class EscogerPlanComponent implements OnInit {
   progressValue: number = 100;
   planSeleccionado: string | null = null;
 
@@ -27,9 +27,9 @@ export class PlanComponent implements OnInit {
 
   onSubmit(): void {
     if (this.planSeleccionado) {
-      console.log('Registrando con plan:', this.planSeleccionado);
+      console.log('Registrando con escoger-plan:', this.planSeleccionado);
 
-      // Guardar el plan y continuar
+      // Guardar el escoger-plan y continuar
       // this.userService.setPlan(this.planSeleccionado);
        this.router.navigate(['/macronutrientes']);
 

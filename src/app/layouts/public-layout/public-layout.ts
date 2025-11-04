@@ -34,7 +34,7 @@ export class PublicLayout {
 
 
 
-    const hiddenRoutes = ['/registro', '/perfil','iniciarsesion','verificar-codigo','nueva-password','password-success','datos-salud','objetivo','nivelactividad','plan','macronutrientes'];
+    const hiddenRoutes = ['/registro', '/perfil','iniciarsesion','verificar-codigo','nueva-password','password-success','datos-salud','objetivo','nivelactividad','macronutrientes','escoger-plan'];
 
     this.showHeaderFooter = !hiddenRoutes.some(route => url.includes(route));
 
