@@ -18,7 +18,7 @@ interface PacienteDTO {
 }
 
 @Component({
-  selector: 'app-cambiar-plan',
+  selector: 'app-cambiar-escoger-plan',
   standalone: true,
   imports: [CommonModule, MatButtonModule],
   templateUrl: './cambiar-plan.html',
@@ -74,7 +74,7 @@ export class CambiarPlan implements OnInit {
       },
       error: () => {
         this.isProcessing = false;
-        alert('No se pudo cambiar el plan. Revisa la consola.');
+        alert('No se pudo cambiar el escoger-plan. Revisa la consola.');
       }
     });
   }
@@ -93,7 +93,7 @@ export class CambiarPlan implements OnInit {
       ];
     }
     return [
-      'Todo el plan free.',
+      'Todo el escoger-plan free.',
       'Consultas virtuales con nutricionistas.',
       'Recetas exclusivas y personalizadas.',
       'Soporte personalizado.',

@@ -76,14 +76,14 @@ export class ListarCitas implements OnInit {
     tomorrow.setDate(today.getDate() + 1);
 
     this.allAppointments = [
-      { id: 1, patientName: 'Fabiana Catillo', time: '10:00', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1000', description: 'Seguimiento plan Nutricional', avatarInitials: 'FC', appointmentDate: today },
+      { id: 1, patientName: 'Fabiana Catillo', time: '10:00', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1000', description: 'Seguimiento escoger-plan Nutricional', avatarInitials: 'FC', appointmentDate: today },
       { id: 2, patientName: 'Carlos Mendoza', time: '11:30', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1130', description: 'Primera consulta y evaluación', avatarInitials: 'CM', appointmentDate: today },
       { id: 3, patientName: 'Ana Torres', time: '14:00', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1400', description: 'Revisión de resultados', avatarInitials: 'AT', appointmentDate: today },
       { id: 4, patientName: 'Roberto Gómez', time: '15:15', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1515', description: 'Control trimestral de peso', avatarInitials: 'RG', appointmentDate: today },
       { id: 5, patientName: 'Elena Vílchez', time: '16:45', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1645', description: 'Ajuste de dieta deportiva', avatarInitials: 'EV', appointmentDate: today },
 
       { id: 6, patientName: 'Luis Flores', time: '09:00', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/0900', description: 'Introducción al ayuno intermitente', avatarInitials: 'LF', appointmentDate: tomorrow },
-      { id: 7, patientName: 'Sara Díaz', time: '10:30', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1030', description: 'Mediciones y plan inicial', avatarInitials: 'SD', appointmentDate: tomorrow },
+      { id: 7, patientName: 'Sara Díaz', time: '10:30', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1030', description: 'Mediciones y escoger-plan inicial', avatarInitials: 'SD', appointmentDate: tomorrow },
       { id: 8, patientName: 'Miguel Ramos', time: '12:00', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1200', description: 'Revisión de diario alimenticio', avatarInitials: 'MR', appointmentDate: tomorrow },
       { id: 9, patientName: 'Claudia Soto', time: '15:00', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1500', description: 'Cita de seguimiento general', avatarInitials: 'CS', appointmentDate: tomorrow },
       { id: 10, patientName: 'Javier Pérez', time: '17:30', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1730', description: 'Optimización de ingesta proteica', avatarInitials: 'JP', appointmentDate: tomorrow }
