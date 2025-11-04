@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { PublicLayout } from './layouts/public-layout/public-layout';
 import { PrivateLayout } from './layouts/private-layout/private-layout';
+import {DatosSaludComponent} from './registro-usuario/datos-salud/datos-salud';
 
 export const routes: Routes = [
   {
@@ -15,8 +16,10 @@ export const routes: Routes = [
       { path: 'centro-de-ayuda', loadComponent: () => import('./centro-de-ayuda/centro-de-ayuda').then(m => m.CentroDeAyuda) },
       { path: 'registro', loadComponent: () => import('./registro/registro').then(m => m.Registro) },
       { path: 'iniciarsesion', loadComponent: () => import('./iniciarsesion/iniciarsesion').then(m => m.Iniciarsesion) },
-      { path: 'registro-usuario', loadComponent: () => import('./registro-usuario/registro-usuario').then(m => m.RegistroUsuarioComponent) },
+
       { path: 'recuperar-password', loadComponent: () => import('./recuperar-password/recuperar-password').then(m => m.RecuperarPasswordComponent) },
+
+
       {
         path: 'recuperar-password',
         children: [
@@ -42,7 +45,16 @@ export const routes: Routes = [
 
     ]
   },
-
+  {
+    path: 'registro-usuario',
+    loadComponent: () => import('./registro-usuario/registro-usuario').then(m => m.RegistroUsuarioComponent),
+    children: [
+      {
+        path: 'datos-salud',
+        component: DatosSaludComponent
+      }
+    ]
+  },
 
   {
     path: 'seleccion-registro',

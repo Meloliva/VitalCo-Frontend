@@ -1,0 +1,125 @@
+<!-- ============= HTML ============= -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<div class="registro-container">
+  <div class="registro-content">
+    <!-- Círculos decorativos - Esquinas (FIJOS) -->
+    <div class="decoration-circles">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+    </div>
+
+    <!-- Círculos decorativos - Centro (FIJOS) -->
+    <div class="decoration-circlesmedio">
+      <div class="circle circle-3"></div>
+      <div class="circle circle-4"></div>
+    </div>
+
+    <!-- Botón atrás -->
+    <button class="back-button"(click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <!-- Logo Fitia (FIJO) -->
+    <div class="icon-above-progress">
+      <img src="Images/Logos/logo_inicio.png" alt="Icono Fitia" class="icono-fitia">
+    </div>
+
+    <!-- Barra de progreso (FIJA) -->
+    <div class="progress-container">
+      <mat-progress-bar
+        mode="determinate"
+        [value]="progressValue"
+        color="accent">
+      </mat-progress-bar>
+    </div>
+
+    <!-- Título -->
+    <div class="registro-header">
+      <h1>Cuentanos mas Sobre ti.....</h1>
+      <div class="logo-container">
+        <img src="/Images/iconos/sobreti.png" alt="Icon" class="header-icon">
+      </div>
+
+    </div>
+
+    <!-- Ilustración de personas -->
+    <div class="illustration">
+      <div class="person person-1"></div>
+      <div class="person person-2"></div>
+    </div>
+
+    <!-- Formulario -->
+    <form [formGroup]="datosSaludForm" (ngSubmit)="onSubmit()">
+      <!-- Edad -->
+      <div class="form-group">
+        <div class="input-wrapper">
+          <i class="fa-solid fa-cake-candles input-icon"></i>
+          <input
+            type="number"
+            id="edad"
+            formControlName="edad"
+            class="form-control"
+            placeholder="Edad">
+        </div>
+        <small *ngIf="datosSaludForm.get('edad')?.invalid && datosSaludForm.get('edad')?.touched" class="error-text">
+          Edad es requerida
+        </small>
+      </div>
+
+      <!-- Altura -->
+      <div class="form-group">
+        <div class="input-wrapper">
+          <i class="fa-solid fa-ruler-vertical input-icon"></i>
+          <input
+            type="number"
+            id="altura"
+            formControlName="altura"
+            class="form-control"
+            placeholder="Altura"
+            step="0.01">
+        </div>
+        <small *ngIf="datosSaludForm.get('altura')?.invalid && datosSaludForm.get('altura')?.touched" class="error-text">
+          Altura es requerida
+        </small>
+      </div>
+
+      <!-- Peso -->
+      <div class="form-group">
+        <div class="input-wrapper">
+          <i class="fa-solid fa-weight-scale input-icon"></i>
+          <input
+            type="number"
+            id="peso"
+            formControlName="peso"
+            class="form-control"
+            placeholder="Peso"
+            step="0.1">
+        </div>
+        <small *ngIf="datosSaludForm.get('peso')?.invalid && datosSaludForm.get('peso')?.touched" class="error-text">
+          Peso es requerido
+        </small>
+      </div>
+
+      <!-- Triglicéridos -->
+      <div class="form-group full-width">
+        <input
+          type="number"
+          id="trigliceridos"
+          formControlName="trigliceridos"
+          class="form-control"
+          placeholder="Ingrese su valor de triglicéridos (mg/dL)"
+          step="0.1">
+        <small *ngIf="datosSaludForm.get('trigliceridos')?.invalid && datosSaludForm.get('trigliceridos')?.touched" class="error-text">
+          Valor de triglicéridos es requerido
+        </small>
+      </div>
+
+      <!-- Botón siguiente -->
+      <button type="submit" class="btn-siguiente">
+        Siguiente
+      </button>
+    </form>
+  </div>
+</div>
+
