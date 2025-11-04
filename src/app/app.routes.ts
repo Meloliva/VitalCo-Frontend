@@ -55,6 +55,10 @@ export const routes: Routes = [
     path: 'perfil',
     loadComponent: () => import('./perfilnutricionista/perfil').then(m => m.Perfil)
   },
+  {
+    path: 'recetas',
+    loadComponent: () => import('./recetas/recetas').then(m => m.RecetasComponent)
+  },
 
   {
     path: 'sistema',
@@ -64,10 +68,23 @@ export const routes: Routes = [
       {
         path: 'progreso-paciente',
         loadComponent: () => import('./progreso-paciente/progreso-paciente').then(m => m.ProgresoPaciente)
+      },
+      {
+        path: 'citas',
+        children: [
+          {
+            path: 'programar',
+            loadComponent: () => import('./citas/programar-cita/programar-cita').then(m => m.ProgramarCita)
+          },
+          {
+            path: 'listar',
+            loadComponent: () => import('./citas/listar-citas/listar-citas').then(m => m.ListarCitas)
+          }
+        ]
       }
+
       /*
       { path: 'recetas', loadComponent: () => import('./recetas/recetas').then(m => m.Recetas) },
-      { path: 'citas', loadComponent: () => import('./sistema/citas/citas').then(m => m.Citas) },
       { path: 'cambiar-plan', loadComponent: () => import('./sistema/cambiar-plan/cambiar-plan').then(m => m.CambiarPlan) }
       */
     ]

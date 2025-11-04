@@ -26,10 +26,18 @@
         <span>Recetas</span>
       </a>
 
-      <a *ngIf="isPremium" routerLink="/sistema/citas" routerLinkActive="active" class="nav-item">
+     <a *ngIf="isPremium" class="nav-item citas-parent">
         <img src="/Images/iconos/iconoSistemas/image%2054.png" alt="Citas" class="nav-icon">
         <span>Citas</span>
       </a>
+      <div *ngIf="isPremium" class="citas-submenu">
+        <a routerLink="/sistema/citas/programar" routerLinkActive="active" class="nav-item sub-link">
+          Programar Cita
+        </a>
+        <a routerLink="/sistema/citas/listar" routerLinkActive="active" class="nav-item sub-link">
+          Listar
+        </a>
+      </div>
 
       <a routerLink="/sistema/cambiar-plan" routerLinkActive="active" class="nav-item">
         <img src="/Images/iconos/iconoSistemas/setting-01.png" alt="Cambiar Plan" class="nav-icon">
@@ -44,7 +52,9 @@
   </aside>
 
   <main class="main-content">
-    <router-outlet />
+    <div class="page-card">
+      <router-outlet></router-outlet>
+    </div>
   </main>
 </div>
 

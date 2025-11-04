@@ -1,0 +1,201 @@
+.progress-container {
+  padding: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* --- ESTILOS PARA EL HEADER CON FECHA --- */
+.date-header {
+  position: relative; /* IMPORTANTE para el posicionamiento del datepicker */
+  display: flex; /* Añadido para alinear el icono y texto */
+  align-items: center;
+  width: fit-content;
+  margin: 0 auto 24px auto;
+  background-color: #28a745;
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.date-header:hover {
+  opacity: 0.9;
+}
+
+.date-header .icon {
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+/* Ocultar el input del datepicker pero mantenerlo en el DOM */
+.datepicker-hidden-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 1px;
+  height: 1px;
+  top: 0;
+  left: 0;
+}
+
+/* --- ESTILOS PARA EL DISEÑO DE DONA Y BARRAS --- */
+
+/* Sección de resumen (Dona y barras) - Layout de 2 columnas */
+.summary-section {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin-bottom: 100px;
+  margin-top: 40px;
+}
+
+/* 1. Gráfico de dona de calorías */
+.calorie-chart {
+  flex: 1; /* Ocupa 1 parte del espacio */
+  display: grid;
+  place-items: center;
+}
+
+.circle-progress {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  position: relative;
+  background: conic-gradient(#f0f0f0 0deg, #f0f0f0 360deg);
+}
+
+.circle-progress::before {
+  content: "";
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  background: #ffffff;
+  border-radius: 50%;
+}
+
+.calorie-display {
+  position: relative;
+  text-align: center;
+  z-index: 1;
+}
+
+.calorie-display span {
+  display: block;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.calorie-display small {
+  font-size: 14px;
+  color: #888;
+  text-transform: uppercase;
+}
+
+/* 2. Detalles de macronutrientes (Barras) */
+.macro-details {
+  flex: 2; /* Ocupa 2 partes del espacio (más ancho) */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.macro-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  font-size: 15px;
+}
+
+.macro-label span:first-child {
+  font-weight: bold;
+  color: #444;
+}
+
+.macro-label span:last-child {
+  color: #777;
+}
+
+.progress-bar-container {
+  width: 100%;
+  background-color: #f0f0f0;
+  border-radius: 50px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%; /* Valor inicial */
+  background-color: #8a8a8a;
+  border-radius: 50px;
+  transition: width 0.5s ease-out;
+}
+
+/* Línea divisoria */
+.divider {
+  border: none;
+  height: 1px;
+  background-color: #eeeeee;
+}
+
+/* Sección de comidas */
+.meals-section {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.meal-category {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.meal-category:last-child {
+  border-bottom: none;
+}
+
+.meal-name {
+  font-weight: bold;
+  font-size: 18px;
+  color: #333;
+  position: relative;
+  padding-bottom: 6px;
+  display: inline-block;
+  margin: 0 0 10px 0;
+}
+
+.meal-name::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 35px;
+  height: 3px;
+  background-color: #28a745;
+  border-radius: 2px;
+}
+
+.meal-kcal {
+  display: block;
+  font-size: 16px;
+  color: #555;
+}
+/* --- AJUSTAR ANCHO DEL DATEPICKER --- */
+::ng-deep .mat-datepicker-content {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 12px !important;
+  width: 310px !important; /* Ajusta este valor según necesites */
+}
+
+::ng-deep .mat-calendar {
+  width: 100% !important;
+  height: auto !important;
+}
+

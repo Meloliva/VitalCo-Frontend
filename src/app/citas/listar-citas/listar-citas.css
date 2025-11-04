@@ -1,0 +1,273 @@
+/* Importamos los íconos (opcional, pero usado en el diseño) */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+
+/* Iconos de ejemplo */
+.icon-calendar::before {
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  content: '\f073';
+  margin-right: 8px;
+}
+.icon-zoom::before {
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  content: '\f03d';
+  margin-right: 4px;
+}
+
+/* --- Contenedor Principal --- */
+.list-container {
+  padding: 20px;
+  max-width: 900px;
+  margin: 20px auto;
+  font-family: 'Arial', sans-serif;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.form-title {
+  font-size: 28px;
+  color: #333;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Estilos para el Selector de Fecha (Datepicker) */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.date-header {
+  background-color: #27d079;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.datepicker-hidden-input {
+  position: absolute;
+  overflow: hidden;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+/* Fin Estilos Datepicker */
+
+/* Pestañas (Tabs) */
+.tabs {
+  margin-bottom: 20px;
+}
+
+.tab-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  background-color: #f0f0f0;
+  color: #888;
+  border-radius: 8px;
+  margin-right: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.tab-button.active {
+  background-color: #e0f8e9;
+  color: #27d079;
+}
+
+/* Lista de Citas */
+.appointment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  min-height: 200px; /* Evita que el footer salte si la lista está vacía */
+}
+
+.appointment-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.appointment-card.selected {
+  border-color: #3cbe82;
+  box-shadow: 0 0 10px rgba(60, 190, 130, 0.3);
+}
+
+.avatar {
+  min-width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #e0f8e9;
+  color: #27d079;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.details {
+  flex-grow: 1;
+}
+
+.row-1 {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+.row-1 h4 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+  font-weight: 600;
+}
+
+.row-2 .description-box {
+  background-color: #f5f5f5;
+  padding: 10px 15px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #444;
+  display: inline-block;
+}
+
+/* Botones de Acción */
+.actions {
+  margin-left: auto;
+}
+
+.btn-join {
+  background-color: #27d079;
+  color: white;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.btn-cancel {
+  background-color: #e74c3c;
+  color: white;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  border: none;
+}
+
+.btn-cancel:disabled {
+  background-color: #f8baba;
+  color: #e74c3c;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* 🚨 ESTILOS MEJORADOS PARA MAT-PAGINATOR 🚨 */
+
+/* Contenedor principal del paginador: Alineación y fondo */
+.custom-paginator {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 0; /* Espacio interno */
+  margin-top: 15px; /* Espacio de la lista superior */
+  background-color: white; /* Asegura un fondo blanco limpio */
+  border-radius: 0 0 12px 12px;
+}
+
+/* Ocultar el fondo y el borde por defecto de Material */
+.mat-mdc-paginator {
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0;
+}
+
+/* Estilos para el texto y selectores (Items per page) */
+.mat-mdc-paginator-container {
+  /* Alinea el contenido (texto, select, botones) */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 15px;
+  font-size: 14px;
+  color: #555;
+  min-height: 48px; /* Altura estándar de Material */
+}
+
+/* Estilos para el campo de selección de tamaño de página */
+.mat-mdc-paginator-page-size-select {
+  /* Hacemos el select más compacto */
+  height: 30px;
+  width: 50px !important;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0 5px;
+}
+
+/* Ocultar el underline del campo de Material */
+.mat-mdc-form-field-bottom-align::before,
+.mat-mdc-form-field-bottom-align::after {
+  display: none !important;
+}
+.mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+/* Botones de Navegación (< y >) */
+.mat-mdc-paginator-navigation-button {
+  /* Quitar el color de fondo por defecto */
+  background: none !important;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  min-width: 0;
+  margin: 0 4px;
+  transition: background-color 0.2s;
+}
+
+.mat-mdc-paginator-navigation-button:hover:not(:disabled) {
+  background-color: #f0f0f0 !important;
+}
+
+/* Estilo para los iconos internos (flechas) */
+.mat-mdc-paginator-icon {
+  color: #333; /* Color oscuro para las flechas */
+}
+
+/* Estilo para botones deshabilitados */
+.mat-mdc-paginator-navigation-button:disabled {
+  border-color: #eee;
+  opacity: 0.6;
+}

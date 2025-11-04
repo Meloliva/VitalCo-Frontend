@@ -1,6 +1,12 @@
+html, body {
+  height: 100%;
+  margin: 0; /* evitar márgenes por defecto que cambian el layout */
+}
 .layout-container {
   display: flex;
   height: 100vh;
+  overflow: hidden; /* evita scroll del layout completo */
+  box-sizing: border-box;
 }
 
 .sidebar {
@@ -9,11 +15,58 @@
   display: flex;
   flex-direction: column;
   border-right: 1px solid #e5e7eb;
+  border-radius: 0 12px 12px 0;
 }
 
 .sidebar-header {
   padding: 20px;
   border-bottom: 1px solid #e5e7eb;
+}
+.page-card {
+  width: 980px;
+  max-width: calc(100% - 40px);
+  flex: 1;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: auto; /* permite scroll interno si el contenido es muy largo */
+  box-sizing: border-box;
+}
+
+
+.page-card > * > h1,
+.page-card > * > h2,
+.page-card > * > h3,
+.page-card > * > p,
+.page-card > * > .container {
+  margin-top: 0;
+}
+.page-card > * {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  min-height: 0;
+  height: auto;
+  box-sizing: border-box;
+}
+
+.main-content {
+  flex: 1;
+  overflow: hidden; /* NO hay scroll aquí */
+  background: #f9fafb;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
 }
 
 .logo-brand {
@@ -29,8 +82,8 @@
 }
 
 .user-avatar {
-  width: 40px;
-  height: 40px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -41,13 +94,13 @@
 }
 
 .brand-name {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 600;
   color: #80CD29;
 }
 
 .user-name {
-  font-size: 12px;
+  font-size: 15px;
   color: #6b7280;
 }
 
@@ -64,10 +117,12 @@
   align-items: center;
   gap: 12px;
   padding: 12px 20px;
+  margin: 0 8px;
   text-decoration: none;
   color: #374151;
   font-size: 14px;
   transition: background-color 0.2s;
+  border-radius: 8px;
 }
 
 .nav-item:hover {
@@ -101,15 +156,10 @@
   transition: background-color 0.2s;
   text-align: left;
   width: 100%;
+  border-radius: 8px;
 }
 
 .sidebar-logout:hover {
   background-color: #f3f4f6;
 }
 
-.main-content {
-  flex: 1;
-  overflow-y: auto;
-  background: #f9fafb;
-  padding: 20px;
-}
