@@ -1,0 +1,134 @@
+<!-- Iconos Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<div class="registro-container">
+  <!-- Botón atrás - FUERA de registro-content -->
+  <button class="back-button" (click)="goBack()">
+    <i class="fas fa-arrow-left"></i>
+  </button>
+
+  <div class="registro-content">
+    <!-- Círculos decorativos - Esquinas -->
+    <div class="decoration-circles">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+    </div>
+
+    <!-- Círculos decorativos - Centro -->
+    <div class="decoration-circlesmedio">
+      <div class="circle circle-3"></div>
+      <div class="circle circle-4"></div>
+    </div>
+
+    <!-- Logo Fitia -->
+    <div class="icon-above-progress">
+      <img src="/Images/Logos/logo_inicio.png" alt="Logo Fitia" class="icono-fitia">
+    </div>
+
+    <!-- Barra de progreso -->
+    <div class="progress-container">
+      <mat-progress-bar
+        mode="determinate"
+        [value]="progressValue"
+        color="accent">
+      </mat-progress-bar>
+    </div>
+
+    <!-- Título - AHORA DEBAJO DE LA BARRA -->
+    <div class="registro-header">
+      <h1>Escoge tu plan...</h1>
+    </div>
+
+    <!-- Icono central decorativo - AHORA DEBAJO DEL TÍTULO -->
+    <div class="icon-central">
+      <div class="icon-circle">
+        <img src="/Images/iconos/planes.png" alt="Lista" class="icon-lista">
+      </div>
+    </div>
+
+    <!-- Cards de planes -->
+    <div class="planes-container">
+
+      <!-- Plan Gratuito -->
+      <div class="plan-card"
+           [class.selected]="planSeleccionado === 'gratuito'">
+        <div class="plan-header">
+          <h3>Plan Gratuito</h3>
+          <p class="plan-precio">Gratis</p>
+        </div>
+
+        <p class="plan-descripcion">
+          Empieza sin compromiso. Ideal para explorar VitalCo y conocer tus hábitos.
+        </p>
+
+        <ul class="plan-beneficios">
+          <li>
+            <img src="/Images/iconos/check.png" alt="check" class="check-icon">
+            <span>Recetas básicas para triglicéridos.</span>
+          </li>
+          <li>
+            <img src="/Images/iconos/check.png" alt="check" class="check-icon">
+            <span>Registro manual de alimentos.</span>
+          </li>
+          <li>
+            <img src="/Images/iconos/check.png" alt="check" class="check-icon">
+            <span>Gráfica simple de progreso.</span>
+          </li>
+        </ul>
+
+        <button class="btn-plan" (click)="selectPlan('gratuito')">
+          Empezar gratis
+        </button>
+      </div>
+
+      <!-- Plan Premium/Anual -->
+      <div class="plan-card"
+           [class.selected]="planSeleccionado === 'premium'">
+        <div class="plan-header">
+          <h3>Plan Anual</h3>
+          <p class="plan-precio">S/49.90</p>
+        </div>
+
+        <p class="plan-descripcion">
+          Tu salud con apoyo profesional mes a mes.
+        </p>
+
+        <ul class="plan-beneficios">
+          <li>
+            <img src="/Images/iconos/check.png" alt="check" class="check-icon">
+            <span>Todo lo del plan Free</span>
+          </li>
+          <li>
+            <img src="/Images/iconos/check.png" alt="check" class="check-icon">
+            <span>Consultas virtuales con nutricionista</span>
+          </li>
+          <li>
+            <img src="/Images/iconos/check.png" alt="check" class="check-icon">
+            <span>Recetas exclusivas y personalizadas</span>
+          </li>
+          <li>
+            <img src="/Images/iconos/check.png" alt="check" class="check-icon">
+            <span>Soporte personalizado</span>
+          </li>
+          <li>
+            <img src="/Images/iconos/check.png" alt="check" class="check-icon">
+            <span>Gráficas avanzadas de triglicéridos</span>
+          </li>
+        </ul>
+
+        <button class="btn-plan" (click)="selectPlan('premium')">
+          Elegir Premium
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Botón Registrar -->
+    <button
+      class="btn-registrar"
+      (click)="onSubmit()"
+      [disabled]="!planSeleccionado">
+      Registrar
+    </button>
+  </div>
+</div>
