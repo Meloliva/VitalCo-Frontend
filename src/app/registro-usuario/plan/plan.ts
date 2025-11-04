@@ -11,7 +11,7 @@ import {MatProgressBar} from '@angular/material/progress-bar';
   styleUrls: ['./plan.css']
 })
 export class PlanComponent implements OnInit {
-  progressValue: number = 95;
+  progressValue: number = 100;
   planSeleccionado: string | null = null;
 
   constructor(private router: Router) {}
@@ -31,9 +31,9 @@ export class PlanComponent implements OnInit {
 
       // Guardar el plan y continuar
       // this.userService.setPlan(this.planSeleccionado);
-      // this.router.navigate(['/home']);
+       this.router.navigate(['/macronutrientes']);
 
-      alert(`Has seleccionado el plan: ${this.planSeleccionado}`);
+
     }
   }
 

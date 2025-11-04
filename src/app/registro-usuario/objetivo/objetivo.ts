@@ -15,7 +15,7 @@ import {FormsModule} from '@angular/forms';
 export class ObjetivoComponent implements OnInit {
 
   // Valor de la barra de progreso
-  progressValue: number = 40;
+  progressValue: number = 60;
 
   // Objetivo seleccionado
   objetivoSeleccionado: string = 'mantener-12'; // Valor por defecto

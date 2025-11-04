@@ -17,7 +17,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 })
 export class NivelActividadComponent {
   // Valor de la barra de progreso (ajusta según el paso)
-  progressValue: number = 60;
+  progressValue: number = 80;
 
   // Nivel seleccionado por el usuario
   nivelSeleccionado: string = '';

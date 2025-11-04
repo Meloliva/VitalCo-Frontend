@@ -1,7 +1,10 @@
+// @ts-ignore
+
 import { Routes } from '@angular/router';
 import { PublicLayout } from './layouts/public-layout/public-layout';
 import { PrivateLayout } from './layouts/private-layout/private-layout';
 import {DatosSaludComponent} from './registro-usuario/datos-salud/datos-salud';
+import {RegistroUsuarioComponent} from './registro-usuario/registro-usuario';
 
 export const routes: Routes = [
   {
@@ -16,8 +19,14 @@ export const routes: Routes = [
       { path: 'centro-de-ayuda', loadComponent: () => import('./centro-de-ayuda/centro-de-ayuda').then(m => m.CentroDeAyuda) },
       { path: 'registro', loadComponent: () => import('./registro/registro').then(m => m.Registro) },
       { path: 'iniciarsesion', loadComponent: () => import('./iniciarsesion/iniciarsesion').then(m => m.Iniciarsesion) },
-
       { path: 'recuperar-password', loadComponent: () => import('./recuperar-password/recuperar-password').then(m => m.RecuperarPasswordComponent) },
+      { path: 'datos-salud',loadComponent: () => import('./registro-usuario/datos-salud/datos-salud').then(m => m.DatosSaludComponent)},
+      { path: 'macronutrientes',loadComponent: () => import('./registro-usuario/macronutrientes/macronutrientes').then(m => m.MacronutrientesComponent)},
+      { path: 'nivelactividad',loadComponent: () => import('./registro-usuario/nivelactividad/nivelactividad').then(m => m.NivelActividadComponent)},
+      { path: 'objetivo',loadComponent: () => import('./registro-usuario/objetivo/objetivo').then(m => m.ObjetivoComponent)},
+      { path: 'plan',loadComponent: () => import('./registro-usuario/plan/plan').then(m => m.PlanComponent)},
+      {path: 'registro-usuario',loadComponent: () =>import('./registro-usuario/registro-usuario').then(m=>RegistroUsuarioComponent)},
+
 
 
       {
@@ -45,16 +54,7 @@ export const routes: Routes = [
 
     ]
   },
-  {
-    path: 'registro-usuario',
-    loadComponent: () => import('./registro-usuario/registro-usuario').then(m => m.RegistroUsuarioComponent),
-    children: [
-      {
-        path: 'datos-salud',
-        component: DatosSaludComponent
-      }
-    ]
-  },
+
 
   {
     path: 'seleccion-registro',

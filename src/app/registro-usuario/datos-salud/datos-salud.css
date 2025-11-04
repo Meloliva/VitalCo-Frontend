@@ -286,7 +286,7 @@ form {
 .form-control {
   width: 100%;
   padding: 14px 18px;
-  border: 2px solid #7cb342;
+  border: 2px solid #00BF61;
   border-radius: 25px;
   font-size: 1rem;
   transition: all 0.3s ease;
@@ -297,7 +297,7 @@ form {
 
 .form-control:focus {
   outline: none;
-  border-color: #689f38;
+  border-color: #00BF61;
   box-shadow: 0 0 0 3px rgba(124, 179, 66, 0.15);
 }
 

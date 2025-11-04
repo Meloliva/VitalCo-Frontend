@@ -14,7 +14,7 @@ export class SeleccionRegistro {
 
   registrarPaciente() {
     // Por ahora solo muestra un mensaje, después implementarás esta ruta
-    alert('Registro de paciente - Próximamente');
+    this.router.navigate(['/registro-usuario']);
   }
 
   registrarNutricionista() {
