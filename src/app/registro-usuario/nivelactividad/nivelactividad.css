@@ -1,0 +1,406 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  min-height: 100vh;
+  width: 100vw;
+}
+
+.registro-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #ffffff;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.registro-content {
+  width: 100%;
+  max-width: 600px;
+  position: relative;
+  z-index: 1;
+  align-items: center;
+}
+
+/* ========== ELEMENTOS FIJOS ========== */
+
+/* Círculos decorativos - Esquinas (FIJOS) */
+.decoration-circles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
+}
+
+.circle {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.circle-1 {
+  width: 350px;
+  height: 350px;
+  background: linear-gradient(135deg, #9FD2AE 0%, #A8E6CF);
+  top: -80px;
+  left: -200px;
+  opacity: 0.6;
+}
+
+.circle-2 {
+  width: 280px;
+  height: 280px;
+  background: linear-gradient(135deg, #9FD2AE 0%, #A8E6CF);
+  top: -109px;
+  left: 1px;
+  opacity: 0.5;
+}
+
+/* Círculos decorativos - Centro/Derecha (FIJOS) */
+.decoration-circlesmedio {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  transform: translate(-50%, -50%);
+  overflow: visible;
+}
+
+.circle-3 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, #9FD2AE 0%, #A8E6CF);
+  top: 200px;
+  left: 860px;
+  opacity: 0.6;
+  z-index: -9;
+}
+
+.circle-4 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, #9FD2AE 0%, #A8E6CF);
+  top: 360px;
+  left: 660px;
+  opacity: 0.6;
+  z-index: -9;
+}
+
+/* Botón atrás (FIJO) */
+.back-button {
+  position: fixed;
+  top: 153px;
+  left: 540px;
+  background: none;
+  border: none;
+  color: #7cb342;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 1001;
+  outline: none;
+}
+
+.back-button:hover {
+  transform: translateX(-5px);
+}
+
+.back-button:active {
+  transform: translateX(-2px) scale(0.95);
+  box-shadow: inset 0 0 5px rgba(124, 179, 66, 0.3);
+}
+
+/* Logo Fitia (FIJO) */
+.icon-above-progress {
+  position: fixed;
+  top: 45px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 1000;
+  width: 100%;
+  max-width: 100vw;
+}
+
+.icon-above-progress .icono-fitia {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Barra de progreso (FIJA) */
+.progress-container {
+  position: fixed;
+  top: 170px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 700px;
+  height: 12px;
+  z-index: 1000;
+}
+
+.progress-container ::ng-deep .mat-mdc-progress-bar {
+  height: 12px !important;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #e0e0e0 !important;
+}
+
+.progress-container ::ng-deep .mdc-linear-progress__buffer,
+.progress-container ::ng-deep .mdc-linear-progress__bar,
+.progress-container ::ng-deep .mdc-linear-progress__primary-bar {
+  height: 12px !important;
+}
+
+.progress-container ::ng-deep .mdc-linear-progress__buffer-bar {
+  display: none !important;
+}
+
+.progress-container ::ng-deep .mdc-linear-progress__bar-inner {
+  height: 12px !important;
+  border: none !important;
+  background: linear-gradient(90deg, #FFD700 0%, #FFC107 100%) !important;
+  border-radius: 6px;
+}
+
+.progress-container ::ng-deep .mat-accent .mdc-linear-progress__bar-inner {
+  border-color: #FFD700 !important;
+  background: linear-gradient(90deg, #FFD700 0%, #FFC107 100%) !important;
+  border-top-width: 12px !important;
+}
+
+/* ========== CONTENIDO SCROLLEABLE ========== */
+
+/* Título */
+.registro-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  margin-top: 200px;
+  text-align: center;
+}
+
+.registro-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin-top: -100px;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-icon {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+/* ========== OPCIONES DE ACTIVIDAD (3 BOTONES) ========== */
+
+.actividad-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto 30px;
+}
+
+.actividad-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 25px;
+  background: white;
+  border: 2px solid #d0d0d0;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  font-family: 'Segoe UI', sans-serif;
+  outline: none;
+  position: relative;
+}
+
+.actividad-card:hover:not(.selected) {
+  border-color: #00BF61;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(124, 179, 66, 0.2);
+}
+
+/* ESTADO SELECCIONADO - TODO EL BOTÓN SE PINTA */
+.actividad-card.selected {
+  background: linear-gradient( #31c182 );
+  border-color: #00BF61;
+  color: #1a1a1a;
+  box-shadow: 0 6px 20px rgba(159, 210, 174, 0.4);
+  transform: translateY(-2px);
+}
+
+.actividad-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+}
+
+.actividad-icon i {
+  font-size: 2rem;
+  color: #1a1a1a;
+  transition: color 0.3s ease;
+}
+
+/* El icono se mantiene oscuro en estado seleccionado */
+.actividad-card.selected .actividad-icon i {
+  color: #1a1a1a;
+}
+
+.actividad-text {
+  flex: 1;
+}
+
+.actividad-text h3 {
+  margin: 0 0 5px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  transition: color 0.3s ease;
+}
+
+/* El título se mantiene oscuro en estado seleccionado */
+.actividad-card.selected .actividad-text h3 {
+  color: #1a1a1a;
+}
+
+.actividad-text p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+  transition: color 0.3s ease;
+}
+
+/* El texto descriptivo se mantiene gris en estado seleccionado */
+.actividad-card.selected .actividad-text p {
+  color: #555;
+}
+
+/* Botón siguiente */
+.btn-siguiente {
+  width: 100%;
+  max-width: 250px;
+  padding: 15px;
+  background: linear-gradient(135deg, #8bc34a 0%, #7cb342 100%);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(124, 179, 66, 0.3);
+  font-family: 'Segoe UI', sans-serif;
+  margin: 10px auto 0;
+  display: block;
+}
+
+.btn-siguiente:hover:not(:disabled) {
+  background: linear-gradient(135deg, #7cb342 0%, #689f38 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(124, 179, 66, 0.4);
+}
+
+.btn-siguiente:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-siguiente:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #cccccc 0%, #999999 100%);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .circle-3,
+  .circle-4 {
+    display: none;
+  }
+
+  .registro-header {
+    margin-top: 80px;
+  }
+
+  .registro-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .header-icon {
+    width: 80px;
+    height: 80px;
+  }
+
+  .icon-above-progress .icono-fitia {
+    width: 70px;
+    height: 70px;
+  }
+
+  .progress-container {
+    top: 65px;
+  }
+
+  .back-button {
+    top: 20px;
+    left: 15px;
+    font-size: 1.3rem;
+  }
+
+  .actividad-card {
+    padding: 15px 20px;
+    gap: 15px;
+  }
+
+  .actividad-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .actividad-icon i {
+    font-size: 1.5rem;
+  }
+
+  .actividad-text h3 {
+    font-size: 1rem;
+  }
+
+  .actividad-text p {
+    font-size: 0.85rem;
+  }
+}
