@@ -3,14 +3,10 @@
 import { Routes } from '@angular/router';
 import { PublicLayout } from './layouts/public-layout/public-layout';
 import { PrivateLayout } from './layouts/private-layout/private-layout';
-<<<<<<< HEAD
 import {Perfil} from './perfilnutricionista/perfil';
 import {PrivateLayoutNutricionista} from './layouts/private-layout-nutricionista/private-layout-nutricionista';
-=======
 import {DatosSaludComponent} from './registro-usuario/datos-salud/datos-salud';
 import {RegistroUsuarioComponent} from './registro-usuario/registro-usuario';
->>>>>>> Luz
-
 export const routes: Routes = [
   {
     path: '',
