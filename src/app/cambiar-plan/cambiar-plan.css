@@ -1,0 +1,92 @@
+
+                                 /* CSS */
+                               :host {
+                                 display: block;
+                                 width: 100%;
+                                 padding: 8px 16px;
+                                 box-sizing: border-box;
+                               }
+
+/* Neutralizar visual de la tarjeta blanca del layout para esta vista */
+:host ::ng-deep .page-card {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Root layout */
+.cambiar-plan-root {
+  width: 100%;
+  background: #f9fafb; /* coincide con main-content */
+  border-radius: 12px;
+  padding: 22px;
+  box-sizing: border-box;
+}
+
+/* Header */
+.cp-header h1 {
+  margin: 0 0 6px 0;
+  font-size: 20px;
+  color: #0f172a;
+}
+.cp-header .subtitle {
+  margin: 0 0 18px 0;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* Current plan section */
+.current-plan {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.cp-left { flex: 1; }
+.cp-right { width: 160px; display:flex; justify-content:center; align-items:center; }
+
+/* Plan card */
+.plan-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #eef2f6;
+  box-shadow: 0 4px 10px rgba(15,23,42,0.04);
+}
+.plan-card.current { background: linear-gradient(90deg,#ffffff,#fbfffb); border-color: #f1f8ec; }
+.plan-title { font-weight: 600; color: #064e3b; font-size: 15px; }
+.plan-desc { color: #6b7280; font-size: 13px; margin-top:6px; }
+
+/* Plan list */
+.planes-list .label { color:#374151; font-weight:600; margin-bottom:10px; }
+.cards { display:flex; flex-direction:column; gap:10px; }
+.plan-card { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.plan-info { flex:1; min-width:0; }
+.plan-actions { display:flex; align-items:center; gap:12px; }
+
+/* Price */
+.plan-price { color:#065f46; font-weight:600; font-size:14px; }
+
+/* Confirm row */
+.confirm-row { margin-top:14px; display:flex; gap:10px; align-items:center; }
+
+/* Stats circle (visual) */
+.stats-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, #ffffff 60%, #f0f2f4 61%);
+  display:flex;align-items:center;justify-content:center;border:8px solid #f3f4f6;
+}
+.kcal { font-weight:700; color:#0f172a; text-align:center; }
+.kcal span { display:block; font-weight:400; font-size:12px; color:#6b7280; }
+
+/* Responsive */
+@media (max-width: 800px) {
+  .current-plan { flex-direction: column; align-items: stretch; }
+  .cp-right { width:100%; display:flex; justify-content:flex-start; margin-top:12px; }
+  .plan-actions { flex-direction:column; gap:8px; align-items:flex-end; }
+}
