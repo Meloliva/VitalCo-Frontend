@@ -123,7 +123,8 @@ export const routes: Routes = [
 
 
       { path: 'receta-paciente', loadComponent: () => import('./receta-paciente/receta-paciente').then(m => m.RecetaPaciente) },
-      { path: 'cambiar-escoger-plan', loadComponent: () => import('./cambiar-plan/cambiar-plan').then(m => m.CambiarPlan) }
+      { path: 'cambiar-escoger-plan', loadComponent: () => import('./cambiar-plan/cambiar-plan').then(m => m.CambiarPlan) },
+      { path: 'perfil-paciente',loadComponent:()=>import('./perfil-paciente/perfil-paciente').then(m=>m.PerfilPacienteComponent)}
 
     ]
   }

@@ -1,0 +1,174 @@
+<div class="perfil-container">
+  <form [formGroup]="perfilForm" class="perfil-form">
+
+    <!-- Avatar y botón cambiar foto -->
+    <div class="avatar-section">
+      <div class="avatar-wrapper">
+        <mat-icon class="avatar-icon">person</mat-icon>
+      </div>
+      <button
+        type="button"
+        mat-raised-button
+        class="cambiar-foto-btn"
+        (click)="cambiarFoto()"
+      >
+        Cambiar foto
+      </button>
+    </div>
+
+    <!-- Datos Personales -->
+    <div class="seccion-form">
+      <h3 class="seccion-titulo">Datos Personales</h3>
+
+      <div class="seccion-bordered">
+        <div class="form-row">
+          <label class="form-label">Edad</label>
+          <mat-form-field appearance="outline" class="form-field">
+            <input
+              matInput
+              type="number"
+              formControlName="edad"
+              placeholder="Ingresa tu edad"
+            />
+            <mat-error *ngIf="edad?.hasError('required')">
+              La edad es requerida
+            </mat-error>
+            <mat-error *ngIf="edad?.hasError('min') || edad?.hasError('max')">
+              La edad debe estar entre 1 y 80 años
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">Altura</label>
+          <mat-form-field appearance="outline" class="form-field">
+            <input
+              matInput
+              type="number"
+              formControlName="altura"
+              placeholder="Altura en cm"
+            />
+            <mat-error *ngIf="altura?.hasError('required')">
+              La altura es requerida
+            </mat-error>
+            <mat-error *ngIf="altura?.hasError('min') || altura?.hasError('max')">
+              La altura debe estar entre 50 y 250 cm
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">Sexo</label>
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-select formControlName="sexo" placeholder="Selecciona tu sexo">
+              <mat-option value="Masculino">Masculino</mat-option>
+              <mat-option value="Femenino">Femenino</mat-option>
+              <mat-option value="Otro">Otro</mat-option>
+            </mat-select>
+            <mat-error *ngIf="sexo?.hasError('required')">
+              El sexo es requerido
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">Cnt.Trigliceridos</label>
+          <mat-form-field appearance="outline" class="form-field">
+            <input
+              matInput
+              type="number"
+              formControlName="cntTrigliceridos"
+              placeholder="Nivel de triglicéridos"
+            />
+            <mat-error *ngIf="cntTrigliceridos?.hasError('required')">
+              El nivel de triglicéridos es requerido
+            </mat-error>
+            <mat-error *ngIf="cntTrigliceridos?.hasError('min')">
+              El valor debe ser mayor a 0
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cuenta -->
+    <div class="seccion-form">
+      <h3 class="seccion-titulo">Cuenta</h3>
+
+      <div class="seccion-bordered">
+        <div class="form-row">
+          <label class="form-label">Correo</label>
+          <mat-form-field appearance="outline" class="form-field">
+            <input
+              matInput
+              type="email"
+              formControlName="correo"
+              placeholder="correo@ejemplo.com"
+            />
+            <mat-error *ngIf="correo?.hasError('required')">
+              El correo es requerido
+            </mat-error>
+            <mat-error *ngIf="correo?.hasError('email')">
+              Ingresa un correo válido
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">Contraseña</label>
+          <mat-form-field appearance="outline" class="form-field">
+            <input
+              matInput
+              type="password"
+              formControlName="contrasena"
+              placeholder="Dejar vacío para no cambiar"
+            />
+            <mat-error *ngIf="contrasena?.hasError('minlength')">
+              La contraseña debe tener al menos 6 caracteres
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row plan-row">
+          <label class="form-label">Plan actual</label>
+          <div class="plan-actions">
+            <span class="plan-badge" [class.premium]="planActual === 'Premium'">
+              {{ planActual }}
+            </span>
+            <button
+              type="button"
+              mat-raised-button
+              class="eliminar-plan-btn"
+              (click)="eliminarPlan()"
+              *ngIf="planActual === 'Premium'"
+            >
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="botones-accion">
+      <button
+        type="button"
+        mat-raised-button
+        class="eliminar-cuenta-btn"
+        (click)="eliminarCuenta()"
+      >
+        Eliminar cuenta
+      </button>
+      <button
+        type="button"
+        mat-raised-button
+        class="guardar-btn"
+        (click)="guardarCambios()"
+      >
+        Guardar
+      </button>
+    </div>
+
+  </form>
+</div>
+
