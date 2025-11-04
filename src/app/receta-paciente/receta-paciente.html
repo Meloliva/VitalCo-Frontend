@@ -1,0 +1,91 @@
+
+<div class="search-row">
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-icon matPrefix class="search-icon">search</mat-icon>
+    <input  #searchInput matInput placeholder="buscar" [(ngModel)]="searchQuery" (keyup.enter)="buscar()" />
+  </mat-form-field>
+  <button mat-raised-button class="search-btn" (click)="buscar()">Buscar</button>
+</div>
+
+<mat-tab-group class="tabs" [(selectedIndex)]="selectedTab" (selectedTabChange)="onTabChange($event)">
+  <mat-tab label="Para ti"></mat-tab>
+  <mat-tab label="Favoritos"></mat-tab>
+  <mat-tab label="Mis recetas del día"></mat-tab>
+</mat-tab-group>
+
+<div class="filters-row" *ngIf="!isSearching && selectedTab !== 2">
+  <div class="filtros-label">Filtros</div>
+  <mat-chip-listbox class="chips-wrap" aria-label="Filtros" [(ngModel)]="selectedFilters" (change)="onFiltroChange()">
+    <mat-chip-option value="Desayuno">Desayuno</mat-chip-option>
+    <mat-chip-option value="Almuerzo">Almuerzo</mat-chip-option>
+    <mat-chip-option value="Snack">Snack</mat-chip-option>
+    <mat-chip-option value="Cena">Cena</mat-chip-option>
+  </mat-chip-listbox>
+</div>
+
+<!-- ocultar título cuando se está buscando o en 'Mis recetas del día' -->
+<div class="titulo-seccion" *ngIf="!isSearching && selectedTab !== 2">
+  <h2>Desayunos Saludables para Controlar Triglicéridos</h2>
+  <p>Estas recetas han sido elegidas exclusivamente para cumplir tu plan y con los alimentos disponibles en tu cocina</p>
+</div>
+
+<div class="recetas-area">
+  <div class="recetas-list" *ngIf="recetas.length > 0">
+    <ng-container *ngFor="let receta of recetas">
+      <!-- MIS RECETAS DEL DÍA: nombre + descripción + eliminar -->
+      <mat-card class="receta-card" *ngIf="selectedTab === 2">
+        <div class="receta-left">
+          <div class="titulo-text">{{ receta.nombre }}</div>
+          <div class="receta-desc">{{ receta.descripcion }}</div>
+        </div>
+        <div class="receta-right">
+          <button mat-stroked-button color="warn" class="eliminar-btn" (click)="eliminarReceta(receta)">Eliminar</button>
+        </div>
+      </mat-card>
+
+      <!-- RESULTADOS DE BÚSQUEDA: nombre + descripción + Ver Receta -->
+      <mat-card class="receta-card" *ngIf="isSearching && selectedTab !== 2">
+        <div class="receta-left">
+          <div class="titulo-text">{{ receta.nombre }}</div>
+          <div class="receta-desc">{{ receta.descripcion }}</div>
+        </div>
+        <div class="receta-right">
+          <button mat-stroked-button class="ver-btn" (click)="verReceta(receta)">Ver Receta</button>
+        </div>
+      </mat-card>
+
+      <!-- VISTA NORMAL (Para ti / Favoritos): nombre + descripción + favorito + Ver Receta -->
+      <mat-card class="receta-card" *ngIf="!isSearching && selectedTab !== 2">
+        <div class="receta-left">
+          <div class="receta-titulo">
+            <span class="titulo-text">{{ receta.nombre }}</span>
+            <mat-icon class="heart" [ngClass]="{ 'favorito': receta.favorito }" (click)="toggleFavorito(receta)">
+              {{ receta.favorito ? 'favorite' : 'favorite_border' }}
+            </mat-icon>
+          </div>
+          <div class="receta-desc">{{ receta.descripcion }}</div>
+        </div>
+        <div class="receta-right">
+          <button mat-stroked-button class="ver-btn" (click)="verReceta(receta)">Ver Receta</button>
+        </div>
+      </mat-card>
+    </ng-container>
+  </div>
+
+  <div class="no-recetas" *ngIf="recetas.length === 0">
+    <p>No hay recetas disponibles</p>
+  </div>
+</div>
+
+<!-- ocultar paginador durante la búsqueda -->
+<div class="paginator-row" *ngIf="!isSearching && selectedTab !== 2">
+  <mat-paginator
+    [length]="totalRecetas"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[3,5,10]"
+    (page)="onPageChange($event)"
+    showFirstLastButtons>
+  </mat-paginator>
+</div>
+
+
