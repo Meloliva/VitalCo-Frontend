@@ -1,1 +1,74 @@
-<p>programar works!</p>
+<div class="main-content-area">
+  <div class="schedule-appointment-container wide-card">
+    <h1 class="form-title">Programar Cita</h1>
+
+    <form class="appointment-form" [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
+
+      <!-- DNI -->
+      <div class="form-group">
+        <label for="dni">DNI</label>
+        <input
+          type="text"
+          id="dni"
+          name="dni"
+          placeholder="Ingrese DNI del paciente"
+          formControlName="dni"
+        />
+      </div>
+
+      <!-- Fecha y Hora -->
+      <div class="form-group date-time-group">
+        <label>Fecha y Hora</label>
+        <div class="date-time-inputs">
+          <input
+            type="date"
+            id="appointmentDate"
+            name="appointmentDate"
+            formControlName="appointmentDate"
+          />
+          <input
+            type="time"
+            id="appointmentTime"
+            name="appointmentTime"
+            formControlName="appointmentTime"
+          />
+        </div>
+      </div>
+
+      <!-- Link de la reunión -->
+      <div class="form-group">
+        <label for="meetingLink">Link de la reunión</label>
+        <input
+          type="url"
+          id="meetingLink"
+          name="meetingLink"
+          placeholder="https://meet.google.com/..."
+          formControlName="meetingLink"
+        />
+      </div>
+
+      <!-- Asunto a tratar -->
+      <div class="form-group">
+        <label for="subject">Asunto a tratar</label>
+        <textarea
+          id="subject"
+          name="subject"
+          rows="5"
+          placeholder="Describe brevemente el tema de la cita"
+          formControlName="subject"
+        ></textarea>
+      </div>
+
+      <!-- Botón -->
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn-programar"
+          [disabled]="appointmentForm.invalid"
+        >
+          Programar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
