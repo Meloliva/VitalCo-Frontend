@@ -1,49 +1,49 @@
-
 <div class="cambiar-plan-root">
-  <header class="cp-header">
-    <h1>Cambiar Suscripción</h1>
-    <p class="subtitle">Selecciona un nuevo plan para tu cuenta. El cambio se aplicará al perfil del paciente.</p>
-  </header>
 
-  <section class="current-plan" *ngIf="paciente">
-    <div class="cp-left">
-      <div class="label">Plan actual</div>
-      <div class="plan-card current">
-        <div class="plan-title">{{ paciente.idplan?.nombre || 'Sin plan' }}</div>
-        <div class="plan-desc">{{ paciente.idplan?.descripcion || '-' }}</div>
+  <section class="cards-row">
+    <div class="plan-card"
+         *ngFor="let plan of planes"
+         [class.highlight]="esPlanActual(plan)">
+
+      <div class="plan-ribbon" [class.green]="plan.precio === 0">
+        {{ plan.precio === 0 ? 'GRATIS' : 'PREMIUM' }}
       </div>
-    </div>
 
-    <div class="cp-right">
-      <div class="stats-circle">
-        <div class="kcal">{{ paciente.kcalRestantes ?? '0' }}<span> KCAL</span></div>
+      <div class="plan-body">
+        <div class="plan-title">{{ plan.nombre }}</div>
+        <div class="plan-subtitle">{{ plan.descripcion }}</div>
+
+        <div class="plan-price">
+          <span *ngIf="plan.precio !== undefined && plan.precio > 0">S/. {{ plan.precio | number:'1.2-2' }}</span>
+          <span *ngIf="plan.precio === 0">Gratuito</span>
+        </div>
+
+        <ul class="plan-features">
+          <li>✓ Recetas básicas para triglicéridos</li>
+          <li>✓ Registro manual de alimentos</li>
+          <li>✓ Gráfica simple de progreso</li>
+          <li *ngIf="plan.precio && plan.precio > 0">✓ Consultas virtuales con nutricionistas</li>
+          <li *ngIf="plan.precio && plan.precio > 0">✓ Recetas exclusivas y personalizadas</li>
+          <li *ngIf="plan.precio && plan.precio > 0">✓ Soporte personalizado</li>
+        </ul>
+
+        <button mat-flat-button
+                class="plan-btn"
+                [disabled]="esPlanActual(plan) || isProcessing"
+                (click)="cambiarAPlan(plan)">
+          {{ esPlanActual(plan) ? 'Plan actual' : 'Cambiar Plan' }}
+        </button>
+
+        <a class="terms" href="#">Términos y condiciones</a>
       </div>
     </div>
   </section>
 
-  <section class="planes-list">
-    <div class="label">Planes disponibles</div>
+  <footer class="payments">
+    <div class="label">Métodos de Pago</div>
     <div class="cards">
-      <div class="plan-card" *ngFor="let plan of planes">
-        <div class="plan-info">
-          <div class="plan-title">{{ plan.nombre }}</div>
-          <div class="plan-desc">{{ plan.descripcion }}</div>
-        </div>
-        <div class="plan-actions">
-          <div class="plan-price">{{ plan.precio ? ('S/ ' + plan.precio) : '' }}</div>
-          <button mat-stroked-button color="primary" (click)="seleccionarPlan(plan)" [disabled]="isProcessing || plan.id === seleccionadoId">
-            {{ plan.id === seleccionadoId ? 'Seleccionado' : 'Seleccionar' }}
-          </button>
-        </div>
-      </div>
+      <img src="/Images/iconos/metodos-pago.png" alt="Métodos de pago: Visa, Mastercard, Maestro, PayPal, Diners, Amex">
     </div>
-
-    <div class="confirm-row" *ngIf="seleccionadoId">
-      <button mat-flat-button color="primary" (click)="confirmarCambio()" [disabled]="isProcessing">Confirmar cambio de plan</button>
-      <button mat-button (click)="cancelarSeleccion()" [disabled]="isProcessing">Cancelar</button>
-    </div>
-  </section>
+    <div class="note">Aceptamos Visa, American Express, Mastercard y Paypal</div>
+  </footer>
 </div>
-
-
-

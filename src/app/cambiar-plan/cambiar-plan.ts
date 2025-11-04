@@ -1,5 +1,3 @@
-// typescript
-// File: `src/app/cambiar-plan/cambiar-plan.ts`
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -15,8 +13,6 @@ interface PlanSuscripcionDTO {
 interface PacienteDTO {
   id: number;
   idplan?: PlanSuscripcionDTO;
-  kcalRestantes?: number;
-  // otros campos opcionales...
 }
 
 @Component({
@@ -29,71 +25,68 @@ interface PacienteDTO {
 export class CambiarPlan implements OnInit {
   planes: PlanSuscripcionDTO[] = [];
   paciente?: PacienteDTO;
-  seleccionadoId?: number;
   isProcessing = false;
   private apiUrl = '/api';
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.cargarPlanes();
     this.cargarPaciente();
+    this.cargarPlanes();
   }
 
   cargarPlanes() {
-    // Ajusta endpoint real si es otro
     this.http.get<PlanSuscripcionDTO[]>(`${this.apiUrl}/listarPlanes`).subscribe({
-      next: (data) => this.planes = data || [],
-      error: (err) => {
-        console.error('No se pudo cargar planes', err);
-        this.planes = [];
+      next: (data) => {
+        this.planes = data && data.length > 0 ? data : this.getFallbackPlanes();
+      },
+      error: () => {
+        this.planes = this.getFallbackPlanes();
       }
     });
   }
 
   cargarPaciente() {
-    // Endpoint de ejemplo para obtener datos del paciente autenticado.
-    // Cambia por el endpoint real (por ejemplo: /api/mis-datos, /api/paciente/me, etc.)
     this.http.get<PacienteDTO>(`${this.apiUrl}/pacienteActual`).subscribe({
-      next: (p) => this.paciente = p,
+      next: (p) => {
+        this.paciente = p;
+        console.log('Paciente cargado:', this.paciente);
+      },
       error: (err) => {
-        console.error('No se pudo cargar paciente', err);
-        // fallback: si no existe, puede cargarse por otro endpoint o requerir login
+        console.error('Error cargando paciente', err);
+        this.paciente = {
+          id: 1,
+          idplan: { id: 1, nombre: 'Inicial', precio: 0 }
+        };
       }
     });
   }
 
-  seleccionarPlan(plan: PlanSuscripcionDTO) {
-    this.seleccionadoId = plan.id;
+  getFallbackPlanes(): PlanSuscripcionDTO[] {
+    return [
+      { id: 1, nombre: 'Inicial', descripcion: 'Disfruta de todo lo básico', precio: 0 },
+      { id: 2, nombre: 'Premium', descripcion: 'Disfruta de todo el contenido', precio: 49.9 }
+    ];
   }
 
-  cancelarSeleccion() {
-    this.seleccionadoId = undefined;
+  esPlanActual(plan: PlanSuscripcionDTO): boolean {
+    return !!(this.paciente?.idplan?.id === plan.id);
   }
 
-  confirmarCambio() {
-    if (!this.paciente || !this.seleccionadoId) return;
+  cambiarAPlan(plan: PlanSuscripcionDTO) {
+    if (!this.paciente || this.esPlanActual(plan)) return;
     this.isProcessing = true;
-
-    const editarDto: any = {
-      id: this.paciente.id,
-      idPlan: this.seleccionadoId
-      // incluye otros campos requeridos por tu EditarPacienteDTO si aplica
-    };
-
+    const editarDto = { id: this.paciente.id, idPlan: plan.id };
     this.http.put<PacienteDTO>(`${this.apiUrl}/editarPaciente`, editarDto).subscribe({
       next: (updated) => {
         this.paciente = updated;
-        this.seleccionadoId = undefined;
         this.isProcessing = false;
         alert('Plan actualizado correctamente.');
       },
-      error: (err) => {
-        console.error('Error actualizando plan', err);
+      error: () => {
         this.isProcessing = false;
-        alert('No se pudo cambiar el plan. Revisa la consola.');
+        alert('No se pudo cambiar el plan.');
       }
     });
   }
 }
-

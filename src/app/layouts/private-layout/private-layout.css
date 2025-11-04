@@ -162,4 +162,32 @@ html, body {
 .sidebar-logout:hover {
   background-color: #f3f4f6;
 }
+/* CSS */
+:host(.no-page-card) .page-card {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  overflow: visible !important;
+}
+
+/* ajustar el contenedor principal para que el contenido de la vista use todo el ancho */
+:host(.no-page-card) .main-content {
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  padding: 22px !important;
+}
+
+/* neutralizar hijos si es necesario */
+:host(.no-page-card) .page-card > * {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
 
