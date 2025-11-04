@@ -1,8 +1,15 @@
+// @ts-ignore
+
 import { Routes } from '@angular/router';
 import { PublicLayout } from './layouts/public-layout/public-layout';
 import { PrivateLayout } from './layouts/private-layout/private-layout';
+<<<<<<< HEAD
 import {Perfil} from './perfilnutricionista/perfil';
 import {PrivateLayoutNutricionista} from './layouts/private-layout-nutricionista/private-layout-nutricionista';
+=======
+import {DatosSaludComponent} from './registro-usuario/datos-salud/datos-salud';
+import {RegistroUsuarioComponent} from './registro-usuario/registro-usuario';
+>>>>>>> Luz
 
 export const routes: Routes = [
   {
@@ -18,6 +25,15 @@ export const routes: Routes = [
       { path: 'registro', loadComponent: () => import('./registro/registro').then(m => m.Registro) },
       { path: 'iniciarsesion', loadComponent: () => import('./iniciarsesion/iniciarsesion').then(m => m.Iniciarsesion) },
       { path: 'recuperar-password', loadComponent: () => import('./recuperar-password/recuperar-password').then(m => m.RecuperarPasswordComponent) },
+      { path: 'datos-salud',loadComponent: () => import('./registro-usuario/datos-salud/datos-salud').then(m => m.DatosSaludComponent)},
+      { path: 'macronutrientes',loadComponent: () => import('./registro-usuario/macronutrientes/macronutrientes').then(m => m.MacronutrientesComponent)},
+      { path: 'nivelactividad',loadComponent: () => import('./registro-usuario/nivelactividad/nivelactividad').then(m => m.NivelActividadComponent)},
+      { path: 'objetivo',loadComponent: () => import('./registro-usuario/objetivo/objetivo').then(m => m.ObjetivoComponent)},
+      { path: 'plan',loadComponent: () => import('./registro-usuario/plan/plan').then(m => m.PlanComponent)},
+      {path: 'registro-usuario',loadComponent: () =>import('./registro-usuario/registro-usuario').then(m=>RegistroUsuarioComponent)},
+
+
+
       {
         path: 'recuperar-password',
         children: [
