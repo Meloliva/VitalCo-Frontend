@@ -1,0 +1,91 @@
+<div class="recovery-container">
+  <div class="recovery-card">
+    <!-- Círculos decorativos -->
+    <div class="decoration-circles">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+    </div>
+
+    <!-- Logo y título -->
+    <div class="recovery-header">
+      <img src="Images/Logos/logo_inicio.png" alt="Logo" class="logo">
+      <h2>Digite el código proporcionado</h2>
+      <p class="subtitle">Hemos enviado un código de 6 dígitos a<br><strong>{{ email }}</strong></p>
+    </div>
+
+    <!-- Formulario de código -->
+    <form [formGroup]="codeForm" (ngSubmit)="onSubmit()">
+      <div class="code-inputs" (paste)="onPaste($event)">
+        <input
+          type="text"
+          id="digit1"
+          formControlName="digit1"
+          class="code-input"
+          maxlength="1"
+          inputmode="numeric"
+          (input)="onDigitInput($event, 1)"
+          (keydown)="onKeyDown($event, 1)"
+          autocomplete="off">
+        <input
+          type="text"
+          id="digit2"
+          formControlName="digit2"
+          class="code-input"
+          maxlength="1"
+          inputmode="numeric"
+          (input)="onDigitInput($event, 2)"
+          (keydown)="onKeyDown($event, 2)"
+          autocomplete="off">
+        <input
+          type="text"
+          id="digit3"
+          formControlName="digit3"
+          class="code-input"
+          maxlength="1"
+          inputmode="numeric"
+          (input)="onDigitInput($event, 3)"
+          (keydown)="onKeyDown($event, 3)"
+          autocomplete="off">
+        <input
+          type="text"
+          id="digit4"
+          formControlName="digit4"
+          class="code-input"
+          maxlength="1"
+          inputmode="numeric"
+          (input)="onDigitInput($event, 4)"
+          (keydown)="onKeyDown($event, 4)"
+          autocomplete="off">
+        <input
+          type="text"
+          id="digit5"
+          formControlName="digit5"
+          class="code-input"
+          maxlength="1"
+          inputmode="numeric"
+          (input)="onDigitInput($event, 5)"
+          (keydown)="onKeyDown($event, 5)"
+          autocomplete="off">
+        <input
+          type="text"
+          id="digit6"
+          formControlName="digit6"
+          class="code-input"
+          maxlength="1"
+          inputmode="numeric"
+          (input)="onDigitInput($event, 6)"
+          (keydown)="onKeyDown($event, 6)"
+          autocomplete="off">
+      </div>
+
+      <button type="submit" class="btn-submit" [disabled]="!codeForm.valid">
+        Verificar código
+      </button>
+    </form>
+
+    <!-- Link cancelar -->
+    <div class="cancel-link">
+      <a [routerLink]="['/recuperar-password']" class="btn-cancelar">Cancelar</a>
+    </div>
+  </div>
+</div>

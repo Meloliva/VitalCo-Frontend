@@ -31,32 +31,88 @@ registerLocaleData(localeEs);
 })
 export class ProgresoPaciente {
 
-  // --- 1. LÓGICA DE FECHA (con el Datepicker) ---
-  public selectedDate: Date = new Date(); // Fecha actual
+  public selectedDate: Date = new Date();
 
-  // --- 2. DATOS DE EJEMPLO (para dona, barras y comidas) ---
-  calories = {
-    current: 900,
-    total: 1200
+  // --- 🔹 Datos por fecha (ejemplo de mini “base de datos”) ---
+  private dailyData: Record<string, any> = {
+    '2025-11-01': {
+      calories: { current: 900, total: 1200 },
+      macros: [
+        { name: 'Proteína', current: 45, total: 70 },
+        { name: 'Carbohidratos', current: 95, total: 180 },
+        { name: 'Grasas', current: 46, total: 50 }
+      ],
+      meals: [
+        { name: 'Desayuno', kcal: 200 },
+        { name: 'Almuerzo', kcal: 500 },
+        { name: 'Snacks', kcal: 25 },
+        { name: 'Cena', kcal: 175 }
+      ]
+    },
+    '2025-11-02': {
+      calories: { current: 1100, total: 1200 },
+      macros: [
+        { name: 'Proteína', current: 60, total: 70 },
+        { name: 'Carbohidratos', current: 150, total: 180 },
+        { name: 'Grasas', current: 48, total: 50 }
+      ],
+      meals: [
+        { name: 'Desayuno', kcal: 300 },
+        { name: 'Almuerzo', kcal: 600 },
+        { name: 'Snacks', kcal: 0 },
+        { name: 'Cena', kcal: 200 }
+      ]
+    },
+    '2025-11-03': {
+      calories: { current: 500, total: 1200 },
+      macros: [
+        { name: 'Proteína', current: 25, total: 70 },
+        { name: 'Carbohidratos', current: 50, total: 180 },
+        { name: 'Grasas', current: 20, total: 50 }
+      ],
+      meals: [
+        { name: 'Desayuno', kcal: 200 },
+        { name: 'Almuerzo', kcal: 0 },
+        { name: 'Snacks', kcal: 100 },
+        { name: 'Cena', kcal: 200 }
+      ]
+    }
   };
 
-  macros = [
-    { name: 'Proteina', current: 45, total: 70 },
-    { name: 'Carbohidratos', current: 95, total: 180 },
-    { name: 'Grasas', current: 46, total: 50 }
-  ];
+  // --- 🔹 Variables dinámicas que se mostrarán ---
+  calories = { current: 0, total: 1200 };
+  macros: any[] = [];
+  meals: any[] = [];
 
-  meals = [
-    { name: 'Desayuno', kcal: 200 },
-    { name: 'Almuerzo', kcal: 500 },
-    { name: 'Snacks', kcal: 25 },
-    { name: 'Cena', kcal: 175 }
-  ];
+  constructor(private datePipe: DatePipe) {
+    this.loadDataForDate(this.selectedDate);
+  }
 
-  constructor() { }
+  // --- 🧠 Cargar datos según la fecha ---
   onDateChange(event: any): void {
-    console.log("Nueva fecha seleccionada:", this.selectedDate);
-    //cargar datos
+    this.loadDataForDate(this.selectedDate);
+  }
+
+  private loadDataForDate(date: Date): void {
+    const dateKey = this.datePipe.transform(date, 'yyyy-MM-dd')!;
+    const data = this.dailyData[dateKey];
+
+    if (data) {
+      this.calories = data.calories;
+      this.macros = data.macros;
+      this.meals = data.meals;
+    } else {
+      // 🔸 Si no hay datos, se muestran vacíos o por defecto
+      this.calories = { current: 0, total: 1200 };
+      this.macros = [
+        { name: 'Proteína', current: 0, total: 70 },
+        { name: 'Carbohidratos', current: 0, total: 180 },
+        { name: 'Grasas', current: 0, total: 50 }
+      ];
+      this.meals = [];
+    }
+
+    console.log("📅 Datos cargados para:", dateKey, data || 'sin datos');
   }
 
   getCalorieGradient(): string {

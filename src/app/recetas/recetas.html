@@ -1,0 +1,87 @@
+<div class="container">
+  <h1>Crear receta</h1>
+
+  <form [formGroup]="recetaForm" (ngSubmit)="guardarReceta()" class="form-card">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" formControlName="nombre" />
+      </div>
+      <div class="form-group">
+        <label for="tiempo">Tiempo</label>
+        <input type="text" id="tiempo" formControlName="tiempo" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group full-width">
+        <label for="tipoComida">Tipo de comida</label>
+        <select id="tipoComida" formControlName="tipoComida">
+          <option value="">Seleccionar...</option>
+          <option value="desayuno">Desayuno</option>
+          <option value="almuerzo">Almuerzo</option>
+          <option value="cena">Cena</option>
+          <option value="postre">Postre</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="nutrition-section">
+      <div class="nutrition-title">Informe Nutricional</div>
+
+      <div class="nutrition-grid">
+        <div class="nutrition-item">
+          <label for="peso">Peso de la porción (g)</label>
+          <input type="number" id="peso" formControlName="peso" />
+        </div>
+        <div class="nutrition-item">
+          <label for="calorias">Calorías (kcal)</label>
+          <input type="number" id="calorias" formControlName="calorias" />
+        </div>
+        <div class="nutrition-item">
+          <label for="grasaSaturada">Grasa saturada (g)</label>
+          <input type="number" id="grasaSaturada" formControlName="grasaSaturada" />
+        </div>
+        <div class="nutrition-item">
+          <label for="grasaTrans">Grasa trans (g)</label>
+          <input type="number" id="grasaTrans" formControlName="grasaTrans" />
+        </div>
+        <div class="nutrition-item">
+          <label for="proteina">Proteína (g)</label>
+          <input type="number" id="proteina" formControlName="proteina" />
+        </div>
+        <div class="nutrition-item">
+          <label for="azucares">Azúcares (g)</label>
+          <input type="number" id="azucares" formControlName="azucares" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group full-width">
+      <label for="descripcion">Descripción</label>
+      <textarea id="descripcion" formControlName="descripcion"></textarea>
+    </div>
+
+    <div class="image-upload" (click)="fileInput.click()">
+      <input #fileInput type="file" style="display: none;" accept="image/*" (change)="onFileSelected($event)" />
+      <div class="image-upload-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+          <circle cx="8.5" cy="8.5" r="1.5" />
+          <polyline points="21 15 16 10 5 21" />
+        </svg>
+      </div>
+      <!--
+        Aquí usamos [hidden] en lugar de *ngIf para una mejor experiencia
+        y evitar saltos de layout (CLS)
+      -->
+      <div class="image-upload-text" [hidden]="imagePreview">Subir imagen</div>
+      <div class="image-upload-text" [hidden]="!imagePreview">Imagen seleccionada</div>
+    </div>
+
+    <div class="button-group">
+      <button type="button" class="btn-modify" (click)="cancelar()">Modificar</button>
+      <button type="submit" class="btn-save">Guardar</button>
+    </div>
+  </form>
+</div>

@@ -1,14 +1,16 @@
 import { Component, AfterViewInit } from '@angular/core';
-import { Router } from '@angular/router';
 import Chart from 'chart.js/auto';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common'; // Añadido por si acaso
 
 @Component({
   selector: 'app-consultar',
   standalone: true,
   templateUrl: './consultar.html',
+  // Router y RouterLink/Active ya no son necesarios aquí
   imports: [
-    FormsModule
+    FormsModule,
+    CommonModule
   ],
   styleUrls: ['./consultar.css']
 })
@@ -18,7 +20,8 @@ export class Consultar implements AfterViewInit {
   dni: string = '';
   private chart: any;
 
-  constructor(private router: Router) {}
+  // Ya no se necesita el Router
+  constructor() {}
 
   ngAfterViewInit(): void {
     // Crea un gráfico de ejemplo apenas carga
@@ -34,7 +37,7 @@ export class Consultar implements AfterViewInit {
       const ctx = canvas.getContext('2d');
       if (this.chart) this.chart.destroy();
 
-      // === Aquí cambiamos el gráfico a macronutrientes ===
+      // === Gráfico de macronutrientes ===
       this.chart = new Chart(ctx!, {
         type: 'bar',
         data: {
@@ -70,10 +73,9 @@ export class Consultar implements AfterViewInit {
   buscar(event: Event): void {
     event.preventDefault();
     console.log('Buscando por:', this.fechaConsulta, this.dni);
-    this.inicializarGrafico();
+    // Aquí iría la lógica para buscar datos reales y actualizar el gráfico
+    this.inicializarGrafico(); // Por ahora, solo refresca el gráfico de ejemplo
   }
 
-  salir(): void {
-    this.router.navigate(['/inicio']);
-  }
+  // El método salir() se eliminó porque ahora está en el layout principal
 }

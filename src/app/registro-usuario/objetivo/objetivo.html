@@ -1,0 +1,75 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<div class="registro-container">
+  <!-- Botón atrás - FUERA de registro-content -->
+  <button class="back-button" (click)="goBack()">
+    <i class="fas fa-arrow-left"></i>
+  </button>
+
+  <div class="registro-content">
+    <!-- Círculos decorativos - Esquinas (FIJOS) -->
+    <div class="decoration-circles">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+    </div>
+
+    <!-- Círculos decorativos - Centro (FIJOS) -->
+    <div class="decoration-circlesmedio">
+      <div class="circle circle-3"></div>
+      <div class="circle circle-4"></div>
+    </div>
+
+    <!-- Logo Fitia (FIJO) -->
+    <div class="icon-above-progress">
+      <img src="Images/Logos/logo_inicio.png" alt="Icono Fitia" class="icono-fitia">
+    </div>
+
+    <!-- Barra de progreso (FIJA) -->
+    <div class="progress-container">
+      <mat-progress-bar
+        mode="determinate"
+        [value]="progressValue"
+        color="accent">
+      </mat-progress-bar>
+    </div>
+
+    <!-- Título -->
+    <div class="registro-header">
+      <h1>Tracemos tu objetivo.....</h1>
+      <div class="logo-container">
+        <img src="/Images/iconos/objetivo.png" alt="Icon" class="header-icon">
+      </div>
+    </div>
+
+    <!-- Selector dropdown -->
+    <div class="selector-wrapper">
+      <select
+        class="custom-select"
+        [(ngModel)]="objetivoSeleccionado"
+        (change)="onSelectChange()">
+        <option value="">Selecciona tu objetivo</option>
+        <option value="bajar-12">bajar trigliceridos - 12 meses</option>
+        <option value="bajar-3">bajar trigliceridos - 3 meses</option>
+        <option value="bajar-6">bajar trigliceridos - 6 meses</option>
+        <option value="mantener-12">mantener tu salud - 12 meses</option>
+        <option value="mantener-3">mantener tu salud - 3 meses</option>
+        <option value="mantener-6">mantener tu salud - 6 meses</option>
+      </select>
+      <i class="fas fa-chevron-down select-arrow"></i>
+    </div>
+
+    <!-- Mensaje informativo con icono de bombilla -->
+    <div class="info-message">
+      <i class="fas fa-lightbulb info-icon"></i>
+      <p>Recuerda que puedes cambiar tu objetivo y tiempo más adelante desde tu perfil.</p>
+    </div>
+
+    <!-- Botón siguiente -->
+    <button
+      class="btn-siguiente"
+      (click)="onSubmit()"
+      [disabled]="!objetivoSeleccionado">
+      Siguiente
+    </button>
+  </div>
+</div>

@@ -1,0 +1,100 @@
+<!-- Iconos Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<div class="registro-container">
+  <!-- Botón atrás - FUERA de registro-content -->
+  <button class="back-button" (click)="goBack()">
+    <i class="fas fa-arrow-left"></i>
+  </button>
+
+  <div class="registro-content">
+    <!-- Círculos decorativos - Esquinas -->
+    <div class="decoration-circles">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+    </div>
+
+    <!-- Círculos decorativos - Centro -->
+    <div class="decoration-circlesmedio">
+      <div class="circle circle-3"></div>
+      <div class="circle circle-4"></div>
+    </div>
+
+    <!-- Logo Fitia -->
+    <div class="icon-above-progress">
+      <img src="/Images/Logos/logo_inicio.png" alt="Logo Fitia" class="icono-fitia">
+    </div>
+
+    <!-- Barra de progreso -->
+    <div class="progress-container">
+      <mat-progress-bar
+        mode="determinate"
+        [value]="progressValue"
+        color="accent">
+      </mat-progress-bar>
+    </div>
+
+    <!-- Título -->
+    <div class="registro-header">
+      <h1>¿Cuál es su nivel de actividad?</h1>
+      <div class="logo-container">
+        <img src="/Images/iconos/actividad.png" alt="Icono actividad" class="header-icon">
+      </div>
+    </div>
+
+    <!-- Botones de nivel de actividad -->
+    <div class="actividad-options">
+
+      <!-- Opción Sedentario -->
+      <button
+        class="actividad-card"
+        [class.selected]="nivelSeleccionado === 'sedentario'"
+        (click)="selectNivel('sedentario')">
+        <div class="actividad-icon">
+          <i class="fas fa-bed"></i>
+        </div>
+        <div class="actividad-text">
+          <h3>Sedentario</h3>
+          <p>Poco o nada de ejercicio</p>
+        </div>
+      </button>
+
+      <!-- Opción Ligeramente Activo -->
+      <button
+        class="actividad-card"
+        [class.selected]="nivelSeleccionado === 'ligero'"
+        (click)="selectNivel('ligero')">
+        <div class="actividad-icon">
+          <i class="fas fa-walking"></i>
+        </div>
+        <div class="actividad-text">
+          <h3>Ligeramente Activo</h3>
+          <p>Ejercicio 2 a 3 días por semana</p>
+        </div>
+      </button>
+
+      <!-- Opción Muy Activo -->
+      <button
+        class="actividad-card"
+        [class.selected]="nivelSeleccionado === 'muy-activo'"
+        (click)="selectNivel('muy-activo')">
+        <div class="actividad-icon">
+          <i class="fas fa-running"></i>
+        </div>
+        <div class="actividad-text">
+          <h3>Muy Activo</h3>
+          <p>Ejercicio intenso 6 a 7 días</p>
+        </div>
+      </button>
+
+    </div>
+
+    <!-- Botón siguiente -->
+    <button
+      class="btn-siguiente"
+      (click)="onSubmit()"
+      [disabled]="!nivelSeleccionado">
+      Siguiente
+    </button>
+  </div>
+</div>

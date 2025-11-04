@@ -1,0 +1,99 @@
+<div class="list-container">
+
+  <div class="header">
+    <h1 class="form-title">Citas</h1>
+
+    <div class="date-header" (click)="picker.open()">
+
+      <mat-form-field class="datepicker-hidden-input">
+        <input
+          matInput
+          [matDatepicker]="picker"
+          [(ngModel)]="selectedDate"
+          (dateChange)="onDateChange($event)"
+        />
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <span class="icon-calendar"></span>
+      {{ selectedDate | date:'EEEE, d \'de\' MMMM \'de\' yyyy' | titlecase }}
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'hoy'"
+      (click)="changeTab('hoy')">
+      Hoy
+    </button>
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'mañana'"
+      (click)="changeTab('mañana')">
+      Mañana
+    </button>
+  </div>
+
+  <div class="appointment-list">
+    <div
+      *ngFor="let app of paginatedAppointments"
+      class="appointment-card"
+      (click)="selectAppointment(app)"
+      [class.selected]="app.id === selectedAppointment?.id">
+
+      <div class="avatar">
+        {{ app.avatarInitials }}
+      </div>
+
+      <div class="details">
+        <div class="row-1">
+          <h4>{{ app.patientName }}</h4>
+          <span class="appointment-time">{{ app.time }}</span>
+          <span class="meeting-type">
+            <i class="icon-zoom"></i> {{ app.meetingType }}
+          </span>
+        </div>
+        <div class="row-2">
+          <div class="description-box">
+            {{ app.description }}
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button
+          class="btn-join"
+          (click)="joinMeeting($event, app.meetingLink)">
+          Unirse
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="appointments.length === 0" class="no-appointments">
+      No hay citas programadas para la fecha seleccionada.
+    </div>
+
+  </div>
+
+  <div class="footer-actions">
+    <button
+      class="btn-cancel"
+      (click)="cancelAppointment()"
+      [disabled]="!selectedAppointment">
+      Cancelar cita
+    </button>
+  </div>
+
+  <mat-paginator
+    [length]="totalAppointments"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="pageSizeOptions"
+    (page)="paginateAppointments($event)"
+    showFirstLastButtons
+    aria-label="Select page of appointments"
+    class="custom-paginator"
+  >
+  </mat-paginator>
+
+</div>

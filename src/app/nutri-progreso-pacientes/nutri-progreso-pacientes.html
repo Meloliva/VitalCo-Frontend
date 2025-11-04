@@ -1,0 +1,124 @@
+<div class="main-content">
+  <!-- 1️⃣ Pantalla de búsqueda -->
+  <div *ngIf="vistaActual === 'buscar'" class="container">
+    <h1>Progreso de Pacientes</h1>
+    <div class="form-card">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Fecha de Seguimiento</label>
+          <input type="date" [(ngModel)]="fechaSeguimiento">
+        </div>
+        <div class="form-group">
+          <label>Filtrar por DNI</label>
+          <input type="text" [(ngModel)]="dniFiltro" placeholder="Buscar por DNI">
+        </div>
+        <div class="form-group btn-group">
+          <button class="btn-save" (click)="buscar()">Buscar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2️⃣ Resultados -->
+  <div *ngIf="vistaActual === 'resultados'" class="container">
+    <h1>Progreso de Pacientes</h1>
+
+    <div class="form-card">
+      <!-- Mostrar fecha y DNI arriba -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Fecha de Seguimiento</label>
+          <input type="date" [(ngModel)]="fechaSeguimiento" disabled>
+        </div>
+        <div class="form-group">
+          <label>Filtrar por DNI</label>
+          <input type="text" [(ngModel)]="dniFiltro" disabled>
+        </div>
+        <div class="form-group btn-group">
+          <button class="btn-save" (click)="buscar()">Buscar</button>
+        </div>
+      </div>
+
+      <!-- Progreso del paciente debajo -->
+      <div class="paciente-card" *ngFor="let p of pacientes">
+        <div class="paciente-info">
+          <div class="foto"></div>
+          <div>
+            <h3>{{ p.nombre }}</h3>
+            <p>{{ p.estado }}</p>
+          </div>
+        </div>
+        <div class="acciones">
+          <button class="btn-save" (click)="verPaciente(p)">Ver</button>
+          <button class="btn-save" (click)="editarPaciente(p)">Editar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3️⃣ Ver paciente -->
+  <div *ngIf="vistaActual === 'ver'" class="container">
+    <button class="btn-back" (click)="volver()">←</button>
+    <div class="fecha-box">{{ pacienteSeleccionado?.fecha }}</div>
+
+    <div class="grafica-section">
+      <div class="grafica-circular">
+        <svg viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="90" stroke="#e5e7eb" stroke-width="20" fill="none" />
+          <circle
+            cx="100"
+            cy="100"
+            r="90"
+            stroke="#fde047"
+            stroke-width="20"
+            fill="none"
+            stroke-linecap="round"
+            [attr.stroke-dasharray]="(porcentaje(pacienteSeleccionado.calorias.actual, pacienteSeleccionado.calorias.meta)*5.65) + ', 565'"
+          />
+        </svg>
+        <div class="grafica-text">
+          {{ pacienteSeleccionado.calorias.actual }} / {{ pacienteSeleccionado.calorias.meta }} kcal
+        </div>
+      </div>
+
+      <div class="macros">
+        <div class="macro-item" *ngFor="let macro of ['proteina','carbohidratos','grasas']">
+          <div class="macro-label">{{ macro | titlecase }}</div>
+          <div class="macro-bar">
+            <div class="macro-fill"
+                 [style.width.%]="porcentaje(pacienteSeleccionado.macros[macro].actual, pacienteSeleccionado.macros[macro].meta)">
+            </div>
+          </div>
+          <div class="macro-value">{{ pacienteSeleccionado.macros[macro].actual }} g</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comidas">
+      <div *ngFor="let comida of ['desayuno','almuerzo','snacks','cena']">
+        <h3>{{ comida | titlecase }}</h3>
+        <div class="divider"></div>
+        <p>{{ pacienteSeleccionado.comidas[comida] }} kcal</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4️⃣ Editar paciente -->
+  <div *ngIf="vistaActual === 'editar'" class="container">
+    <button class="btn-back" (click)="volver()">←</button>
+    <h1>Modificar Macronutrientes</h1>
+    <div class="form-card edit-form">
+      <div class="edit-group" *ngFor="let campo of ['calorias','proteinas','grasas','carbohidratos','tiempo']">
+        <label>{{ campo | titlecase }}</label>
+        <input [(ngModel)]="metasEditadas[campo]" [type]="campo==='tiempo'?'text':'number'">
+      </div>
+      <button class="btn-save" (click)="guardarCambios()">Guardar</button>
+    </div>
+  </div>
+
+  <!-- 5️⃣ Confirmación -->
+  <div *ngIf="vistaActual === 'confirmacion'" class="container confirm-box">
+    <button class="btn-back" (click)="volver()">←</button>
+    <div class="success-msg">{{ mensajeConfirmacion }}</div>
+  </div>
+</div>

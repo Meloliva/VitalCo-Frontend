@@ -1,0 +1,70 @@
+<!-- Iconos Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<div class="registro-container">
+  <div class="registro-content">
+    <!-- Círculos decorativos DETRÁS del contenido -->
+    <div class="decoration-circles">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+    </div>
+
+    <div class="decoration-circlesmedio">
+      <div class="circle circle-3"></div>
+      <div class="circle circle-4"></div>
+
+    </div>
+
+    <!-- Icono de check verde con IMAGEN -->
+    <div class="success-icon">
+      <img src="/Images/iconos/comprobado.png" alt="Éxito" class="check-icon">
+    </div>
+
+    <!-- Título principal -->
+    <h1 class="main-title">Todo Listo</h1>
+
+    <!-- Tarjeta de resumen -->
+    <div class="resumen-card">
+      <!-- Texto informativo -->
+      <p class="info-text">Estas son las calorías que necesitas al día</p>
+
+      <!-- Calorías calculadas -->
+      <div class="calorias-section">
+        <h2 class="calorias-valor">{{ caloriasCalculadas }} kcal</h2>
+        <p class="duracion-objetivo">por {{ mesesObjetivo }} meses</p>
+      </div>
+
+      <!-- Línea divisoria -->
+      <div class="divider"></div>
+
+      <!-- Macronutrientes -->
+      <div class="macros-section">
+        <div class="macro-item">
+          <span class="macro-valor">{{ proteinas }}g</span>
+          <span class="macro-label">Proteínas</span>
+        </div>
+        <div class="macro-item">
+          <span class="macro-valor">{{ carbohidratos }}g</span>
+          <span class="macro-label">Carbohidratos</span>
+        </div>
+        <div class="macro-item">
+          <span class="macro-valor">{{ grasas }}g</span>
+          <span class="macro-label">Grasas</span>
+        </div>
+      </div>
+
+      <!-- Gráfico -->
+      <div class="grafico-container">
+        <canvas id="macrosChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Texto inferior -->
+    <p class="progreso-text">Así se verá su progreso</p>
+
+    <!-- Botón final -->
+    <button class="btn-todo-listo" (click)="finalizarRegistro()">
+      Todo listo
+    </button>
+  </div>
+</div>

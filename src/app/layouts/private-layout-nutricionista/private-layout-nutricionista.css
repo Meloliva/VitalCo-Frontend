@@ -1,0 +1,205 @@
+/* --- Variables Globales (Colores actualizados) --- */
+:root {
+  --color-fondo-layout: #eef1f4; /* más oscuro que #f9fafb */
+  --color-fondo-sidebar: #ffffff;
+  --color-fondo-tarjeta: #ffffff;
+  --color-marca: #80CD29;
+  --color-marca-fondo-activo: rgba(128, 205, 41, 0.4);
+  --color-marca-texto-activo: #065f46;
+  --color-fondo-hover: #f3f4f6;
+  --color-texto-principal: #374151;
+  --color-texto-secundario: #6b7280;
+  --color-borde: #e5e7eb;
+  --ancho-sidebar: 240px;
+  --radio-borde: 8px;
+  --radio-borde-layout: 12px;
+  --sombra-tarjeta: 0 10px 25px rgba(15, 23, 42, 0.1); /* más visible */
+  --sombra-sidebar: 4px 0 14px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Layout Principal --- */
+html, body {
+  height: 100%;
+  margin: 0;
+  background-color: var(--color-fondo-layout);
+}
+
+.layout-container {
+  display: flex;
+  height: 100vh;
+  background-color: var(--color-fondo-layout);
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+/* --- Barra Lateral --- */
+.sidebar {
+  width: var(--ancho-sidebar);
+  flex-shrink: 0;
+  background-color: var(--color-fondo-sidebar);
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--color-borde);
+  border-radius: 0 var(--radio-borde-layout) var(--radio-borde-layout) 0;
+  box-shadow: var(--sombra-sidebar);
+  z-index: 2; /* Asegura que se vea sobre el fondo */
+}
+
+/* --- Cabecera Sidebar --- */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.user-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-marca);
+}
+
+.user-name {
+  font-size: 15px;
+  color: var(--color-texto-secundario);
+}
+
+/* --- Navegación Sidebar --- */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 4px;
+  padding: 16px 0;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+}
+
+/* --- Enlace normal --- */
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  margin: 0 8px;
+  border-radius: var(--radio-borde);
+  font-size: 14px;
+  color: var(--color-texto-principal);
+  text-decoration: none;
+  transition: all 0.25s ease;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+/* --- Hover: color más notorio --- */
+.sidebar-link:hover {
+  background-color: rgba(155, 209, 91, 0.55);
+  border-radius: 20px;
+}
+
+/* --- Active (routerLinkActive) --- */
+.sidebar-link.active {
+  background-color: rgba(99, 165, 34, 0.68);
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+/* --- Asegura que los SVG cambien de color con el enlace --- */
+.sidebar-link svg {
+  stroke: currentColor; /* hereda el color del enlace */
+  transition: stroke 0.25s ease;
+}
+
+
+/* --- Enlace especial de Salir --- */
+.sidebar-link.salir-link {
+  margin: 0;
+  width: 100%;
+  border-radius: 0;
+  border-top: 1px solid var(--color-borde);
+}
+
+.sidebar-link.salir-link:hover {
+  background-color: var(--color-fondo-hover);
+}
+
+
+/* --- Icono de Flecha (Chevron) --- */
+.chevron-icon {
+  width: 16px !important;
+  height: 16px !important;
+  color: var(--color-texto-secundario);
+  transition: transform 0.2s ease-in-out;
+}
+
+.chevron-icon.open {
+  transform: rotate(90deg);
+}
+
+/* --- Submenús --- */
+.submenu-container {
+  display: flex;
+  flex-direction: column;
+  margin: 0 8px;
+  gap: 4px;
+}
+
+.submenu-link {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  padding-left: 52px;
+}
+
+.submenu-link span {
+  flex-grow: 0;
+}
+
+/* --- Contenido Principal --- */
+.main-content {
+  flex-grow: 1;
+  padding: 28px;
+  background: linear-gradient(180deg, #eef1f4 0%, #e8ebef 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto; /* permite scroll vertical */
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* Tarjeta principal más destacada */
+.page-card {
+  width: 100%;
+  max-width: 980px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15); /* sombra más oscura */
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+}
+
+/* Sidebar ligeramente más oscuro para diferenciar del fondo */
+.sidebar {
+  background-color: #f8fafc;
+  box-shadow: 6px 0 18px rgba(0, 0, 0, 0.08);
+}

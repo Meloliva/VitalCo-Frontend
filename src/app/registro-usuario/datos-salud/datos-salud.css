@@ -1,0 +1,356 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+.registro-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Asegura que el contenedor ocupe toda la altura de la pantalla */
+  background-color: #ffffff;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden; /* Elimina cualquier desbordamiento */
+}
+
+.registro-content {
+  width: 100%;
+  max-width: 600px;
+  position: relative;
+  z-index: 1;
+  align-items: center;
+}
+
+/* ========== ELEMENTOS FIJOS ========== */
+
+/* Círculos decorativos - Esquinas (FIJOS) */
+.decoration-circles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
+}
+
+.circle {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.circle-1 {
+  width: 350px;
+  height: 350px;
+  background: linear-gradient(135deg, #9FD2AE 0%, #A8E6CF);
+  top: -80px;
+  left: -200px;
+  opacity: 0.6;
+}
+
+.circle-2 {
+  width: 280px;
+  height: 280px;
+  background: linear-gradient(135deg, #9FD2AE 0%, #A8E6CF);
+  top: -109px;
+  left: 1px;
+  opacity: 0.5;
+}
+
+/* Círculos decorativos - Centro (FIJOS) */
+.decoration-circlesmedio {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  transform: translate(-50%, -50%);
+  overflow: visible;
+}
+
+.circle-3 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, #9FD2AE 0%, #A8E6CF);
+  top: 200px;
+  left: 860px;
+  opacity: 0.6;
+}
+
+.circle-4 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, #9FD2AE 0%, #A8E6CF);
+  top: 360px;
+  left: 660px;
+  opacity: 0.6;
+}
+
+/* Logo Fitia (FIJO) */
+.icon-above-progress {
+  text-align: center;
+  margin-top: -100px; /* sube más el logo */
+  margin-bottom: -20px; /* ajusta si quieres más espacio debajo */
+  z-index: 1;
+}
+
+.icon-above-progress .icono-fitia {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Barra de progreso (FIJA) */
+.progress-container {
+  width: 100%;
+  max-width: 700px;
+  margin: -80px auto 29px;
+  height: 12px;
+}
+
+.progress-container ::ng-deep .mat-mdc-progress-bar {
+  height: 12px !important;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #e0e0e0 !important;
+}
+
+.progress-container ::ng-deep .mdc-linear-progress__buffer,
+.progress-container ::ng-deep .mdc-linear-progress__bar,
+.progress-container ::ng-deep .mdc-linear-progress__primary-bar {
+  height: 12px !important;
+}
+
+.progress-container ::ng-deep .mdc-linear-progress__buffer-bar {
+  display: none !important;
+}
+
+.progress-container ::ng-deep .mdc-linear-progress__bar-inner {
+  height: 12px !important;
+  border: none !important;
+  background: linear-gradient(90deg, #FFD700 0%, #FFC107 100%) !important;
+  border-radius: 6px;
+}
+
+.progress-container ::ng-deep .mat-accent .mdc-linear-progress__bar-inner {
+  border-color: #FFD700 !important;
+  background: linear-gradient(90deg, #FFD700 0%, #FFC107 100%) !important;
+  border-top-width: 12px !important;
+}
+.registro-header {
+  display: flex;
+  /* CAMBIAR ESTO: */
+  /* align-items: center; */
+  /* justify-content: center; */
+  /* gap: 10px; */
+
+  /* POR ESTO: */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.registro-header h1 {
+  font-size: 8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 5px 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* AGREGAR: */
+
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+
+}
+.header-icon {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.registro-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 5px 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+/* ========== NUEVO CONTENIDO ========== */
+
+/* Botón atrás */
+.back-button {
+  position: absolute;
+  top: 3px;
+  left: -70px;
+  background: none;
+  border: none;
+  color: #7cb342;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 10px;
+  transition: transform 0.3s ease;
+  z-index: 10;
+}
+
+.back-button:hover {
+  transform: translateX(-5px);
+}
+
+
+
+
+
+
+/* Formulario */
+
+
+form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  /* AGREGAR ESTA LÍNEA: */
+  margin-left: 100px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full-width {
+  width: 65%;
+}
+
+/* Input wrapper con icono */
+.input-wrapper {
+  position: relative;
+  width: 65%;
+}
+
+.input-icon {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #000000;
+  font-size: 1.2rem;
+  z-index: 1;
+}
+
+/* Iconos PNG dentro del input */
+.input-icon-img {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.input-wrapper .form-control {
+  padding-left: 55px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 14px 18px;
+  border: 2px solid #00BF61;
+  border-radius: 25px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  background-color: white;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #00BF61;
+  box-shadow: 0 0 0 3px rgba(124, 179, 66, 0.15);
+}
+
+.form-control::placeholder {
+  color: #bbb;
+}
+
+/* Mensajes de error */
+.error-text {
+  color: #e53935;
+  font-size: 0.85rem;
+  margin-top: 5px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Botón siguiente */
+.btn-siguiente {
+  width: 100%;
+  max-width: 300px;
+  margin: 30px auto 0;
+  padding: 15px;
+  background: linear-gradient(135deg, #8bc34a 0%, #7cb342 100%);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(124, 179, 66, 0.3);
+  font-family: 'Segoe UI', sans-serif;
+  position: relative;
+  left: -99px;
+}
+
+.btn-siguiente:hover {
+  background: linear-gradient(135deg, #7cb342 0%, #689f38 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(124, 179, 66, 0.4);
+}
+
+.btn-siguiente:active {
+  transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .circle-3,
+  .circle-4 {
+    display: none;
+  }
+
+  .registro-header h1 {
+    font-size: 1.2rem;
+  }
+}

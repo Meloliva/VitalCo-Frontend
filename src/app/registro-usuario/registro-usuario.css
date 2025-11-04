@@ -1,0 +1,328 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: hidden; /* 👈 Evita el scroll vertical */
+  width: 100%;
+  height: 100%;
+}
+
+.registro-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* 👈 Cambia min-height por height fija */
+  background-color: #ffffff;
+  padding: 0 20px; /* 👈 Elimina padding vertical que empuja el contenido */
+  position: relative;
+  overflow: hidden; /* 👈 Evita que los decorativos generen scroll */
+}
+
+.registro-content {
+  width: 100%;
+  max-width: 900px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Círculos decorativos - Esquinas */
+.decoration-circles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
+}
+
+.circle {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.circle-1 {
+  width: 350px;
+  height: 350px;
+  background: linear-gradient(135deg, #9FD2AE 0%, #A8E6CF);
+  top: -80px;
+  left: -200px;
+  opacity: 0.6;
+}
+
+.circle-2 {
+  width: 280px;
+  height: 280px;
+  background: linear-gradient(135deg, #9FD2AE 0%, #A8E6CF);
+  top: -109px;
+  left: 1px;
+  opacity: 0.5;
+}
+
+/* Círculos decorativos - Centro */
+.decoration-circlesmedio {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;  /* Aseguramos que los círculos 3 y 4 estén al fondo */
+  transform: translate(-50%, -50%);
+  overflow: visible;
+}
+
+.circle-3 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, #9FD2AE 0%, #A8E6CF);
+  top: 200px;
+  left: 860px;
+  opacity: 0.6;
+}
+
+.circle-4 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, #9FD2AE 0%, #A8E6CF);
+  top: 360px;
+  left: 660px;
+  opacity: 0.6;
+}
+/* NUEVO: Icono arriba de la barra de progreso */
+.icon-above-progress {
+  text-align: center;
+  margin-top:-60px;
+  margin-bottom: -40px;
+  z-index: 1;
+}
+
+.icon-above-progress .icono-fitia {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+
+}
+
+/* Barra de progreso personalizada */
+.progress-container {
+  width: 100%;
+  max-width: 700px;
+  margin: -80px auto 29px;
+  height: 12px;
+}
+
+.progress-container ::ng-deep .mat-mdc-progress-bar {
+  height: 12px !important;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #e0e0e0 !important;
+}
+
+.progress-container ::ng-deep .mdc-linear-progress__buffer,
+.progress-container ::ng-deep .mdc-linear-progress__bar,
+.progress-container ::ng-deep .mdc-linear-progress__primary-bar {
+  height: 12px !important;
+}
+
+.progress-container ::ng-deep .mdc-linear-progress__buffer-bar {
+  display: none !important;
+}
+
+.progress-container ::ng-deep .mdc-linear-progress__bar-inner {
+  height: 12px !important;
+  border: none !important;
+  background: linear-gradient(90deg, #FFD700 0%, #FFC107 100%) !important;
+  border-radius: 6px;
+}
+
+.progress-container ::ng-deep .mdc-linear-progress__primary-bar {
+  height: 12px !important;
+}
+/* Color personalizado para la barra */
+.progress-container ::ng-deep .mat-accent .mdc-linear-progress__bar-inner {
+  border-color: #FFD700 !important;
+  background: linear-gradient(90deg, #FFD700 0%, #FFC107 100%) !important;
+  border-top-width: 120px !important;  /* Se adapta a la altura de 12px */
+}
+
+/* Header */
+.registro-header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
+
+.registro-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 5px 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.registro-header h2 {
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #666;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Formulario */
+form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 0.95rem;
+  color: #333;
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.form-control {
+  width: 100%;
+  padding: 14px 18px;
+  border: 2px solid #00BF61;
+  border-radius: 25px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  background-color: white;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #00BF61;
+  box-shadow: 0 0 0 3px rgba(124, 179, 66, 0.15);
+}
+
+.form-control::placeholder {
+  color: #bbb;
+}
+
+/* Select personalizado */
+select.form-control {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  padding-right: 40px;
+  border-color: #00BF61;
+}
+
+/* Password wrapper */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper .form-control {
+  padding-right: 50px;
+}
+
+/* Icono del ojo para mostrar/ocultar contraseña */
+.eye-icon {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: color 0.3s ease;
+}
+
+.eye-icon:hover {
+  color: #666;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.3rem;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease;
+}
+
+.toggle-password:hover {
+  opacity: 0.7;
+}
+
+/* Mensajes de error */
+.error-text {
+  color: #e53935;
+  font-size: 0.85rem;
+  margin-top: 5px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Botón registrar */
+.btn-registrar {
+  width: 100%;
+  max-width: 350px;
+  margin: 20px auto 0;
+  padding: 15px;
+  background: linear-gradient(135deg, #8bc34a 0%, #7cb342 100%);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(124, 179, 66, 0.3);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.btn-registrar:hover {
+  background: linear-gradient(135deg, #7cb342 0%, #689f38 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(124, 179, 66, 0.4);
+}
+
+.btn-registrar:active {
+  transform: translateY(0);
+}
+

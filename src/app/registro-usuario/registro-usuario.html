@@ -1,0 +1,135 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<div class="registro-container">
+  <div class="registro-content">
+    <!-- Decoración -->
+    <div class="decoration-circles">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+    </div>
+
+    <!-- Nueva clase para los círculos centrados -->
+    <div class="decoration-circlesmedio">
+      <div class="circle circle-3"></div>
+      <div class="circle circle-4"></div>
+    </div>
+
+    <!-- NUEVO ICONO ARRIBA DE LA BARRA -->
+    <div class="icon-above-progress">
+      <img src="Images/Logos/logo_inicio.png" alt="Icono Fitia" class="icono-fitia">
+    </div>
+
+    <!-- Barra de progreso de Angular Material -->
+    <div class="progress-container">
+      <mat-progress-bar
+        mode="determinate"
+        [value]="progressValue"
+        color="accent">
+      </mat-progress-bar>
+    </div>
+
+    <!-- Logo y título - ORDEN CAMBIADO -->
+    <div class="registro-header">
+      <h1>Empezemos</h1>
+      <div class="logo-container">
+        <img src="/Images/iconos/agregar-usuario.png" alt="Logo" class="logo">
+      </div>
+      <h2>Crea su perfil...</h2>
+    </div>
+
+    <!-- Formulario -->
+    <form [formGroup]="registroForm" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <!-- Nombre -->
+        <div class="form-group">
+          <label for="nombre">Nombre:</label>
+          <input
+            type="text"
+            id="nombre"
+            formControlName="nombre"
+            class="form-control"
+            placeholder="Ingrese su nombre">
+          <small *ngIf="registroForm.get('nombre')?.invalid && registroForm.get('nombre')?.touched" class="error-text">Nombre es requerido</small>
+        </div>
+
+        <!-- DNI -->
+        <div class="form-group">
+          <label for="dni">Dni:</label>
+          <input
+            type="text"
+            id="dni"
+            formControlName="dni"
+            class="form-control"
+            placeholder="Ingrese su DNI"
+            maxlength="8">
+          <small *ngIf="registroForm.get('dni')?.invalid && registroForm.get('dni')?.touched" class="error-text">DNI debe tener 8 dígitos</small>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Apellido -->
+        <div class="form-group">
+          <label for="apellido">Apellido:</label>
+          <input
+            type="text"
+            id="apellido"
+            formControlName="apellido"
+            class="form-control"
+            placeholder="Ingrese su apellido">
+          <small *ngIf="registroForm.get('apellido')?.invalid && registroForm.get('apellido')?.touched" class="error-text">Apellido es requerido</small>
+        </div>
+
+        <!-- Nueva contraseña -->
+        <div class="form-group">
+          <label for="password">Ingrese la contraseña nueva</label>
+          <div class="password-wrapper">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="password"
+              formControlName="password"
+              class="form-control"
+              placeholder="********" />
+            <i class="fas eye-icon"
+               [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+               (click)="togglePasswordVisibility()"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Correo -->
+        <div class="form-group">
+          <label for="correo">Correo:</label>
+          <input
+            type="email"
+            id="correo"
+            formControlName="correo"
+            class="form-control"
+            placeholder="ejemplo@gmail.com">
+          <small *ngIf="registroForm.get('correo')?.invalid && registroForm.get('correo')?.touched" class="error-text">Correo inválido</small>
+        </div>
+
+        <!-- Género -->
+        <div class="form-group">
+          <label for="genero">Genero:</label>
+          <select
+            id="genero"
+            formControlName="genero"
+            class="form-control">
+            <option value="" disabled selected>Seleccione</option>
+            <option value="masculino">Masculino</option>
+            <option value="femenino">Femenino</option>
+            <option value="otro">Otro</option>
+          </select>
+          <small *ngIf="registroForm.get('genero')?.invalid && registroForm.get('genero')?.touched" class="error-text">Género es requerido</small>
+        </div>
+      </div>
+
+      <!-- Botón registrar -->
+      <button type="submit" class="btn-registrar">
+        Registrar
+
+      </button>
+    </form>
+  </div>
+</div>
