@@ -3,8 +3,6 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-
-// Angular Material Imports
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -50,7 +48,10 @@ export class Iniciarsesion implements OnInit {
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
-      usuario: ['', [Validators.required]],
+        usuario: ['', [
+        Validators.required,
+        Validators.pattern(/^\d{8}$/)
+          ]],// ← Solo 8 dígitos numéricos
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }

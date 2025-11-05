@@ -46,6 +46,6 @@ export class NivelActividadComponent {
     localStorage.setItem('nivelActividad', this.nivelSeleccionado);
 
     // Navegar a la siguiente pantalla
-    this.router.navigate(['/plan']); // Ajusta según tu flujo
+    this.router.navigate(['/escoger-plan']); // Ajusta según tu flujo
   }
 }
