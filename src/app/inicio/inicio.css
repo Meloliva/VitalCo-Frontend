@@ -28,7 +28,9 @@
 }
 
 .text-container h1 .linea1 {
-  margin-right: 0.5rem;
+  display: block;
+  font-size: 3.2rem !important;
+  font-weight: 700 !important;
 }
 
 .text-container h1 .destacado {
@@ -110,10 +112,12 @@
 }
 
 .trophy-img {
+  position: relative;
+  top: -15px; /* mueve la imagen hacia arriba */
   width: 100%;
   max-width: 250px;
   height: auto;
-  transform: translateY(40px);
+  left: 90px;
 }
 
 .achieve-content {
@@ -123,11 +127,13 @@
 }
 
 .achieve-content h2 {
-  font-size: 2.2rem;
-  margin-bottom: 2.5rem;
+  font-size: 2.2rem !important;     /* No exagerado, pero sí grande */
+  font-weight: 900 !important;
+  color: #000000 !important;      /* Verde Vitalco */
   text-align: center;
   font-family: 'Open Sans', sans-serif;
-  font-weight: 700;
+  margin-bottom: 2.5rem;
+
 }
 
 .achieve-content ul {
@@ -165,4 +171,61 @@
   left: 0;
   top: 0.15rem;
   flex-shrink: 0;
+}
+@media (max-width: 768px) {
+  .content-section {
+    flex-direction: column;
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+
+  .text-container {
+    max-width: 100%;
+    padding: 1rem;
+  }
+
+  .text-container h1 {
+    font-size: 2.2rem;
+  }
+
+  .text-container h1 .linea1 {
+    font-size: 2.4rem !important;
+  }
+
+  .text-container h1 .destacado {
+    font-size: 2.2rem;
+  }
+
+  .text-container p {
+    font-size: 0.95rem;
+  }
+
+  .image-container {
+    padding: 1rem 0;
+  }
+
+  .image-container img {
+    max-width: 100%;
+  }
+
+  .achieve-container {
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1rem;
+  }
+
+  .trophy-img {
+    left: 0;
+    top: 0;
+    max-width: 180px;
+  }
+
+  .achieve-content h2 {
+    font-size: 1.8rem !important;
+  }
+
+  .achieve-content ul li {
+    font-size: 1rem;
+    padding-left: 2rem;
+  }
 }
