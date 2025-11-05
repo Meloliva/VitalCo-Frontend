@@ -1,163 +1,263 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 <div class="registro-container">
-  <!-- Paso 1: Crear cuenta de usuario -->
-  <div class="registro-card" *ngIf="step() === 1">
-    <img src="/Images/iconos/shaperegistro.png" alt="" class="decorative-circle circle-1">
-    <img src="/Images/iconos/shaperegistro1.png" alt="" class="decorative-circle circle-2">
-
-    <div class="logo-container">
-      <img src="/Images/Logos/logoregistro.png" alt="VitalCo" class="logo">
+  <div class="registro-content">
+    <!-- Círculos decorativos - Esquinas -->
+    <div class="decoration-circles">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
     </div>
 
-    <div class="progress-bar">
-      <div class="progress-fill step-1"></div>
+    <!-- Círculos decorativos - Centro -->
+    <div class="decoration-circlesmedio">
+      <div class="circle circle-3"></div>
+      <div class="circle circle-4"></div>
     </div>
 
-    <h2>Crea su cuenta de usuario..</h2>
+    <!-- Logo Fitia -->
+    <div class="icon-above-progress">
+      <img src="Images/Logos/logo_inicio.png" alt="Icono Fitia" class="icono-fitia">
+    </div>
 
-    <form [formGroup]="registroForm" (ngSubmit)="nextStep()">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Nombre:</label>
-          <input type="text" formControlName="nombre">
+    <!-- Barra de progreso -->
+    <div class="progress-container">
+      <mat-progress-bar
+        mode="determinate"
+        [value]="progressValue"
+        color="accent">
+      </mat-progress-bar>
+    </div>
+
+    <!-- Paso 1: Crear cuenta de usuario -->
+    <div *ngIf="step() === 1">
+      <!-- Título -->
+      <div class="registro-header">
+        <h1>Empezemos</h1>
+        <div class="logo-container">
+          <img src="/Images/iconos/agregar-usuario.png" alt="Logo" class="logo">
         </div>
-        <div class="form-group">
-          <label>Genero:</label>
-          <select formControlName="genero">
-            <option value="">Seleccionar</option>
-            <option value="masculino">Masculino</option>
-            <option value="femenino">Femenino</option>
-            <option value="otro">Otro</option>
-          </select>
-        </div>
+        <h2>Crea su perfil...</h2>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>Apellido:</label>
-          <input type="text" formControlName="apellido">
-        </div>
-        <div class="form-group">
-          <label>Correo:</label>
-          <input type="email" formControlName="correo">
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Dni:</label>
-          <input type="text" formControlName="dni" maxlength="8">
-        </div>
-        <div class="form-group">
-          <label>Password:</label>
-          <div class="input-with-icon">
+      <!-- Formulario Paso 1 -->
+      <form [formGroup]="registroForm" (ngSubmit)="nextStep()">
+        <div class="form-row">
+          <!-- Nombre -->
+          <div class="form-group">
+            <label for="nombre">Nombre:</label>
             <input
-              [type]="showPassword ? 'text' : 'password'"
-              formControlName="password"
-              class="password-input"
-            />
-            <span class="icon-eye" (click)="togglePasswordVisibility()">
-              <img src="/Images/iconos/eye-icon.png" alt="Mostrar/Ocultar">
-            </span>
+              type="text"
+              id="nombre"
+              formControlName="nombre"
+              class="form-control"
+              placeholder="Ingrese su nombre">
+            <small *ngIf="registroForm.get('nombre')?.invalid && registroForm.get('nombre')?.touched" class="error-text">
+              Nombre es requerido
+            </small>
+          </div>
+
+          <!-- DNI -->
+          <div class="form-group">
+            <label for="dni">Dni:</label>
+            <input
+              type="text"
+              id="dni"
+              formControlName="dni"
+              class="form-control"
+              placeholder="Ingrese su DNI"
+              maxlength="8">
+            <small *ngIf="registroForm.get('dni')?.invalid && registroForm.get('dni')?.touched" class="error-text">
+              DNI debe tener 8 dígitos
+            </small>
           </div>
         </div>
-      </div>
 
-      <div *ngIf="errorMessage" style="color: red; margin-bottom: 15px; text-align: center;">
-        {{ errorMessage }}
-      </div>
+        <div class="form-row">
+          <!-- Apellido -->
+          <div class="form-group">
+            <label for="apellido">Apellido:</label>
+            <input
+              type="text"
+              id="apellido"
+              formControlName="apellido"
+              class="form-control"
+              placeholder="Ingrese su apellido">
+            <small *ngIf="registroForm.get('apellido')?.invalid && registroForm.get('apellido')?.touched" class="error-text">
+              Apellido es requerido
+            </small>
+          </div>
 
-      <button type="submit" class="btn-registrar" [disabled]="!registroForm.valid || isLoading">
-        <span *ngIf="!isLoading">Registrar</span>
-        <span *ngIf="isLoading">Cargando...</span>
-      </button>
-    </form>
-  </div>
-
-  <!-- Paso 2: Datos profesionales -->
-  <div class="registro-card" *ngIf="step() === 2">
-    <img src="/Images/iconos/shaperegistro.png" alt="" class="decorative-circle circle-1">
-    <img src="/Images/iconos/shaperegistro1.png" alt="" class="decorative-circle circle-2">
-
-    <div class="header-with-back">
-      <button class="btn-back" (click)="goBack()">←</button>
-      <div class="logo-container">
-        <img src="/Images/Logos/logoregistro.png" alt="VitalCo" class="logo">
-      </div>
-    </div>
-
-    <div class="progress-bar">
-      <div class="progress-fill step-2"></div>
-    </div>
-
-    <h2>Datos Profesionales</h2>
-
-    <form [formGroup]="registroProfesionalForm" (ngSubmit)="nextStep()">
-      <div class="form-group">
-        <label>Asociación:</label>
-        <input type="text" formControlName="asociacion" placeholder="Nombre de la asociación">
-      </div>
-
-      <div class="form-group">
-        <label>Universidad:</label>
-        <input type="text" formControlName="universidad" placeholder="Nombre de la universidad">
-      </div>
-
-      <div class="form-group">
-        <label>Grado Académico:</label>
-        <input type="text" formControlName="gradoAcademico" placeholder="Ej: Licenciado, Magíster">
-      </div>
-
-      <div class="form-group">
-        <label>Turno:</label>
-        <select formControlName="turno">
-          <option value="">Seleccionar turno</option>
-          <option *ngFor="let turno of turnos" [value]="turno.id">
-            {{ turno.inicioTurno }} - {{ turno.finTurno }}
-          </option>
-        </select>
-      </div>
-
-      <div *ngIf="errorMessage" style="color: red; margin-bottom: 15px; text-align: center;">
-        {{ errorMessage }}
-      </div>
-
-      <button type="submit" class="btn-registrar"
-              [disabled]="!registroProfesionalForm.valid || isLoading">
-        <span *ngIf="!isLoading">Completar Registro</span>
-        <span *ngIf="isLoading">Registrando...</span>
-      </button>
-    </form>
-  </div>
-
-  <!-- Paso 3: Registro exitoso -->
-  <div class="registro-card success-card" *ngIf="step() === 3">
-    <img src="/Images/iconos/shaperegistro.png" alt="" class="decorative-circle circle-1">
-    <img src="/Images/iconos/shaperegistro1.png" alt="" class="decorative-circle circle-2">
-
-    <div class="header-with-back">
-      <button class="btn-back" (click)="goBack()">←</button>
-      <div class="logo-container">
-        <img src="/Images/Logos/logoregistro.png" alt="VitalCo" class="logo">
-      </div>
-    </div>
-
-    <div class="progress-bar">
-      <div class="progress-fill step-3"></div>
-    </div>
-
-    <div class="success-content">
-      <div class="success-box">
-        <div class="success-icon">
-          <img src="/Images/iconos/comprobadoregistro.png" alt="Éxito" class="check-image">
+          <!-- Contraseña -->
+          <div class="form-group">
+            <label for="password">Ingrese la contraseña nueva</label>
+            <div class="password-wrapper">
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                id="password"
+                formControlName="password"
+                class="form-control"
+                placeholder="********" />
+              <i class="fas eye-icon"
+                 [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+                 (click)="togglePasswordVisibility()"></i>
+            </div>
+            <small *ngIf="registroForm.get('password')?.invalid && registroForm.get('password')?.touched" class="error-text">
+              Mínimo 6 caracteres
+            </small>
+          </div>
         </div>
-        <h2>¡Registro Exitoso!</h2>
-        <p>Se ha registrado correctamente</p>
 
-        <div class="button-stack">
-          <button class="btn-iniciar" (click)="iniciar()">Iniciar</button>
-          <button class="btn-cancelar" (click)="cancelar()">Cancelar</button>
+        <div class="form-row">
+          <!-- Correo -->
+          <div class="form-group">
+            <label for="correo">Correo:</label>
+            <input
+              type="email"
+              id="correo"
+              formControlName="correo"
+              class="form-control"
+              placeholder="ejemplo@gmail.com">
+            <small *ngIf="registroForm.get('correo')?.invalid && registroForm.get('correo')?.touched" class="error-text">
+              Correo inválido
+            </small>
+          </div>
+
+          <!-- Género -->
+          <div class="form-group">
+            <label for="genero">Genero:</label>
+            <select
+              id="genero"
+              formControlName="genero"
+              class="form-control">
+              <option value="" disabled selected>Seleccione</option>
+              <option value="masculino">Masculino</option>
+              <option value="femenino">Femenino</option>
+              <option value="otro">Otro</option>
+            </select>
+            <small *ngIf="registroForm.get('genero')?.invalid && registroForm.get('genero')?.touched" class="error-text">
+              Género es requerido
+            </small>
+          </div>
         </div>
+
+        <div *ngIf="errorMessage" style="color: red; margin-bottom: 15px; text-align: center;">
+          {{ errorMessage }}
+        </div>
+
+        <button type="submit" class="btn-registrar" [disabled]="!registroForm.valid || isLoading">
+          <span *ngIf="!isLoading">Registrar</span>
+          <span *ngIf="isLoading">Cargando...</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Paso 2: Datos profesionales -->
+    <div *ngIf="step() === 2">
+      <!-- Título -->
+      <div class="registro-header">
+        <h1>Datos Profesionales</h1>
+      </div>
+
+      <!-- Formulario Paso 2 -->
+      <form [formGroup]="registroProfesionalForm" (ngSubmit)="nextStep()">
+        <div class="form-row">
+          <!-- Asociación -->
+          <div class="form-group">
+            <label for="asociacion">Asociación:</label>
+            <input
+              type="text"
+              id="asociacion"
+              formControlName="asociacion"
+              class="form-control"
+              placeholder="Nombre de la asociación">
+            <small *ngIf="registroProfesionalForm.get('asociacion')?.invalid && registroProfesionalForm.get('asociacion')?.touched" class="error-text">
+              Asociación es requerida
+            </small>
+          </div>
+
+          <!-- Universidad -->
+          <div class="form-group">
+            <label for="universidad">Universidad:</label>
+            <input
+              type="text"
+              id="universidad"
+              formControlName="universidad"
+              class="form-control"
+              placeholder="Nombre de la universidad">
+            <small *ngIf="registroProfesionalForm.get('universidad')?.invalid && registroProfesionalForm.get('universidad')?.touched" class="error-text">
+              Universidad es requerida
+            </small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <!-- Grado Académico -->
+          <div class="form-group">
+            <label for="gradoAcademico">Grado Académico:</label>
+            <input
+              type="text"
+              id="gradoAcademico"
+              formControlName="gradoAcademico"
+              class="form-control"
+              placeholder="Ej: Licenciado, Magíster">
+            <small *ngIf="registroProfesionalForm.get('gradoAcademico')?.invalid && registroProfesionalForm.get('gradoAcademico')?.touched" class="error-text">
+              Grado académico es requerido
+            </small>
+          </div>
+
+          <!-- Turno -->
+          <div class="form-group">
+            <label for="turno">Turno:</label>
+            <select
+              id="turno"
+              formControlName="turno"
+              class="form-control">
+              <option value="" disabled selected>Seleccionar turno</option>
+              <option *ngFor="let turno of turnos" [value]="turno.id">
+                {{ turno.inicioTurno }} - {{ turno.finTurno }}
+              </option>
+            </select>
+            <small *ngIf="registroProfesionalForm.get('turno')?.invalid && registroProfesionalForm.get('turno')?.touched" class="error-text">
+              Turno es requerido
+            </small>
+          </div>
+        </div>
+
+        <div *ngIf="errorMessage" style="color: red; margin-bottom: 15px; text-align: center;">
+          {{ errorMessage }}
+        </div>
+
+        <button type="submit" class="btn-registrar"
+                [disabled]="!registroProfesionalForm.valid || isLoading">
+          <span *ngIf="!isLoading">Completar Registro</span>
+          <span *ngIf="isLoading">Registrando...</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Paso 3: Registro exitoso -->
+    <div *ngIf="step() === 3">
+      <!-- Icono de éxito -->
+      <div style="text-align: center; margin: 40px 0 30px 0;">
+        <img src="/Images/iconos/comprobado.png" alt="Éxito" style="width: 120px; height: 120px;">
+      </div>
+
+      <!-- Título -->
+      <div class="registro-header">
+        <h1 style="font-size: 2.5rem; margin-bottom: 10px;">¡Registro Exitoso!</h1>
+        <h2 style="color: #666; font-weight: 400;">Se ha registrado correctamente</h2>
+      </div>
+
+      <!-- Botones -->
+      <div style="display: flex; flex-direction: column; gap: 15px; align-items: center; width: 100%; margin-top: 30px;">
+        <button class="btn-registrar" (click)="iniciar()">
+          Iniciar
+        </button>
+        <button class="btn-cancelar" (click)="cancelar()">
+          Cancelar
+        </button>
       </div>
     </div>
+
   </div>
 </div>

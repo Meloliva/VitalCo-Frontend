@@ -2,6 +2,7 @@ import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { NutricionistaService, RolDTO, TurnoDTO } from '../service/nutricionista.service';
 
 @Component({
@@ -10,7 +11,8 @@ import { NutricionistaService, RolDTO, TurnoDTO } from '../service/nutricionista
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    MatProgressBarModule
   ],
   templateUrl: './registro.html',
   styleUrl: './registro.css'
@@ -20,6 +22,7 @@ export class Registro implements OnInit {
   registroForm: FormGroup;
   registroProfesionalForm: FormGroup;
   showPassword: boolean = false;
+  progressValue: number = 33;
 
   // Variables para almacenar datos del backend
   roles: RolDTO[] = [];
@@ -35,8 +38,8 @@ export class Registro implements OnInit {
   ) {
     // Formulario paso 1
     this.registroForm = this.fb.group({
-      nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
+      nombre: ['', [Validators.required, Validators.minLength(2)]],
+      apellido: ['', [Validators.required, Validators.minLength(2)]],
       dni: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
       genero: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],
@@ -93,6 +96,7 @@ export class Registro implements OnInit {
   nextStep() {
     if (this.step() === 1 && this.registroForm.valid) {
       this.step.set(2);
+      this.progressValue = 66;
     } else if (this.step() === 2 && this.registroProfesionalForm.valid) {
       this.registrarNutricionista();
     }
@@ -148,6 +152,7 @@ export class Registro implements OnInit {
             console.log('Nutricionista creado:', nutricionistaCreado);
             this.isLoading = false;
             this.step.set(3);
+            this.progressValue = 100;
           },
           error: (error) => {
             console.error('Error al registrar nutricionista:', error);
@@ -169,14 +174,15 @@ export class Registro implements OnInit {
   goBack() {
     if (this.step() === 2) {
       this.step.set(1);
+      this.progressValue = 33;
     } else if (this.step() === 3) {
       this.step.set(2);
+      this.progressValue = 66;
     }
   }
 
   iniciar() {
     this.router.navigate(['/nutricionista/perfil']);
-
   }
 
   cancelar() {
