@@ -63,21 +63,22 @@
 
 .logo {
 
-    width: 330px !important;
-    height: auto !important;
-    object-fit: contain;
-    display: block;
+  width: 330px !important;
+  height: auto !important;
+  object-fit: contain;
+  display: block;
+  margin-bottom: -140px !important; /* Cambia de 20px a 100px o más */
+
 
 }
 
 .login-header h2 {
   font-size: 1.7rem !important;
-  font-weight: 600;
+  font-weight: 650 !important;
   color: rgb(0, 0, 0);
-  margin-top: -70px;
+  margin-top: 30px; /* Ajustado de -70px */
   margin-bottom: 80px;
-  font-family: 'Roboto', sans-serif;
-
+  font-family: 'Segoe UI';
 
 }
 
@@ -267,13 +268,13 @@ form {
   text-transform: none;
   font-weight: 500;
   letter-spacing: 0.25px;
-  color: #689F38; /* verde lima */
+  color: #00BF61; /* verde lima */
 }
 .custom-link {
   font-size: 0.95rem;
   font-weight: 500;
   letter-spacing: 0.25px;
-  color: #689F38;
+  color: #00BF61;
   text-transform: none;
   text-decoration: none;
   transition: color 0.3s ease;
@@ -281,7 +282,7 @@ form {
 
 .custom-link:hover,
 .custom-link:focus {
-  color: #558B2F;
+  color: #00BF61;
   text-decoration: underline;
 }
 
