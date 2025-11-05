@@ -4,6 +4,15 @@ import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 
+// Angular Material Imports
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
+
 interface AuthResponse {
   jwt: string;
   roles: string[];
@@ -15,7 +24,14 @@ interface AuthResponse {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    RouterModule
+    RouterModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatCardModule,
+    MatDividerModule
   ],
   templateUrl: './iniciarsesion.html',
   styleUrl: './iniciarsesion.css',
@@ -44,7 +60,7 @@ export class Iniciarsesion implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.loginForm.valid) {
+    if (this.loginForm.valid && !this.isLoading) {
       this.isLoading = true;
       this.errorMessage = '';
 

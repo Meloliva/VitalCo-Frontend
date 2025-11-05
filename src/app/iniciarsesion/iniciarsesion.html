@@ -8,62 +8,98 @@
 
     <!-- Logo y título -->
     <div class="login-header">
-      <img src="Images/Logos/logo_inicio.png" alt="Logo" class="logo">
+      <img src="/Images/Logos/logo_inicio.png" alt="Logo" class="logo">
       <h2>Iniciar sesión</h2>
     </div>
 
     <!-- Botones de redes sociales -->
     <div class="social-buttons">
-      <button class="btn-social btn-facebook" (click)="loginWithFacebook()">
-        <img src="/Images/iconos/facebook.png">
+      <button mat-raised-button class="btn-social btn-facebook" (click)="loginWithFacebook()">
+        <img src="/Images/iconos/facebook.png" alt="Facebook">
+        <span>Facebook</span>
       </button>
-      <button class="btn-social btn-google" (click)="loginWithGoogle()">
-        <img src="/Images/iconos/google.png">
+      <button mat-raised-button class="btn-social btn-google" (click)="loginWithGoogle()">
+        <img src="/Images/iconos/google.png" alt="Google">
+        <span>Google</span>
       </button>
     </div>
 
-    <!-- Formulario -->
+    <mat-divider class="divider"></mat-divider>
+
+    <!-- Formulario con Material -->
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="usuario">Ingrese su usuario</label>
+
+      <!-- Campo Usuario -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Usuario</mat-label>
         <input
-          type="text"
-          id="usuario"
+          matInput
           formControlName="usuario"
-          class="form-control"
-          placeholder="Usuario">
-      </div>
+          placeholder="Ingrese su usuario"
+          autocomplete="username">
+        <mat-icon matPrefix>person</mat-icon>
+        <mat-error *ngIf="loginForm.get('usuario')?.hasError('required')">
+          El DNI es requerido
+        </mat-error>
+      </mat-form-field>
 
-      <div class="form-group">
-        <label for="password">Ingrese su contraseña</label>
-        <div class="password-input">
-          <input
-            [type]="showPassword ? 'text' : 'password'"
-            id="password"
-            formControlName="password"
-            class="form-control"
-            placeholder="Contraseña">
-          <button
-            type="button"
-            class="btn-toggle-password"
-            (click)="togglePassword()">
-            <i [class]="showPassword ? 'far fa-eye-slash' : 'far fa-eye'"></i>
-          </button>
-        </div>
-      </div>
-      <div *ngIf="errorMessage" class="error-message">
-        {{ errorMessage }}
-      </div>
+      <!-- Campo Contraseña -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Contraseña</mat-label>
+        <input
+          matInput
+          [type]="showPassword ? 'text' : 'password'"
+          formControlName="password"
+          placeholder="Ingrese su contraseña"
+          autocomplete="current-password">
+        <mat-icon matPrefix>lock</mat-icon>
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="togglePassword()"
+          [attr.aria-label]="'Mostrar contraseña'"
+          [attr.aria-pressed]="showPassword">
+          <mat-icon>{{showPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+          La contraseña es requerida
+        </mat-error>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">
+          Mínimo 6 caracteres
+        </mat-error>
+      </mat-form-field>
 
-      <button type="submit" class="btn-submit" [disabled]="!loginForm.valid || isLoading">
-        {{ isLoading ? 'Iniciando...' : 'Inicia sesión' }}
+      <!-- Mensaje de error -->
+      <mat-card *ngIf="errorMessage" class="error-card">
+        <mat-card-content>
+          <div class="error-content">
+            <mat-icon>error</mat-icon>
+            <span>{{ errorMessage }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Botón Submit -->
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        class="btn-submit"
+        [disabled]="!loginForm.valid || isLoading">
+        <mat-spinner *ngIf="isLoading" diameter="20" class="spinner"></mat-spinner>
+        <span *ngIf="!isLoading">Iniciar sesión</span>
+        <span *ngIf="isLoading">Iniciando...</span>
       </button>
     </form>
 
     <!-- Link olvidé contraseña -->
     <div class="forgot-password">
       <span>¿No puedes iniciar sesión? </span>
-      <a routerLink="/recuperar-password">Olvidé mi contraseña</a>
+      <a routerLink="/recuperar-password" mat-button class="custom-link">
+        Olvidé mi contraseña
+      </a>
+
     </div>
   </div>
 
@@ -72,4 +108,3 @@
     <img src="Images/iconos/imagen-de-iniciosecion.jpg" alt="Alimentos saludables">
   </div>
 </div>
-
