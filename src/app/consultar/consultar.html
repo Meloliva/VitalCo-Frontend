@@ -28,6 +28,10 @@
         <span *ngIf="!cargando">🔍 Buscar</span>
         <span *ngIf="cargando">⏳ Buscando...</span>
       </button>
+      <button class="btn-limpiar" type="button" (click)="limpiarBusqueda()">
+        🧹 Borrar búsqueda
+      </button>
+
     </div>
   </form>
 

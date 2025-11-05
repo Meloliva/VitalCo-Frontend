@@ -17,13 +17,11 @@ export class Consultar implements AfterViewInit, OnDestroy {
   dni: string = '';
   private chart: any;
 
-  // Variables para mostrar los datos
   resumenCargado: boolean = false;
   errorMensaje: string = '';
   cargando: boolean = false;
   nombrePaciente: string = '';
 
-  // Datos nutricionales
   datosNutricionales: any = null;
 
   constructor(
@@ -32,7 +30,6 @@ export class Consultar implements AfterViewInit, OnDestroy {
   ) {}
 
   ngAfterViewInit(): void {
-    // Inicializar gráfico vacío
     this.inicializarGraficoVacio();
   }
 
@@ -45,20 +42,10 @@ export class Consultar implements AfterViewInit, OnDestroy {
   inicializarGraficoVacio(): void {
     requestAnimationFrame(() => {
       const canvas = document.getElementById('grafico-consulta') as HTMLCanvasElement;
-      if (!canvas) {
-        console.warn('Canvas no encontrado al inicializar gráfico');
-        return;
-      }
+      const ctx = canvas?.getContext('2d');
+      if (!ctx) return;
 
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        console.warn('No se pudo obtener el contexto 2D del canvas');
-        return;
-      }
-
-      if (this.chart) {
-        this.chart.destroy();
-      }
+      if (this.chart) this.chart.destroy();
 
       this.chart = new Chart(ctx, {
         type: 'bar',
@@ -83,20 +70,9 @@ export class Consultar implements AfterViewInit, OnDestroy {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              display: true,
-              labels: { color: '#333' }
-            },
             title: {
               display: true,
-              text: 'Esperando búsqueda...',
-              color: '#666'
-            }
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: { stepSize: 20 }
+              text: 'Esperando búsqueda...'
             }
           }
         }
@@ -107,20 +83,10 @@ export class Consultar implements AfterViewInit, OnDestroy {
   actualizarGrafico(datos: SeguimientoResumenDTO): void {
     requestAnimationFrame(() => {
       const canvas = document.getElementById('grafico-consulta') as HTMLCanvasElement;
-      if (!canvas) {
-        console.warn('Canvas no encontrado al actualizar gráfico');
-        return;
-      }
+      const ctx = canvas?.getContext('2d');
+      if (!ctx) return;
 
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        console.warn('No se pudo obtener el contexto 2D del canvas');
-        return;
-      }
-
-      if (this.chart) {
-        this.chart.destroy();
-      }
+      if (this.chart) this.chart.destroy();
 
       const totales = datos.totalesNutricionales;
 
@@ -132,9 +98,9 @@ export class Consultar implements AfterViewInit, OnDestroy {
             {
               label: 'Consumido (g)',
               data: [
-                totales.proteinas || 0,
-                totales.grasas || 0,
-                totales.carbohidratos || 0
+                totales.proteinas,
+                totales.grasas,
+                totales.carbohidratos
               ],
               backgroundColor: '#4CAF50',
               borderRadius: 6
@@ -142,9 +108,9 @@ export class Consultar implements AfterViewInit, OnDestroy {
             {
               label: 'Requerido (g)',
               data: [
-                totales.requerido_proteinas || 0,
-                totales.requerido_grasas || 0,
-                totales.requerido_carbohidratos || 0
+                totales.requerido_proteinas,
+                totales.requerido_grasas,
+                totales.requerido_carbohidratos
               ],
               backgroundColor: '#FF9800',
               borderRadius: 6
@@ -153,23 +119,10 @@ export class Consultar implements AfterViewInit, OnDestroy {
         },
         options: {
           responsive: true,
-          maintainAspectRatio: false,
           plugins: {
-            legend: {
-              display: true,
-              labels: { color: '#333' }
-            },
             title: {
               display: true,
-              text: `Reporte de ${datos.nombrePaciente || 'Paciente'}`,
-              color: '#333',
-              font: { size: 16, weight: 'bold' }
-            }
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: { stepSize: 20 }
+              text: `Reporte de ${datos.nombrePaciente}`
             }
           }
         }
@@ -180,27 +133,49 @@ export class Consultar implements AfterViewInit, OnDestroy {
   buscar(event: Event): void {
     event.preventDefault();
 
-    // Validaciones
-    if (!this.dni || this.dni.trim() === '') {
-      this.errorMensaje = 'Por favor, ingrese un DNI';
+    if (!this.dni || !this.fechaConsulta) {
+      this.errorMensaje = 'Ingrese DNI y fecha válidos';
       return;
     }
 
-    if (!this.fechaConsulta || this.fechaConsulta.trim() === '') {
-      this.errorMensaje = 'Por favor, seleccione una fecha';
-      return;
-    }
-
-    // Limpiar mensajes anteriores
     this.errorMensaje = '';
-    this.resumenCargado = false;
     this.cargando = true;
 
-    // Llamar al servicio
+    // 🔴 Simulación temporal de datos (en lugar de llamar al backend)
+    setTimeout(() => {
+      const datosSimulados: SeguimientoResumenDTO = {
+        nombrePaciente: 'Mariana García',
+        totalesNutricionales: {
+          calorias: 1800,
+          carbohidratos: 220,
+          proteinas: 90,
+          grasas: 60,
+          requerido_calorias: 2000,
+          requerido_carbohidratos: 250,
+          requerido_proteinas: 100,
+          requerido_grasas: 70
+        },
+        caloriasPorHorario: {
+          desayuno: 500,
+          snack: 200,
+          almuerzo: 700,
+          cena: 400
+        }
+      };
+
+      this.datosNutricionales = datosSimulados;
+      this.nombrePaciente = datosSimulados.nombrePaciente;
+      this.resumenCargado = true;
+      this.cargando = false;
+
+      this.actualizarGrafico(datosSimulados);
+    }, 800);
+
+    // 🟠 Conexión real (descomentar cuando funcione login/backend)
+    /*
     this.seguimientoService.obtenerResumenPorDniYFecha(this.dni, this.fechaConsulta)
       .subscribe({
         next: (resumen) => {
-          console.log('Resumen recibido:', resumen);
           this.datosNutricionales = resumen;
           this.nombrePaciente = resumen.nombrePaciente;
           this.resumenCargado = true;
@@ -208,28 +183,26 @@ export class Consultar implements AfterViewInit, OnDestroy {
           this.actualizarGrafico(resumen);
         },
         error: (error) => {
-          console.error('Error al obtener resumen:', error);
+          this.errorMensaje = 'Error al obtener los datos';
           this.cargando = false;
-          this.resumenCargado = false;
-
-          if (error.status === 404) {
-            this.errorMensaje = 'No se encontraron datos para este DNI y fecha';
-          } else if (error.status === 403) {
-            this.errorMensaje = 'No tienes permisos para consultar esta información';
-          } else if (error.error?.message) {
-            this.errorMensaje = error.error.message;
-          } else {
-            this.errorMensaje = 'Error al obtener los datos. Verifica el DNI y la fecha.';
-          }
-
           this.inicializarGraficoVacio();
         }
       });
+    */
   }
 
-  // Métodos auxiliares para obtener porcentajes
   calcularPorcentaje(consumido: number, requerido: number): number {
-    if (!requerido || requerido === 0) return 0;
+    if (!requerido) return 0;
     return Math.round((consumido / requerido) * 100);
+  }
+  limpiarBusqueda(): void {
+    this.dni = '';
+    this.fechaConsulta = '';
+    this.datosNutricionales = null;
+    this.nombrePaciente = '';
+    this.resumenCargado = false;
+    this.errorMensaje = '';
+
+    this.inicializarGraficoVacio();
   }
 }
