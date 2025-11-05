@@ -5,15 +5,30 @@ import { MatButtonModule } from '@angular/material/button';
 
 interface PlanSuscripcionDTO {
   id: number;
-  nombre: string;
-  descripcion?: string;
+  tipo: string;
   precio?: number;
+  beneficiosPlan?: string;
+  terminosCondiciones?: string;
+}
+
+interface UsuarioDTO {
+  id: number;
+}
+
+interface PlanNutricionalDTO {
+  id: number;
 }
 
 interface PacienteDTO {
   id: number;
+  idusuario?: UsuarioDTO;
+  altura?: number;
+  peso?: number;
+  edad?: number;
   idplan?: PlanSuscripcionDTO;
-  kcalRestantes?: number;
+  trigliceridos?: number;
+  actividadFisica?: string;
+  idPlanNutricional?: PlanNutricionalDTO;
 }
 
 @Component({
@@ -28,7 +43,7 @@ export class CambiarPlan implements OnInit {
   paciente?: PacienteDTO;
   isProcessing = false;
   metodosPago = ['visa', 'mastercard', 'amex', 'paypal'];
-  private apiUrl = '/api';
+  private apiUrl = 'http://localhost:8080/api';
 
   constructor(private http: HttpClient) {}
 
@@ -38,11 +53,13 @@ export class CambiarPlan implements OnInit {
   }
 
   cargarPlanes() {
-    this.http.get<PlanSuscripcionDTO[]>(`${this.apiUrl}/listarPlanes`).subscribe({
+    this.http.get<PlanSuscripcionDTO[]>(`${this.apiUrl}/listarPlanesSuscripcion`).subscribe({
       next: (data) => {
+        console.log('📦 Planes recibidos:', data);
         this.planes = (data && data.length > 0) ? data : this.mockPlanes();
       },
-      error: () => {
+      error: (err) => {
+        console.error('❌ Error al cargar planes:', err);
         this.planes = this.mockPlanes();
       }
     });
@@ -51,11 +68,11 @@ export class CambiarPlan implements OnInit {
   cargarPaciente() {
     this.http.get<PacienteDTO>(`${this.apiUrl}/pacienteActual`).subscribe({
       next: (p) => {
+        console.log('👤 Paciente cargado:', p);
         this.paciente = p;
-        console.log('Paciente cargado:', p);
       },
       error: (err) => {
-        console.error('Error al cargar paciente:', err);
+        console.error('❌ Error al cargar paciente:', err);
         this.paciente = this.mockPaciente();
       }
     });
@@ -72,10 +89,12 @@ export class CambiarPlan implements OnInit {
 
     this.http.put<PacienteDTO>(`${this.apiUrl}/editarPaciente`, editarDto).subscribe({
       next: (updated) => {
+        console.log('✅ Plan actualizado:', updated);
         this.paciente = updated;
         this.isProcessing = false;
       },
-      error: () => {
+      error: (err) => {
+        console.error('❌ Error al cambiar plan:', err);
         this.isProcessing = false;
         this.paciente = this.mockActualizarPlan(plan);
       }
@@ -87,7 +106,11 @@ export class CambiarPlan implements OnInit {
   }
 
   obtenerFeatures(plan: PlanSuscripcionDTO): string[] {
-    if (!plan.precio) {
+    if (plan.beneficiosPlan) {
+      return plan.beneficiosPlan.split(',').map(b => b.trim());
+    }
+
+    if (!plan.precio || plan.precio === 0) {
       return [
         'Recetas básicas para triglicéridos.',
         'Registro manual de alimentos.',
@@ -105,16 +128,18 @@ export class CambiarPlan implements OnInit {
 
   private mockPlanes(): PlanSuscripcionDTO[] {
     return [
-      { id: 1, nombre: 'Inicial', descripcion: 'Disfruta de todo lo básico', precio: 0 },
-      { id: 2, nombre: 'Premium', descripcion: 'Disfruta de todo el contenido', precio: 49.90 }
+      { id: 1, tipo: 'Inicial', beneficiosPlan: 'Disfruta de todo lo básico', precio: 0 },
+      { id: 2, tipo: 'Premium', beneficiosPlan: 'Disfruta de todo el contenido', precio: 49.90 }
     ];
   }
 
   private mockPaciente(): PacienteDTO {
     return {
       id: 123,
-      idplan: { id: 1, nombre: 'Inicial', precio: 0 },
-      kcalRestantes: 1200
+      idplan: { id: 1, tipo: 'Inicial', precio: 0 },
+      altura: 1.75,
+      peso: 70,
+      edad: 30
     };
   }
 

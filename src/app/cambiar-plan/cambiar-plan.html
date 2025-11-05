@@ -10,8 +10,8 @@
         <div class="plan-badge" *ngIf="isPlanActual(plan)">Gratis</div>
 
         <div class="plan-header">
-          <h2 class="plan-title">{{ plan.nombre }}</h2>
-          <p class="plan-subtitle">{{ plan.descripcion }}</p>
+          <h2 class="plan-title">{{ plan.tipo }}</h2>
+          <p class="plan-subtitle">{{ plan.beneficiosPlan || 'Disfruta de todo lo básico' }}</p>
         </div>
 
         <div class="plan-price">{{ plan.precio ? 'S/. ' + plan.precio : 'Gratuito' }}</div>

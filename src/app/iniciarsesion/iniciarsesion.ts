@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 
 interface AuthResponse {
-  token: string;
+  jwt: string;
   roles: string[];
 }
 
@@ -55,24 +55,28 @@ export class Iniciarsesion implements OnInit {
         contraseña: password
       }).subscribe({
         next: (response) => {
-          localStorage.setItem('token', response.token);
-          localStorage.setItem('roles', JSON.stringify(response.roles));
-          this.router.navigate(['/sistema/progreso-paciente']);
+          console.log('🔑 JWT recibido:', response.jwt);
+
+          if (response.jwt) {
+            localStorage.setItem('token', response.jwt);
+            console.log('✅ Token guardado:', localStorage.getItem('token'));
+
+            this.router.navigate(['/sistema/progreso-paciente']);
+          }
+          this.isLoading = false;
         },
         error: (error) => {
+          console.error('❌ Error en login:', error);
+          this.errorMessage = 'Usuario o contraseña incorrectos';
           this.isLoading = false;
-          if (error.status === 401) {
-            this.errorMessage = 'DNI o contraseña incorrectos';
-          } else if (error.status === 0) {
-            this.errorMessage = 'No se pudo conectar con el servidor';
-          } else {
-            this.errorMessage = error.error?.message || 'Error al iniciar sesión';
-          }
-          console.error('Error de autenticación:', error);
-        },
+        }
       });
     }
   }
+
+
+
+
 
   loginWithFacebook(): void {
     console.log('Login con Facebook');
