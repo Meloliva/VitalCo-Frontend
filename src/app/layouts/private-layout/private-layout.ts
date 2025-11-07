@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy, Inject, PLATFORM_ID, HostBinding} from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import {Router, RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd} from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { UserService, UserProfile } from '../../service/userlayout-service';
@@ -13,11 +13,10 @@ import {filter} from 'rxjs/operators';
   styleUrl: './private-layout.css',
 })
 export class PrivateLayout implements OnInit, OnDestroy {
-  @HostBinding('class.no-page-card') hidePageCard = false;
-
   userAvatar: string = '/Images/iconos/iconoSistemas/image 18.png';
   userName: string = 'Nombre de Usuario';
   isPremium: boolean = false;
+  hidePageCard: boolean = false;
   private userSubscription?: Subscription;
   private routerSubscription?: Subscription;
 
@@ -29,9 +28,15 @@ export class PrivateLayout implements OnInit, OnDestroy {
 
   ngOnInit() {
     // Carga el usuario desde storage (solo navegador)
-    this.watchRouteForNoCard();
     this.userService.initUserFromStorage();
     this.loadUserData();
+    this.checkRoute();
+
+    this.routerSubscription = this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.checkRoute();
+      });
   }
 
   ngOnDestroy() {
@@ -42,19 +47,11 @@ export class PrivateLayout implements OnInit, OnDestroy {
       this.routerSubscription.unsubscribe();
     }
   }
-  private watchRouteForNoCard() {
-    // establecer valor inicial por si ya estamos en la ruta
-    const current = (this.router.url || '').split('?')[0];
-    this.hidePageCard = current.startsWith('/sistema/cambiar-plan');
 
-    // suscribirse a cambios de navegación
-    this.routerSubscription = this.router.events
-      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
-      .subscribe((ev: NavigationEnd) => {
-        const url = ev.urlAfterRedirects || ev.url;
-        this.hidePageCard = url.startsWith('/sistema/cambiar-plan');
-      });
+  private checkRoute() {
+    this.hidePageCard = this.router.url.includes('/cambiar-plan');
   }
+
   loadUserData() {
     this.userSubscription = this.userService.getCurrentUser().subscribe({
       next: (user) => {

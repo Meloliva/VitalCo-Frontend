@@ -16,20 +16,10 @@ import { CommonModule } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrivateLayoutNutricionista {
-
-  // Inyectar el Router para la navegación
+  userAvatar: string = '/Images/iconos/iconoSistemas/image 18.png';
+  userName: string = 'Nombre Nutricionista';
   private router = inject(Router);
-
-  // Propiedades del componente
-  userName = signal('Nombre Nutricionista');
-  logoUrl = signal('https://placehold.co/40x40/22C55E/FFFFFF?text=V&font=sans-serif');
-
-  // --- LÓGICA DEL SUBMENÚ AÑADIDA ---
   citasMenuOpen = signal(false);
-
-  /**
-   * Cambia el estado del submenú de citas.
-   */
   toggleCitasMenu(): void {
     this.citasMenuOpen.update(value => !value);
   }

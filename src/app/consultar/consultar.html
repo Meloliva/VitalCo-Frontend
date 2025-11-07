@@ -1,18 +1,92 @@
-<div class="perfil-container">
-  <!-- Contenido principal -->
-  <main class="perfil-main">
-    <form class="consulta-form" (submit)="buscar($event)">
-      <div class="form-row">
-        <label>Fecha de consulta:</label>
-        <input type="date" [(ngModel)]="fechaConsulta" name="fechaConsulta">
-        <label>DNI:</label>
-        <input type="text" [(ngModel)]="dni" name="dni" placeholder="Ingrese DNI">
-        <button class="btn-buscar" type="submit">Buscar</button>
-      </div>
-    </form>
+<div class="consultar-main">
+  <h2 style="text-align: center; color: #333; margin-bottom: 30px;">
+    Consultar Progreso de Paciente
+  </h2>
 
-    <div class="consulta-result">
-      <canvas id="grafico-consulta"></canvas>
+  <!-- Formulario de búsqueda -->
+  <form class="consulta-form" (submit)="buscar($event)">
+    <div class="form-row">
+      <label>Fecha de consulta:</label>
+      <input
+        type="date"
+        [(ngModel)]="fechaConsulta"
+        name="fechaConsulta"
+        [max]="'2099-12-31'"
+        required>
+
+      <label>DNI del Paciente:</label>
+      <input
+        type="text"
+        [(ngModel)]="dni"
+        name="dni"
+        placeholder="Ingrese DNI (8 dígitos)"
+        maxlength="8"
+        pattern="[0-9]{8}"
+        required>
+
+      <button class="btn-buscar" type="submit" [disabled]="cargando">
+        <span *ngIf="!cargando">🔍 Buscar</span>
+        <span *ngIf="cargando">⏳ Buscando...</span>
+      </button>
+      <button class="btn-limpiar" type="button" (click)="limpiarBusqueda()">
+        🧹 Borrar búsqueda
+      </button>
+
     </div>
-  </main>
+  </form>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="errorMensaje" class="error-mensaje">
+    ⚠️ {{ errorMensaje }}
+  </div>
+
+  <!-- Información del paciente -->
+  <div *ngIf="resumenCargado && datosNutricionales" class="info-paciente">
+    <h3>📊 Paciente: {{ nombrePaciente }}</h3>
+    <p>📅 Fecha: {{ fechaConsulta }}</p>
+  </div>
+
+  <!-- Tarjetas de resumen nutricional -->
+  <div *ngIf="resumenCargado && datosNutricionales" class="cards-container">
+    <div class="nutrient-card">
+      <h4>🔥 Calorías</h4>
+      <p class="consumido">{{ datosNutricionales.totalesNutricionales.calorias || 0 }} kcal</p>
+      <p class="requerido">Requerido: {{ datosNutricionales.totalesNutricionales.requerido_calorias || 0 }} kcal</p>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="calcularPorcentaje(datosNutricionales.totalesNutricionales.calorias, datosNutricionales.totalesNutricionales.requerido_calorias)"></div>
+      </div>
+    </div>
+
+    <div class="nutrient-card">
+      <h4>🥩 Proteínas</h4>
+      <p class="consumido">{{ datosNutricionales.totalesNutricionales.proteinas || 0 }} g</p>
+      <p class="requerido">Requerido: {{ datosNutricionales.totalesNutricionales.requerido_proteinas || 0 }} g</p>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="calcularPorcentaje(datosNutricionales.totalesNutricionales.proteinas, datosNutricionales.totalesNutricionales.requerido_proteinas)"></div>
+      </div>
+    </div>
+
+    <div class="nutrient-card">
+      <h4>🥑 Grasas</h4>
+      <p class="consumido">{{ datosNutricionales.totalesNutricionales.grasas || 0 }} g</p>
+      <p class="requerido">Requerido: {{ datosNutricionales.totalesNutricionales.requerido_grasas || 0 }} g</p>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="calcularPorcentaje(datosNutricionales.totalesNutricionales.grasas, datosNutricionales.totalesNutricionales.requerido_grasas)"></div>
+      </div>
+    </div>
+
+    <div class="nutrient-card">
+      <h4>🍞 Carbohidratos</h4>
+      <p class="consumido">{{ datosNutricionales.totalesNutricionales.carbohidratos || 0 }} g</p>
+      <p class="requerido">Requerido: {{ datosNutricionales.totalesNutricionales.requerido_carbohidratos || 0 }} g</p>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="calcularPorcentaje(datosNutricionales.totalesNutricionales.carbohidratos, datosNutricionales.totalesNutricionales.requerido_carbohidratos)"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráfico -->
+  <div class="consulta-result" style="height: 400px;">
+    <canvas id="grafico-consulta"></canvas>
+  </div>
 </div>

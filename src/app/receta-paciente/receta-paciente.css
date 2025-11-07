@@ -147,6 +147,27 @@
   border-radius: 6px;
   font-weight: 500;
 }
+::ng-deep .mat-mdc-chip {
+  background-color: #E9D250 !important; /* fondo amarillo desde el inicio */
+  color: white !important;              /* texto blanco */
+  border: none !important;              /* elimina borde externo */
+  box-shadow: none !important;          /* elimina sombra interna */
+  border-radius: 20px !important;       /* forma redondeada */
+  padding: 4px 12px !important;         /* espacio interno equilibrado */
+  font-weight: 500;
+  box-sizing: border-box !important;
+}
+
+::ng-deep .mat-mdc-chip {
+  background-color: #E9D250 !important; /* fondo amarillo desde el inicio */
+  color: white !important;              /* texto blanco */
+  border: none !important;              /* elimina borde externo */
+  box-shadow: none !important;          /* elimina sombra interna */
+  border-radius: 20px !important;       /* forma redondeada */
+  padding: 4px 12px !important;         /* espacio interno equilibrado */
+  font-weight: 500;
+  box-sizing: border-box !important;
+}
 
 /* Paginador dentro del flujo, alineado a la derecha */
 .paginator-row {
@@ -170,6 +191,7 @@
   width: 32px;
   height: 32px;
 }
+
 
 /* Responsive: buscador ocupa todo en pantallas pequeñas */
 @media (max-width: 800px) {

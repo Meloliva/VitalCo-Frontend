@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router'; // RouterLink y RouterLinkActive ya no se necesitan aquí
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-perfil',
@@ -12,10 +12,11 @@ import { Router } from '@angular/router'; // RouterLink y RouterLinkActive ya no
 })
 export class Perfil {
   perfilForm: FormGroup;
+  imagenPerfil: string = 'https://placehold.co/70x70/00BF61/FFFFFF?text=Foto';
 
   constructor(
     private fb: FormBuilder,
-    private router: Router // Mantenemos Router para 'eliminarCuenta'
+    private router: Router
   ) {
     this.perfilForm = this.fb.group({
       asociacion: [''],
@@ -36,31 +37,42 @@ export class Perfil {
   }
 
   eliminarCuenta() {
-    // IMPORTANTE: 'confirm' bloquea el hilo y no es una buena práctica.
-    // Deberías reemplazar esto con un componente de modal/diálogo.
     const confirmar = confirm('¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.');
-
     if (confirmar) {
       console.log('Cuenta eliminada');
-      // Aquí puedes agregar la lógica para eliminar la cuenta del backend
-
-      // Llamamos a la lógica de salir que estaba aquí
       this.logoutAndRedirect();
     }
   }
 
-  /**
-   * Esta función ahora solo la usa 'eliminarCuenta'
-   */
+  cambiarFoto(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagenPerfil = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  eliminarFoto(): void {
+    this.imagenPerfil = 'https://placehold.co/70x70/00BF61/FFFFFF?text=Foto';
+  }
+
+  abrirSelectorFoto(): void {
+    const input = document.getElementById('fileInput') as HTMLInputElement;
+    if (input) {
+      input.click();
+    }
+  }
+
   private logoutAndRedirect(): void {
-    // Limpiar cualquier dato de sesión
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     localStorage.removeItem('userName');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userAvatar');
-
-    // Redirigir a la página de inicio
     this.router.navigate(['/inicio']);
   }
 }

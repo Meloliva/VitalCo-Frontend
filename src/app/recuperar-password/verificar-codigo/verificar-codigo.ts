@@ -1,14 +1,28 @@
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {Router, ActivatedRoute, RouterLink} from '@angular/router';
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+
+// Angular Material Imports
+import { MatCardModule } from '@angular/material/card';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-verificar-codigo',
   templateUrl: './verificar-codigo.html',
   standalone: true,
   imports: [
+    CommonModule,
     ReactiveFormsModule,
-    RouterLink
+    RouterLink,
+    MatCardModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatButtonModule,
+    MatIconModule
   ],
   styleUrls: ['./verificar-codigo.css']
 })
@@ -32,21 +46,17 @@ export class VerificarCodigoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // Obtener el email de los parámetros
     this.route.queryParams.subscribe(params => {
       this.email = params['email'] || '';
       if (!this.email) {
-        // Si no hay email, redirigir al inicio
         this.router.navigate(['/recuperar-password']);
       }
     });
 
-    // Ocultar navbar
     this.hideNavbar();
   }
 
   ngOnDestroy() {
-    // Mostrar navbar al salir
     this.showNavbar();
   }
 
@@ -72,14 +82,12 @@ export class VerificarCodigoComponent implements OnInit, OnDestroy {
     const input = event.target;
     const value = input.value;
 
-    // Solo permitir números
     if (!/^\d$/.test(value)) {
       input.value = '';
       this.codeForm.get(`digit${currentIndex}`)?.setValue('');
       return;
     }
 
-    // Auto-focus al siguiente input
     if (value.length === 1 && currentIndex < 6) {
       const nextInput = document.getElementById(`digit${currentIndex + 1}`);
       if (nextInput) {
@@ -91,7 +99,6 @@ export class VerificarCodigoComponent implements OnInit, OnDestroy {
   onKeyDown(event: KeyboardEvent, currentIndex: number) {
     const input = event.target as HTMLInputElement;
 
-    // Retroceder al input anterior con Backspace
     if (event.key === 'Backspace' && input.value === '' && currentIndex > 1) {
       const prevInput = document.getElementById(`digit${currentIndex - 1}`);
       if (prevInput) {
@@ -110,7 +117,6 @@ export class VerificarCodigoComponent implements OnInit, OnDestroy {
         this.codeForm.get(`digit${index + 1}`)?.setValue(digit);
       });
 
-      // Focus en el último input
       const lastInput = document.getElementById('digit6');
       if (lastInput) {
         (lastInput as HTMLInputElement).focus();
@@ -125,21 +131,7 @@ export class VerificarCodigoComponent implements OnInit, OnDestroy {
       console.log('Código ingresado:', code);
       console.log('Email:', this.email);
 
-      // TODO: Llamada al servicio para verificar el código
-      // this.authService.verifyCode(this.email, code).subscribe(
-      //   response => {
-      //     // Navegar a nueva-password con token
-      //     this.router.navigate(['/recuperar-password/nueva-password'], {
-      //       queryParams: { email: this.email, token: response.token }
-      //     });
-      //   },
-      //   error => {
-      //     console.error('Código inválido', error);
-      //     // Mostrar mensaje de error
-      //   }
-      // );
-
-      // Por ahora, navegar directamente (simular éxito)
+      // TODO: Implementar servicio
       this.router.navigate(['/recuperar-password/nueva-password'], {
         queryParams: { email: this.email, code: code }
       });

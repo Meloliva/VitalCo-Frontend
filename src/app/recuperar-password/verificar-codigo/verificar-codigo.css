@@ -1,31 +1,18 @@
+/* Container principal */
 .recovery-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   background-color: #ffffff;
-  padding: 0;
-  margin: 0;
-  overflow: hidden;
+  padding: 20px;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 9999;
-}
-
-.recovery-card {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 40px;
-  position: relative;
-  overflow: hidden;
-  background-color: #ffffff;
+  overflow: auto;
 }
 
 /* Círculos decorativos */
@@ -63,38 +50,45 @@
   opacity: 0.5;
 }
 
-/* Header */
-.recovery-header {
-  text-align: center;
-  margin-bottom: 35px;
-  z-index: 1;
+/* Content wrapper */
+.recovery-content {
+  max-width: 500px;
   width: 100%;
-  margin-top: -80px;
+  z-index: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Logo */
+.logo-container {
+  margin-bottom: -100px;
 }
 
 .logo {
-  width: 310px;
-  height: 310px;
-  margin-bottom: 35px;
+  width: 300px;
+  height: 300px;
   border-radius: 50%;
   object-fit: cover;
-  position: relative;
-  top: 110px; /* Baja más el logo */
 }
 
-.recovery-header h2 {
-  font-size: 1.75rem;
+/* Título */
+.title {
+  font-size: 1.2rem !important;
   font-weight: 700;
   color: #1a1a1a;
-  margin: 0 0 15px 0;
+  margin: 0 0 16px 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Subtítulo */
 .subtitle {
   font-size: 0.95rem;
   color: #666;
-  margin: 0;
-  line-height: 1.5;
+  margin: 0 0 40px 0;
+  line-height: 1.6;
   font-family: 'Segoe UI', sans-serif;
 }
 
@@ -106,140 +100,240 @@
 /* Formulario */
 form {
   width: 100%;
-  max-width: 450px;
-  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* Inputs del código */
+/* Code Inputs con Material */
 .code-inputs {
   display: flex;
   gap: 12px;
   justify-content: center;
-  margin-bottom: 30px;
+  margin-bottom: 32px;
   width: 100%;
+  flex-wrap: wrap;
 }
 
-.code-input {
-  width: 55px;
-  height: 60px;
+.code-field {
+  width: 56px;
+  flex-shrink: 0;
+}
+
+/* Estilos para el input de Material - más limpio y cuadrado */
+::ng-deep .code-field .mat-mdc-text-field-wrapper {
+  padding: 0;
+  background-color: transparent;
+}
+
+::ng-deep .code-field .mat-mdc-form-field-flex {
+  height: 56px;
+  align-items: center;
+  background-color: transparent;
+}
+
+::ng-deep .code-field .mat-mdc-form-field-infix {
+  padding: 0;
+  border: 0;
+  min-height: auto;
+}
+
+::ng-deep .code-field input {
   text-align: center;
-  font-size: 1.8rem;
-  font-weight: 600;
-  border: 2px solid #e0e0e0;
-  border-radius: 12px;
-  transition: all 0.3s ease;
-  background-color: white;
+  font-size: 1.5rem;
+  font-weight: 400;
   color: #1a1a1a;
-  font-family: 'Segoe UI', sans-serif;
+  padding: 0 !important;
+  height: 56px;
+  background-color: transparent;
 }
 
-.code-input:focus {
-  outline: none;
-  border-color: #7cb342;
-  box-shadow: 0 0 0 3px rgba(124, 179, 66, 0.15);
-  transform: scale(1.05);
+/* Bordes cuadrados y limpios */
+::ng-deep .code-field .mat-mdc-notched-outline {
+  border-radius: 8px;
 }
 
-.code-input.ng-invalid.ng-touched {
-  border-color: #e53935;
+::ng-deep .code-field .mat-mdc-notched-outline .mdc-notched-outline__leading,
+::ng-deep .code-field .mat-mdc-notched-outline .mdc-notched-outline__notch,
+::ng-deep .code-field .mat-mdc-notched-outline .mdc-notched-outline__trailing {
+  border-color: #e0e0e0;
+  border-width: 1px;
 }
 
-/* Botón submit */
+::ng-deep .code-field.mat-focused .mat-mdc-notched-outline .mdc-notched-outline__leading,
+::ng-deep .code-field.mat-focused .mat-mdc-notched-outline .mdc-notched-outline__notch,
+::ng-deep .code-field.mat-focused .mat-mdc-notched-outline .mdc-notched-outline__trailing {
+  border-color: #7cb342 !important;
+  border-width: 2px !important;
+}
+
+::ng-deep .code-field.mat-form-field-invalid .mat-mdc-notched-outline .mdc-notched-outline__leading,
+::ng-deep .code-field.mat-form-field-invalid .mat-mdc-notched-outline .mdc-notched-outline__notch,
+::ng-deep .code-field.mat-form-field-invalid .mat-mdc-notched-outline .mdc-notched-outline__trailing {
+  border-color: #e53935 !important;
+}
+
+/* Ocultar el label flotante */
+::ng-deep .code-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* Botón submit - estilo más limpio */
 .btn-submit {
   width: 100%;
   max-width: 350px;
-  padding: 14px;
-  background: linear-gradient(135deg, #8bc34a 0%, #7cb342 100%);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 1.05rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(124, 179, 66, 0.3);
-  font-family: 'Segoe UI', sans-serif;
+  height: 48px;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 8px !important;
+  text-transform: none;
+  letter-spacing: normal;
+  box-shadow: none !important;
+  transition: all 0.3s ease !important;
 }
 
-.btn-submit:hover:not(:disabled) {
-  background: linear-gradient(135deg, #7cb342 0%, #689f38 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(124, 179, 66, 0.4);
+::ng-deep .btn-submit.mat-mdc-raised-button {
+  background-color: #d9d9d9 !important;
+  color: #666 !important;
 }
 
-.btn-submit:disabled {
-  background: #e0e0e0;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-  color: #999;
+::ng-deep .btn-submit.mat-mdc-raised-button:not([disabled]) {
+  background-color: #7cb342 !important;
+  color: white !important;
+}
+
+.btn-submit:hover:not([disabled]) {
+  background-color: #689f38 !important;
+  box-shadow: 0 2px 8px rgba(124, 179, 66, 0.3) !important;
 }
 
 /* Link cancelar */
 .cancel-link {
+  margin-top: 20px;
   text-align: center;
-  margin-top: 15px;
-  z-index: 1;
-  width: 100%;
 }
 
 .cancel-link a {
   color: #00BF61;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.95rem;
   transition: color 0.3s ease;
   font-family: 'Segoe UI', sans-serif;
 }
 
-.cancel-link a:hover {
-  color: #689f38;
-  text-decoration: underline;
-}
 
-/* Responsive */
+
+/* Responsive general para pantallas menores a 640px */
 @media (max-width: 640px) {
-  .recovery-header {
-    margin-top: -60px;
+  .recovery-content {
+    max-width: 100%;
+    padding: 0 16px;
   }
 
-  .recovery-header h2 {
-    font-size: 1.4rem;
+  .title {
+    font-size: 1.3rem;
+    margin-bottom: 12px;
   }
 
   .subtitle {
     font-size: 0.88rem;
+    margin-bottom: 32px;
+    line-height: 1.5;
   }
 
   .logo {
-    width: 120px;
-    height: 120px;
+    width: 200px;
+    height: 200px;
+  }
+
+  .logo-container {
+    margin-bottom: 24px;
   }
 
   .circle-1 {
-    width: 250px;
-    height: 250px;
-    top: -60px;
-    left: -120px;
+    width: 280px;
+    height: 280px;
+    top: -100px;
+    left: -100px;
   }
 
   .circle-2 {
-    width: 180px;
-    height: 180px;
+    width: 200px;
+    height: 200px;
     top: -70px;
-    left: 0px;
+    left: 60px;
   }
 
-  .code-input {
-    width: 45px;
-    height: 52px;
-    font-size: 1.5rem;
+  .code-field {
+    width: 48px;
+  }
+
+  ::ng-deep .code-field .mat-mdc-form-field-flex {
+    height: 48px;
+  }
+
+  ::ng-deep .code-field input {
+    font-size: 1.3rem;
+    height: 48px;
   }
 
   .code-inputs {
     gap: 8px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .btn-submit {
+    max-width: 100%;
+    height: 44px;
+    font-size: 0.95rem;
+  }
+
+  .cancel-link {
+    margin-top: 16px;
+  }
+}
+
+/* Responsive para pantallas menores a 380px */
+@media (max-width: 380px) {
+  .code-field {
+    width: 42px;
+  }
+
+  ::ng-deep .code-field .mat-mdc-form-field-flex {
+    height: 44px;
+  }
+
+  ::ng-deep .code-field input {
+    font-size: 1.2rem;
+    height: 44px;
+  }
+
+  .code-inputs {
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+
+  .btn-submit {
+    height: 40px;
+    font-size: 0.9rem;
+  }
+
+  .title {
+    font-size: 1.2rem;
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
+  }
+
+  .logo {
+    width: 100px;
+    height: 100px;
+  }
+
+  .logo-container {
+    margin-bottom: 20px;
   }
 }

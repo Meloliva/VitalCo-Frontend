@@ -26,7 +26,7 @@ export const routes: Routes = [
       { path: 'macronutrientes',loadComponent: () => import('./registro-usuario/macronutrientes/macronutrientes').then(m => m.MacronutrientesComponent)},
       { path: 'nivelactividad',loadComponent: () => import('./registro-usuario/nivelactividad/nivelactividad').then(m => m.NivelActividadComponent)},
       { path: 'objetivo',loadComponent: () => import('./registro-usuario/objetivo/objetivo').then(m => m.ObjetivoComponent)},
-      { path: 'plan',loadComponent: () => import('./registro-usuario/plan/plan').then(m => m.PlanComponent)},
+      { path: 'escoger-plan',loadComponent: () => import('./registro-usuario/escoger-plan/escoger-plan').then(m => m.EscogerPlanComponent)},
       {path: 'registro-usuario',loadComponent: () =>import('./registro-usuario/registro-usuario').then(m=>RegistroUsuarioComponent)},
 
 
@@ -123,7 +123,8 @@ export const routes: Routes = [
 
 
       { path: 'receta-paciente', loadComponent: () => import('./receta-paciente/receta-paciente').then(m => m.RecetaPaciente) },
-      { path: 'cambiar-plan', loadComponent: () => import('./cambiar-plan/cambiar-plan').then(m => m.CambiarPlan) }
+      { path: 'cambiar-plan', loadComponent: () => import('./cambiar-plan/cambiar-plan').then(m => m.CambiarPlan) },
+      { path: 'perfil-paciente',loadComponent:()=>import('./perfil-paciente/perfil-paciente').then(m=>m.PerfilPacienteComponent)}
 
     ]
   }

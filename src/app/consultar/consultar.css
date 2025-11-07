@@ -1,58 +1,129 @@
-/* CSS "limpio".
-  Se eliminaron todas las clases de .perfil-container, .sidebar,
-  .logo-section, .sidebar-link, y .perfil-main.
-*/
-
-/* Main content */
-.consulta-form {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap; /* Añadido para responsividad */
-  margin-bottom: 30px;
-}
-
-.form-row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap; /* Añadido para responsividad */
-  gap: 15px;
-}
-
-.form-row label {
-  font-weight: 500;
-  color: #374151;
-}
-
-input[type="date"],
-input[type="text"] {
-  padding: 10px 14px;
-  border: 2px solid #00BF61; /* Combinado con el estilo de tus otros forms */
-  border-radius: 25px; /* Combinado con el estilo de tus otros forms */
-  font-size: 0.9rem;
-  outline: none;
-}
-
-.btn-buscar {
-  background-color: #00BF61; /* Verde principal */
-  color: white;
-  border: none;
-  padding: 10px 20px; /* Tamaño consistente */
-  border-radius: 25px; /* Combinado con el estilo de tus otros forms */
-  cursor: pointer;
-  font-weight: 600;
-  transition: background 0.3s;
-}
-
-.btn-buscar:hover {
-  background-color: #009e4f; /* Verde más oscuro */
-}
-
 /* Chart */
 .consulta-result {
   background: white;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 900px;
+  margin: 30px auto 0;
 }
+
+/* Mensaje de error */
+.error-mensaje {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px auto;
+  max-width: 800px;
+  text-align: center;
+  border-left: 4px solid #c62828;
+}
+
+/* Info del paciente */
+.info-paciente {
+  background: linear-gradient(135deg, #00BF61 0%, #02773b 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px auto;
+  max-width: 800px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 191, 97, 0.3);
+}
+
+.info-paciente h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.4rem;
+}
+
+.info-paciente p {
+  margin: 0;
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+/* Tarjetas de nutrientes */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin: 30px auto;
+  max-width: 900px;
+}
+
+.nutrient-card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.nutrient-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.nutrient-card h4 {
+  margin: 0 0 15px 0;
+  color: #02773b;
+  font-size: 1.1rem;
+}
+
+.nutrient-card .consumido {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin: 10px 0;
+}
+
+.nutrient-card .requerido {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 5px 0 15px 0;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00BF61 0%, #02773b 100%);
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+.btn-buscar, .btn-limpiar {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease-in-out;
+  margin-left: 10px;
+}
+
+.btn-buscar {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.btn-buscar:hover {
+  background-color: #45a049;
+}
+
+.btn-limpiar {
+  background-color: #f44336;
+  color: white;
+}
+
+.btn-limpiar:hover {
+  background-color: #d32f2f;
+}
+
