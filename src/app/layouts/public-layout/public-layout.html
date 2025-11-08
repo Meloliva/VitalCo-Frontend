@@ -18,8 +18,10 @@
   </div>
 </mat-toolbar>
 
-<!-- RENDER PAGES -->
-<router-outlet></router-outlet>
+<!-- RENDER PAGES - Agregar clase condicional -->
+<div [class.with-header]="showHeaderFooter" [class.without-header]="!showHeaderFooter">
+  <router-outlet></router-outlet>
+</div>
 
 <!-- FOOTER -->
 <mat-toolbar color="primary" class="footer" *ngIf="showHeaderFooter">

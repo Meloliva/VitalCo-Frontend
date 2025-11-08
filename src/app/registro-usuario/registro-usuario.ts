@@ -30,7 +30,7 @@ export class RegistroUsuarioComponent implements OnInit, OnDestroy {
       nombre: ['', [Validators.required, Validators.minLength(2)]],
       dni: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
       apellido: ['', [Validators.required, Validators.minLength(2)]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
       correo: ['', [Validators.required, Validators.email]],
       genero: ['', [Validators.required]]
     });
@@ -59,7 +59,6 @@ export class RegistroUsuarioComponent implements OnInit, OnDestroy {
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
-
 
   onSubmit() {
     if (this.registroForm.valid) {
