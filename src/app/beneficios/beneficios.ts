@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatGridListModule } from '@angular/material/grid-list';
 
 @Component({
   selector: 'app-beneficios',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, MatCardModule, MatGridListModule],
   templateUrl: './beneficios.html',
-  styleUrl: './beneficios.css',
+  styleUrls: ['./beneficios.css'],
 })
-export class Beneficios {
-
-}
+export class Beneficios {}
