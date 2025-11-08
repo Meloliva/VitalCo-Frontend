@@ -138,7 +138,7 @@ h1 {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 191, 97, 0.3);
 }
-
+/*
 .btn-opcion.nutricionista {
   background: #00BF61;
   color: white;
@@ -147,6 +147,8 @@ h1 {
 .btn-opcion.nutricionista:hover {
   background: #009e4f;
 }
+*/
+
 
 .login-link {
   text-align: center;
