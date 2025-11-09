@@ -1,72 +1,92 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink, RouterLinkActive } from '@angular/router'; // Importaciones no necesarias aquí
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-recetas',
   standalone: true,
-  // Los imports de RouterLink y RouterLinkActive no son necesarios aquí
-  // ya que la navegación está en el layout principal.
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatIconModule
+  ],
   templateUrl: './recetas.html',
   styleUrls: ['./recetas.css']
 })
-export class RecetasComponent {
-  recetaForm: FormGroup;
-  imageFile?: File;
-  imagePreview?: string;
+export class RecetasComponent implements OnInit {
+  recetaForm!: FormGroup;
+  imagenPreview: string | null = null;
+  archivoImagen: File | null = null;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder) {}
+
+  ngOnInit(): void {
     this.recetaForm = this.fb.group({
       nombre: ['', Validators.required],
       tiempo: ['', Validators.required],
       tipoComida: ['', Validators.required],
-      peso: [''],
-      calorias: [''],
-      grasaSaturada: [''],
-      grasaTrans: [''],
-      proteina: [''],
-      azucares: [''],
-      descripcion: ['']
+      pesoPorcion: ['', [Validators.required, Validators.min(1)]],
+      calorias: ['', [Validators.required, Validators.min(1)]],
+      grasaSaturada: ['', [Validators.required, Validators.min(0)]],
+      grasaTrans: ['', [Validators.required, Validators.min(0)]],
+      proteina: ['', [Validators.required, Validators.min(0)]],
+      azucares: ['', [Validators.required, Validators.min(0)]],
+      descripcion: ['', Validators.required]
     });
   }
 
-  // Evento para seleccionar imagen
-  onFileSelected(event: any): void {
-    const file: File = event.target.files[0];
-    if (file) {
-      this.imageFile = file;
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.archivoImagen = file;
 
-      const reader = new FileReader();
-      reader.onload = e => this.imagePreview = e.target?.result as string;
-      reader.readAsDataURL(file);
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          this.imagenPreview = e.target?.result as string;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        alert('Por favor, selecciona una imagen válida.');
+      }
     }
   }
 
-  // Guardar receta
-  guardarReceta(): void {
+  guardar(): void {
     if (this.recetaForm.valid) {
-      const nuevaReceta = {
-        ...this.recetaForm.value,
-        imagen: this.imageFile ? this.imageFile.name : 'Sin imagen'
-      };
-
-      console.log('Receta guardada:', nuevaReceta);
-      // REEMPLAZADO: alert() no está permitido y bloquea la UI.
-      console.log('✅ Receta guardada exitosamente');
-      this.recetaForm.reset();
-      this.imageFile = undefined;
-      this.imagePreview = undefined;
+      const data = { ...this.recetaForm.value, imagen: this.archivoImagen?.name };
+      console.log('Receta guardada:', data);
+      alert('✅ ¡Receta guardada exitosamente!');
+      this.limpiarFormulario();
     } else {
-      // REEMPLAZADO: alert() no está permitido.
-      console.warn('⚠️ Por favor, completa los campos obligatorios.');
+      alert('⚠️ Por favor completa todos los campos.');
     }
   }
 
-  cancelar(): void {
+  modificar(): void {
+    if (this.recetaForm.valid) {
+      console.log('Receta modificada:', this.recetaForm.value);
+      alert('✏️ Receta lista para modificar.');
+    } else {
+      alert('⚠️ Completa todos los campos antes de modificar.');
+    }
+  }
+
+  limpiarFormulario(): void {
     this.recetaForm.reset();
-    this.imageFile = undefined;
-    this.imagePreview = undefined;
+    this.imagenPreview = null;
+    this.archivoImagen = null;
   }
 }
