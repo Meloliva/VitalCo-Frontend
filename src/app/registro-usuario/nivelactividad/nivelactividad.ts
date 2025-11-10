@@ -1,51 +1,44 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { RegistroSharedService } from '../../service/registro-shared.service';
 
 @Component({
   selector: 'app-nivel-actividad',
   standalone: true,
   templateUrl: './nivelactividad.html',
   styleUrls: ['./nivelactividad.css'],
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatProgressBarModule
-  ]
+  imports: [CommonModule, MatProgressBarModule]
 })
-export class NivelActividadComponent {
-  // Valor de la barra de progreso (ajusta según el paso)
-  progressValue: number = 80;
-
-  // Nivel seleccionado por el usuario
+export class NivelActividadComponent implements OnInit {
+  progressValue = 0;
   nivelSeleccionado: string = '';
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private registroShared: RegistroSharedService
+  ) {}
 
-  // CORREGIDO: Ahora SÍ actualiza la variable nivelSeleccionado
-  selectNivel(nivel: string): void {
-    this.nivelSeleccionado = nivel; // ← ESTA LÍNEA FALTABA
-    console.log('Nivel de actividad seleccionado:', this.nivelSeleccionado);
+  ngOnInit(): void {
+    this.registroShared.progress$.subscribe(progress => this.progressValue = progress);
   }
 
-  // Navega a la pantalla anterior
+  selectNivel(nivel: string): void {
+    this.nivelSeleccionado = nivel;
+  }
+
   goBack(): void {
     this.router.navigate(['/objetivo']);
   }
 
-  // Valida y navega al siguiente paso
   onSubmit(): void {
     if (!this.nivelSeleccionado) {
       alert('Por favor selecciona tu nivel de actividad');
       return;
     }
 
-    // Guardar en localStorage o servicio si deseas
-    localStorage.setItem('nivelActividad', this.nivelSeleccionado);
-
-    // Navegar a la siguiente pantalla
-    this.router.navigate(['/escoger-plan']); // Ajusta según tu flujo
+    this.registroShared.guardarNivelActividad(this.nivelSeleccionado);
+    this.router.navigate(['/escoger-plan']);
   }
 }

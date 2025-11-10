@@ -1,59 +1,53 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { MatProgressBar } from '@angular/material/progress-bar';
 import { CommonModule } from '@angular/common';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import {Router} from '@angular/router';
+import { RegistroSharedService } from '../../service/registro-shared.service';
 
 @Component({
   selector: 'app-datos-salud',
   standalone: true,
   templateUrl: './datos-salud.html',
   styleUrls: ['./datos-salud.css'],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatProgressBarModule
-  ]
+  imports: [ReactiveFormsModule, MatProgressBar, CommonModule]
 })
 export class DatosSaludComponent implements OnInit {
-  datosSaludForm: FormGroup;
-  progressValue = 40; // 50% de progreso (segunda pantalla)
+  datosSaludForm!: FormGroup;
+  progressValue = 0;
 
   constructor(
-    private formBuilder: FormBuilder,
+    private fb: FormBuilder,
+    private registroShared: RegistroSharedService,
     private router: Router
-  ) {
-    this.datosSaludForm = this.formBuilder.group({
+  ) {}
+
+  ngOnInit(): void {
+    this.initForm();
+    this.registroShared.progress$.subscribe(progress => this.progressValue = progress);
+  }
+
+  initForm(): void {
+    this.datosSaludForm = this.fb.group({
+      altura: ['', [Validators.required, Validators.min(0.5), Validators.max(3)]],
+      peso: ['', [Validators.required, Validators.min(20), Validators.max(300)]],
       edad: ['', [Validators.required, Validators.min(1), Validators.max(120)]],
-      altura: ['', [Validators.required, Validators.min(50), Validators.max(300)]],
-      peso: ['', [Validators.required, Validators.min(1), Validators.max(500)]],
       trigliceridos: ['', [Validators.required, Validators.min(0)]]
     });
   }
 
-  ngOnInit(): void {
-    // Cargar datos-salud previos si existen en el servicio o localStorage
+  goBack(): void {
+    this.router.navigate(['/registro-usuario']);
   }
 
   onSubmit(): void {
-    if (this.datosSaludForm.valid) {
-      const datosSalud = this.datosSaludForm.value;
-      console.log('Datos de salud:', datosSalud);
-
-      // Guardar en servicio o localStorage
-      // this.registroService.setDatosSalud(datosSalud);
-
-      // Navegar a la siguiente pantalla
-      this.router.navigate(['/objetivo']);
-    } else {
-      // Marcar todos los campos como tocados para mostrar errores
-      Object.keys(this.datosSaludForm.controls).forEach(key => {
-        this.datosSaludForm.get(key)?.markAsTouched();
-      });
+    if (this.datosSaludForm.invalid) {
+      alert('Por favor completa todos los campos correctamente');
+      return;
     }
-  }
 
-  goBack(): void {
-    this.router.navigate(['/registro-usuario']);
+    const datosSalud = this.datosSaludForm.value;
+    this.registroShared.guardarDatosSalud(datosSalud);
+    this.router.navigate(['/objetivo']);
   }
 }

@@ -201,7 +201,7 @@ html, body {
 }
 
 .registro-header h1 {
-  font-size: 2rem;
+  font-size: 1.6rem!important;
   font-weight: 700;
   color: #1a1a1a;
   margin: 0;

@@ -1,169 +1,149 @@
-import { Component, OnInit, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Chart, registerables } from 'chart.js';
-
-// Registrar componentes de Chart.js
-Chart.register(...registerables);
-
-interface DatosUsuario {
-  peso: number;
-  altura: number;
-  edad: number;
-  genero: string;
-  nivelActividad: string;
-  objetivo: string;
-  trigliceridos?: number;
-}
+import { CommonModule } from '@angular/common';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { PacienteService, PlanNutricionalDTO } from '../../service/paciente.service';
+import { RegistroSharedService } from '../../service/registro-shared.service';
 
 @Component({
-  selector: 'app-resumen-final',
+  selector: 'app-macronutrientes',
   standalone: true,
   templateUrl: './macronutrientes.html',
   styleUrls: ['./macronutrientes.css'],
-  imports: [CommonModule]
+  imports: [CommonModule, MatProgressBarModule]
 })
-export class MacronutrientesComponent implements OnInit, AfterViewInit {
-  // Datos calculados
-  caloriasCalculadas: number = 0;
-  proteinas: number = 0;
-  carbohidratos: number = 0;
-  grasas: number = 0;
-  mesesObjetivo: number = 3;
+export class MacronutrientesComponent implements OnInit {
+  progressValue = 0;
+  planesNutricionales: PlanNutricionalDTO[] = [];
+  planSeleccionado: number = 0;
+  isLoading = false;
 
-  private chart: any;
-  private isBrowser: boolean;
+  // ✅ Agregar propiedades faltantes
+  caloriasCalculadas: number = 2000; // Valor calculado según los datos
+  mesesObjetivo: number = 3; // Duración del objetivo
+  proteinas: number = 150; // Gramos
+  carbohidratos: number = 250; // Gramos
+  grasas: number = 60; // Gramos
 
   constructor(
     private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {
-    // Verificar si estamos en el navegador
-    this.isBrowser = isPlatformBrowser(this.platformId);
-  }
+    private pacienteService: PacienteService,
+    private registroShared: RegistroSharedService
+  ) {}
 
   ngOnInit(): void {
-    if (this.isBrowser) {
-      this.cargarDatosYCalcular();
-    }
+    this.registroShared.progress$.subscribe(progress => this.progressValue = progress);
+    this.cargarPlanesNutricionales();
+    this.calcularMacronutrientes(); // ✅ Calcular macros según los datos del paciente
   }
 
-  ngAfterViewInit(): void {
-    if (this.isBrowser) {
-      this.crearGrafico();
-    }
-  }
+  // ✅ Calcular macronutrientes según los datos ingresados
+  private calcularMacronutrientes(): void {
+    const datos = this.registroShared.obtenerDatos();
 
-  cargarDatosYCalcular(): void {
-    // Solo ejecutar en el navegador
-    if (!this.isBrowser) return;
+    if (datos.datosSalud && datos.nivelActividad && datos.objetivo) {
+      // Fórmula Harris-Benedict simplificada
+      const { peso, altura, edad } = datos.datosSalud;
+      let tmb = 10 * peso + 6.25 * (altura * 100) - 5 * edad + 5; // Hombre
 
-    // Recuperar datos del localStorage
-    const datosUsuario: DatosUsuario = {
-      peso: parseFloat(localStorage.getItem('peso') || '70'),
-      altura: parseFloat(localStorage.getItem('altura') || '170'),
-      edad: parseFloat(localStorage.getItem('edad') || '30'),
-      genero: localStorage.getItem('genero') || 'masculino',
-      nivelActividad: localStorage.getItem('nivelActividad') || 'sedentario',
-      objetivo: localStorage.getItem('objetivo') || 'mantener-3',
-      trigliceridos: parseFloat(localStorage.getItem('trigliceridos') || '150')
-    };
+      // Ajustar según nivel de actividad
+      const factorActividad: { [key: string]: number } = {
+        'sedentario': 1.2,
+        'ligero': 1.375,
+        'moderado': 1.55,
+        'activo': 1.725,
+        'muy_activo': 1.9
+      };
 
-    // Extraer meses del objetivo (ej: "bajar-3" -> 3 meses)
-    const objetivoSplit = datosUsuario.objetivo.split('-');
-    this.mesesObjetivo = parseInt(objetivoSplit[1]) || 3;
+      tmb *= factorActividad[datos.nivelActividad.toLowerCase()] || 1.375;
 
-    // Calcular calorías y macros
-    this.calcularCalorias(datosUsuario);
-    this.calcularMacros();
-  }
-
-  calcularCalorias(datos: DatosUsuario): void {
-    // Fórmula Mifflin-St Jeor para TMB (Tasa Metabólica Basal)
-    let tmb = 0;
-
-    if (datos.genero === 'masculino') {
-      tmb = (10 * datos.peso) + (6.25 * datos.altura) - (5 * datos.edad) + 5;
-    } else {
-      tmb = (10 * datos.peso) + (6.25 * datos.altura) - (5 * datos.edad) - 161;
-    }
-
-    // Factor de actividad
-    const factoresActividad: { [key: string]: number } = {
-      'sedentario': 1.2,
-      'ligero': 1.375,
-      'moderado': 1.55,
-      'intenso': 1.725,
-      'muy-activo': 1.9
-    };
-
-    const factor = factoresActividad[datos.nivelActividad] || 1.2;
-    let caloriasDiarias = tmb * factor;
-
-    // Ajustar según objetivo
-    if (datos.objetivo.includes('bajar')) {
-      caloriasDiarias -= 500; // Déficit calórico para bajar peso/triglicéridos
-    } else if (datos.objetivo.includes('subir')) {
-      caloriasDiarias += 500; // Superávit calórico
-    }
-
-    this.caloriasCalculadas = Math.round(caloriasDiarias);
-  }
-
-  calcularMacros(): void {
-    // Distribución de macronutrientes (ajustable según necesidad)
-    // Proteínas: 30% de calorías (4 kcal/g)
-    // Carbohidratos: 40% de calorías (4 kcal/g)
-    // Grasas: 30% de calorías (9 kcal/g)
-
-    this.proteinas = Math.round((this.caloriasCalculadas * 0.30) / 4);
-    this.carbohidratos = Math.round((this.caloriasCalculadas * 0.40) / 4);
-    this.grasas = Math.round((this.caloriasCalculadas * 0.30) / 9);
-  }
-
-  crearGrafico(): void {
-    if (!this.isBrowser) return;
-
-    const canvas = document.getElementById('macrosChart') as HTMLCanvasElement;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    this.chart = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Proteínas', 'Carbohidratos', 'Grasas'],
-        datasets: [{
-          data: [this.proteinas, this.carbohidratos, this.grasas],
-          backgroundColor: [
-            '#FF6384',
-            '#36A2EB',
-            '#FFCE56'
-          ],
-          borderWidth: 0
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
-          legend: {
-            display: false
-          }
-        }
+      // Ajustar según objetivo
+      if (datos.objetivo === 'bajar_peso') {
+        this.caloriasCalculadas = Math.round(tmb - 500);
+        this.mesesObjetivo = 3;
+      } else if (datos.objetivo === 'aumentar_peso') {
+        this.caloriasCalculadas = Math.round(tmb + 500);
+        this.mesesObjetivo = 3;
+      } else {
+        this.caloriasCalculadas = Math.round(tmb);
+        this.mesesObjetivo = 2;
       }
+
+      // Calcular macros (40% carbos, 30% proteína, 30% grasa)
+      this.proteinas = Math.round((this.caloriasCalculadas * 0.30) / 4);
+      this.carbohidratos = Math.round((this.caloriasCalculadas * 0.40) / 4);
+      this.grasas = Math.round((this.caloriasCalculadas * 0.30) / 9);
+    }
+  }
+
+  cargarPlanesNutricionales(): void {
+    this.pacienteService.listarPlanesNutricionales().subscribe({
+      next: (planes) => this.planesNutricionales = planes,
+      error: (error) => console.error('Error al cargar planes nutricionales:', error)
     });
   }
 
-  finalizarRegistro(): void {
-    console.log('Registro completado');
-    this.router.navigate(['/dashboard']);
+  selectPlan(idPlan: number): void {
+    this.planSeleccionado = idPlan;
   }
 
-  ngOnDestroy(): void {
-    if (this.chart) {
-      this.chart.destroy();
+  goBack(): void {
+    this.router.navigate(['/escoger-plan']);
+  }
+
+  // ✅ Método faltante
+  finalizarRegistro(): void {
+    if (!this.planSeleccionado) {
+      alert('Por favor selecciona un plan nutricional');
+      return;
     }
+
+    this.registroShared.guardarPlanNutricional(this.planSeleccionado);
+
+    if (!this.registroShared.datosCompletos()) {
+      alert('Faltan datos por completar');
+      return;
+    }
+
+    this.isLoading = true;
+    const datosCompletos = this.registroShared.obtenerDatos();
+
+    // ✅ PRIMERO: Registrar el usuario en la BD
+    this.pacienteService.registrarUsuario(datosCompletos.usuarioCompleto!).subscribe({
+      next: (usuarioCreado) => {
+        // ✅ SEGUNDO: Crear el paciente con el ID del usuario recién creado
+        const paciente = {
+          idusuario: { id: usuarioCreado.id },
+          altura: datosCompletos.datosSalud!.altura,
+          peso: datosCompletos.datosSalud!.peso,
+          edad: datosCompletos.datosSalud!.edad,
+          trigliceridos: datosCompletos.datosSalud!.trigliceridos,
+          actividadFisica: datosCompletos.nivelActividad!,
+          objetivo: datosCompletos.objetivo!,
+          idplan: { id: datosCompletos.idPlan },
+          idPlanNutricional: { id: datosCompletos.idPlanNutricional }
+        };
+
+        // ✅ TERCERO: Registrar el paciente
+        this.pacienteService.registrarPaciente(paciente).subscribe({
+          next: () => {
+            this.isLoading = false;
+            this.registroShared.limpiarDatos();
+            alert('¡Registro completado exitosamente!');
+            this.router.navigate(['/login']);
+          },
+          error: (error) => {
+            this.isLoading = false;
+            console.error('Error al registrar paciente:', error);
+            alert('Error al completar el registro');
+          }
+        });
+      },
+      error: (error) => {
+        this.isLoading = false;
+        console.error('Error al registrar usuario:', error);
+        alert('Error al registrar usuario');
+      }
+    });
   }
 }

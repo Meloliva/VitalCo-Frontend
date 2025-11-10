@@ -16,7 +16,7 @@
 
     <!-- NUEVO ICONO ARRIBA DE LA BARRA -->
     <div class="icon-above-progress">
-      <img src="Images/Logos/logo_inicio.png" alt="Icono Fitia" class="icono-fitia">
+      <img src="/Images/Logos/logo-nav.png" alt="Icono Fitia" class="icono-fitia">
     </div>
 
     <!-- Barra de progreso de Angular Material -->
@@ -92,7 +92,9 @@
             <i class="fas eye-icon"
                [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
                (click)="togglePasswordVisibility()"></i>
+            <small *ngIf="registroForm.get('password')?.invalid && registroForm.get('password')?.touched" class="error-text">Mínimo de 6 caracteres</small>
           </div>
+
         </div>
       </div>
 

@@ -1,44 +1,81 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import {MatProgressBar} from '@angular/material/progress-bar';
+import { CommonModule } from '@angular/common';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { PacienteService, PlanSuscripcionDTO } from '../../service/paciente.service';
+import { RegistroSharedService } from '../../service/registro-shared.service';
 
 @Component({
-  selector: 'app-planes',
+  selector: 'app-escoger-plan',
+  standalone: true,
   templateUrl: './escoger-plan.html',
-  imports: [
-    MatProgressBar
-  ],
-  styleUrls: ['./escoger-plan.css']
+  styleUrls: ['./escoger-plan.css'],
+  imports: [CommonModule, MatProgressBarModule]
 })
 export class EscogerPlanComponent implements OnInit {
-  progressValue: number = 100;
-  planSeleccionado: string | null = null;
+  progressValue = 0;
+  planes: PlanSuscripcionDTO[] = [];
+  planSeleccionado: number = 0;
 
-  constructor(private router: Router) {}
+  // ✅ Cachear los IDs de los planes
+  planFreeId: number = 0;
+  planPremiumId: number = 0;
+
+  constructor(
+    private router: Router,
+    private pacienteService: PacienteService,
+    private registroShared: RegistroSharedService
+  ) {}
 
   ngOnInit(): void {
-    // Inicialización
+    this.registroShared.progress$.subscribe(progress => this.progressValue = progress);
+    this.cargarPlanes();
   }
 
-  selectPlan(plan: string): void {
-    this.planSeleccionado = plan;
-    console.log('Plan seleccionado:', plan);
+  cargarPlanes(): void {
+    this.pacienteService.listarPlanesSuscripcion().subscribe({
+      next: (planes) => {
+        this.planes = planes;
+        console.log('Planes cargados:', planes);
+
+        // ✅ Guardar los IDs de los planes
+        this.planFreeId = this.obtenerIdPlanPorTipo('Plan free');
+        this.planPremiumId = this.obtenerIdPlanPorTipo('Plan premium');
+
+        console.log('Plan Free ID:', this.planFreeId);
+        console.log('Plan Premium ID:', this.planPremiumId);
+      },
+      error: (error) => console.error('Error al cargar planes:', error)
+    });
   }
 
-  onSubmit(): void {
-    if (this.planSeleccionado) {
-      console.log('Registrando con escoger-plan:', this.planSeleccionado);
+  obtenerIdPlanPorTipo(tipoPlan: string): number {
+    const plan = this.planes.find(p =>
+      p.tipo.toLowerCase() === tipoPlan.toLowerCase()
+    );
+    return plan?.id || 0;
+  }
 
-      // Guardar el escoger-plan y continuar
-      // this.userService.setPlan(this.planSeleccionado);
-       this.router.navigate(['/macronutrientes']);
-
-
+  selectPlan(idPlan: number): void {
+    if (idPlan === 0) {
+      console.error('ID de plan inválido');
+      return;
     }
+    this.planSeleccionado = idPlan;
+    console.log('Plan seleccionado:', idPlan);
   }
 
   goBack(): void {
-    this.router.navigate(['/nivelactividad']);
-    // O usar: window.history.back();
+    this.router.navigate(['/nivel-actividad']);
+  }
+
+  onSubmit(): void {
+    if (!this.planSeleccionado || this.planSeleccionado === 0) {
+      alert('Por favor selecciona un plan');
+      return;
+    }
+
+    this.registroShared.guardarPlan(this.planSeleccionado);
+    this.router.navigate(['/plan-nutricional']);
   }
 }
