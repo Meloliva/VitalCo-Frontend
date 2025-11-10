@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // ✅ Agregar
+import { FormsModule } from '@angular/forms';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { PacienteService, PlanNutricionalDTO } from '../../service/paciente.service';
 import { RegistroSharedService } from '../../service/registro-shared.service';
 
 @Component({
@@ -10,37 +11,74 @@ import { RegistroSharedService } from '../../service/registro-shared.service';
   standalone: true,
   templateUrl: './objetivo.html',
   styleUrls: ['./objetivo.css'],
-  imports: [CommonModule, FormsModule, MatProgressBarModule] // ✅ Agregar FormsModule
+  imports: [CommonModule, FormsModule, MatProgressBarModule]
 })
 export class ObjetivoComponent implements OnInit {
-  progressValue = 0;
   objetivoSeleccionado: string = '';
+  planesNutricionales: PlanNutricionalDTO[] = [];
+  progressValue: number = 0;
 
   constructor(
     private router: Router,
+    private pacienteService: PacienteService,
     private registroShared: RegistroSharedService
   ) {}
 
   ngOnInit(): void {
-    this.registroShared.progress$.subscribe(progress => this.progressValue = progress);
+    this.cargarPlanesNutricionales();
+    this.progressValue = this.registroShared.obtenerProgreso();
   }
 
-  // ✅ Método faltante
+  cargarPlanesNutricionales(): void {
+    this.pacienteService.listarPlanesNutricionales().subscribe({
+      next: (planes) => {
+        this.planesNutricionales = planes;
+        console.log('Planes cargados:', planes);
+      },
+      error: (error) => console.error('Error al cargar planes:', error)
+    });
+  }
+
   onSelectChange(): void {
     console.log('Objetivo seleccionado:', this.objetivoSeleccionado);
   }
 
-  goBack(): void {
-    this.router.navigate(['/datos-salud']);
-  }
-
   onSubmit(): void {
     if (!this.objetivoSeleccionado) {
-      alert('Por favor selecciona tu objetivo');
+      alert('Por favor selecciona un objetivo');
       return;
     }
 
-    this.registroShared.guardarObjetivo(this.objetivoSeleccionado);
-    this.router.navigate(['/nivel-actividad']);
+    const [objetivoTexto, meses] = this.objetivoSeleccionado.split('-');
+    const duracionBuscada = `${meses} meses`;
+
+    const normalizar = (texto: string) => texto.toLowerCase().trim().replace(/\s+/g, ' ');
+
+    const planEncontrado = this.planesNutricionales.find(plan => {
+      const objetivoNormalizado = normalizar(plan.objetivo || '');
+      const duracionNormalizada = normalizar(plan.duracion || '');
+      const buscarObjetivo = normalizar(objetivoTexto === 'bajar' ? 'bajar trigliceridos' : 'mantener tu salud');
+      const buscarDuracion = normalizar(duracionBuscada);
+
+      return objetivoNormalizado === buscarObjetivo && duracionNormalizada === buscarDuracion;
+    });
+
+    if (!planEncontrado || !planEncontrado.id) {
+      alert('No se encontró un plan nutricional que coincida.');
+      return;
+    }
+
+    // ✅ Solo guardar el plan nutricional (que ya incluye el objetivo)
+    this.registroShared.guardarPlanNutricional(planEncontrado.id);
+
+    console.log('📊 Plan nutricional guardado:', planEncontrado);
+    console.log('✅ Datos completos:', this.registroShared.obtenerDatos());
+
+    this.router.navigate(['/nivelactividad']);
+  }
+
+
+  goBack(): void {
+    this.router.navigate(['/datos-salud']);
   }
 }

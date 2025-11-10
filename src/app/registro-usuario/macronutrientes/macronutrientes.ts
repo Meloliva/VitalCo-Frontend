@@ -91,15 +91,8 @@ export class MacronutrientesComponent implements OnInit {
     this.router.navigate(['/escoger-plan']);
   }
 
-  // ✅ Método faltante
   finalizarRegistro(): void {
-    if (!this.planSeleccionado) {
-      alert('Por favor selecciona un plan nutricional');
-      return;
-    }
-
-    this.registroShared.guardarPlanNutricional(this.planSeleccionado);
-
+    // ✅ Validar que todos los datos estén completos
     if (!this.registroShared.datosCompletos()) {
       alert('Faltan datos por completar');
       return;
@@ -108,10 +101,9 @@ export class MacronutrientesComponent implements OnInit {
     this.isLoading = true;
     const datosCompletos = this.registroShared.obtenerDatos();
 
-    // ✅ PRIMERO: Registrar el usuario en la BD
+    // ✅ El plan nutricional ya fue seleccionado en 'objetivo'
     this.pacienteService.registrarUsuario(datosCompletos.usuarioCompleto!).subscribe({
       next: (usuarioCreado) => {
-        // ✅ SEGUNDO: Crear el paciente con el ID del usuario recién creado
         const paciente = {
           idusuario: { id: usuarioCreado.id },
           altura: datosCompletos.datosSalud!.altura,
@@ -121,10 +113,9 @@ export class MacronutrientesComponent implements OnInit {
           actividadFisica: datosCompletos.nivelActividad!,
           objetivo: datosCompletos.objetivo!,
           idplan: { id: datosCompletos.idPlan },
-          idPlanNutricional: { id: datosCompletos.idPlanNutricional }
+          idPlanNutricional: { id: datosCompletos.idPlanNutricional } // ✅ Ya guardado
         };
 
-        // ✅ TERCERO: Registrar el paciente
         this.pacienteService.registrarPaciente(paciente).subscribe({
           next: () => {
             this.isLoading = false;
@@ -146,4 +137,5 @@ export class MacronutrientesComponent implements OnInit {
       }
     });
   }
+
 }

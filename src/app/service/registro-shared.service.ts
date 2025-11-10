@@ -40,11 +40,6 @@ export class RegistroSharedService {
     this.actualizarProgreso(2);
   }
 
-  guardarObjetivo(objetivo: string): void {
-    this.datosRegistro.objetivo = objetivo;
-    this.actualizarProgreso(3);
-  }
-
   guardarNivelActividad(nivel: string): void {
     this.datosRegistro.nivelActividad = nivel;
     this.actualizarProgreso(4);
@@ -57,7 +52,9 @@ export class RegistroSharedService {
 
   guardarPlanNutricional(idPlanNutricional: number): void {
     this.datosRegistro.idPlanNutricional = idPlanNutricional;
-    this.actualizarProgreso(6);
+    // ✅ NO guardar "objetivo" como campo separado
+    this.actualizarProgreso(3); // ✅ Paso 3 de 5
+    console.log('✅ Plan nutricional guardado:', idPlanNutricional);
   }
 
   obtenerDatos(): DatosRegistroPaciente {
@@ -65,9 +62,19 @@ export class RegistroSharedService {
   }
 
   datosCompletos(): boolean {
-    const { usuarioId, datosSalud, objetivo, nivelActividad, idPlan, idPlanNutricional } = this.datosRegistro;
-    return !!(usuarioId && datosSalud && objetivo && nivelActividad && idPlan && idPlanNutricional);
+    const { usuarioCompleto, datosSalud, objetivo, nivelActividad, idPlan, idPlanNutricional } = this.datosRegistro;
+
+    console.log('🔍 Verificando datos completos:', {
+      tieneUsuario: !!usuarioCompleto,
+      tieneSalud: !!datosSalud,
+      tieneActividad: !!nivelActividad,
+      tienePlan: !!idPlan,
+      tienePlanNutricional: !!idPlanNutricional
+    });
+
+    return !!(usuarioCompleto && datosSalud && nivelActividad && idPlan && idPlanNutricional);
   }
+
 
   limpiarDatos(): void {
     this.datosRegistro = {};
