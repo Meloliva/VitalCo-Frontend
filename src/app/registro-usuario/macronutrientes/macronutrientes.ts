@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -13,18 +13,15 @@ import Chart from 'chart.js/auto';
   styleUrls: ['./macronutrientes.css'],
   imports: [CommonModule, MatProgressBarModule]
 })
-export class MacronutrientesComponent implements OnInit {
+export class MacronutrientesComponent implements OnInit, AfterViewInit {
   progressValue = 0;
   planesNutricionales: PlanNutricionalDTO[] = [];
-  planSeleccionado: number = 0;
-  isLoading = false;
 
-  // ✅ Agregar propiedades faltantes
-  caloriasCalculadas: number = 2000; // Valor calculado según los datos
-  mesesObjetivo: number = 3; // Duración del objetivo
-  proteinas: number = 150; // Gramos
-  carbohidratos: number = 250; // Gramos
-  grasas: number = 60; // Gramos
+  caloriasCalculadas: number = 2000;
+  mesesObjetivo: number = 3;
+  proteinas: number = 150;
+  carbohidratos: number = 250;
+  grasas: number = 60;
 
   constructor(
     private router: Router,
@@ -35,12 +32,20 @@ export class MacronutrientesComponent implements OnInit {
   ngOnInit(): void {
     this.registroShared.progress$.subscribe(progress => this.progressValue = progress);
     this.cargarPlanesNutricionales();
-    this.calcularMacronutrientes(); // ✅ Calcular macros según los datos del paciente
   }
 
   ngAfterViewInit(): void {
-    // ✅ Crear gráfico después de que el canvas esté renderizado
     this.crearGraficoMacros();
+  }
+
+  cargarPlanesNutricionales(): void {
+    this.pacienteService.listarPlanesNutricionales().subscribe({
+      next: (planes) => {
+        this.planesNutricionales = planes;
+        this.calcularMacronutrientes();
+      },
+      error: (error) => console.error('Error al cargar planes nutricionales:', error)
+    });
   }
 
   private calcularMacronutrientes(): void {
@@ -61,9 +66,9 @@ export class MacronutrientesComponent implements OnInit {
       const nivelNormalizado = datos.nivelActividad.toLowerCase().replace(/\s+/g, '_');
       tmb *= factorActividad[nivelNormalizado] || 1.375;
 
-      // Obtener objetivo del plan nutricional
       const planNutricional = this.planesNutricionales.find(p => p.id === datos.idPlanNutricional);
       const objetivo = planNutricional?.objetivo?.toLowerCase() || '';
+
       if (objetivo.includes('bajar') || objetivo.includes('perder')) {
         this.caloriasCalculadas = Math.round(tmb - 500);
         this.mesesObjetivo = 3;
@@ -75,26 +80,25 @@ export class MacronutrientesComponent implements OnInit {
         this.mesesObjetivo = 2;
       }
 
-      // Calcular macros
       this.proteinas = Math.round((this.caloriasCalculadas * 0.30) / 4);
       this.carbohidratos = Math.round((this.caloriasCalculadas * 0.40) / 4);
       this.grasas = Math.round((this.caloriasCalculadas * 0.30) / 9);
     }
   }
+
   private crearGraficoMacros(): void {
     const canvas = document.getElementById('macrosChart') as HTMLCanvasElement;
-
     if (!canvas) {
       console.error('❌ Canvas no encontrado');
       return;
     }
 
     const ctx = canvas.getContext('2d');
-
     if (!ctx) {
       console.error('❌ No se pudo obtener el contexto del canvas');
       return;
     }
+
     new Chart(ctx, {
       type: 'doughnut',
       data: {
@@ -117,66 +121,13 @@ export class MacronutrientesComponent implements OnInit {
     });
   }
 
-   cargarPlanesNutricionales(): void {
-    this.pacienteService.listarPlanesNutricionales().subscribe({
-      next: (planes) => this.planesNutricionales = planes,
-      error: (error) => console.error('Error al cargar planes nutricionales:', error)
-    });
-  }
-
-  selectPlan(idPlan: number): void {
-    this.planSeleccionado = idPlan;
-  }
-
   goBack(): void {
     this.router.navigate(['/escoger-plan']);
   }
 
   finalizarRegistro(): void {
-    // ✅ Validar que todos los datos estén completos
-    if (!this.registroShared.datosCompletos()) {
-      alert('Faltan datos por completar');
-      return;
-    }
-
-    this.isLoading = true;
-    const datosCompletos = this.registroShared.obtenerDatos();
-
-    // ✅ El plan nutricional ya fue seleccionado en 'objetivo'
-    this.pacienteService.registrarUsuario(datosCompletos.usuarioCompleto!).subscribe({
-      next: (usuarioCreado) => {
-        const paciente = {
-          idusuario: { id: usuarioCreado.id },
-          altura: datosCompletos.datosSalud!.altura,
-          peso: datosCompletos.datosSalud!.peso,
-          edad: datosCompletos.datosSalud!.edad,
-          trigliceridos: datosCompletos.datosSalud!.trigliceridos,
-          actividadFisica: datosCompletos.nivelActividad!,
-          objetivo: datosCompletos.objetivo!,
-          idplan: { id: datosCompletos.idPlan },
-          idPlanNutricional: { id: datosCompletos.idPlanNutricional } // ✅ Ya guardado
-        };
-
-        this.pacienteService.registrarPaciente(paciente).subscribe({
-          next: () => {
-            this.isLoading = false;
-            this.registroShared.limpiarDatos();
-            alert('¡Registro completado exitosamente!');
-            this.router.navigate(['/sistema/progreso-paciente']);
-          },
-          error: (error) => {
-            this.isLoading = false;
-            console.error('Error al registrar paciente:', error);
-            alert('Error al completar el registro');
-          }
-        });
-      },
-      error: (error) => {
-        this.isLoading = false;
-        console.error('Error al registrar usuario:', error);
-        alert('Error al registrar usuario');
-      }
-    });
+    this.registroShared.limpiarDatos();
+    alert('¡Registro completado exitosamente!');
+    this.router.navigate(['/sistema/progreso-paciente']);
   }
-
 }

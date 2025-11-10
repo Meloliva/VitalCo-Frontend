@@ -16,8 +16,8 @@ export class EscogerPlanComponent implements OnInit {
   progressValue = 0;
   planes: PlanSuscripcionDTO[] = [];
   planSeleccionado: number = 0;
+  isLoading = false;
 
-  // ✅ Cachear los IDs de los planes
   planFreeId: number = 0;
   planPremiumId: number = 0;
 
@@ -36,23 +36,15 @@ export class EscogerPlanComponent implements OnInit {
     this.pacienteService.listarPlanesSuscripcion().subscribe({
       next: (planes) => {
         this.planes = planes;
-        console.log('Planes cargados:', planes);
-
-        // ✅ Guardar los IDs de los planes
         this.planFreeId = this.obtenerIdPlanPorTipo('Plan free');
         this.planPremiumId = this.obtenerIdPlanPorTipo('Plan premium');
-
-        console.log('Plan Free ID:', this.planFreeId);
-        console.log('Plan Premium ID:', this.planPremiumId);
       },
       error: (error) => console.error('Error al cargar planes:', error)
     });
   }
 
   obtenerIdPlanPorTipo(tipoPlan: string): number {
-    const plan = this.planes.find(p =>
-      p.tipo.toLowerCase() === tipoPlan.toLowerCase()
-    );
+    const plan = this.planes.find(p => p.tipo.toLowerCase() === tipoPlan.toLowerCase());
     return plan?.id || 0;
   }
 
@@ -62,11 +54,10 @@ export class EscogerPlanComponent implements OnInit {
       return;
     }
     this.planSeleccionado = idPlan;
-    console.log('Plan seleccionado:', idPlan);
   }
 
   goBack(): void {
-    this.router.navigate(['/nivel-actividad']);
+    this.router.navigate(['/nivelactividad']);
   }
 
   onSubmit(): void {
@@ -74,8 +65,47 @@ export class EscogerPlanComponent implements OnInit {
       alert('Por favor selecciona un plan');
       return;
     }
-
     this.registroShared.guardarPlan(this.planSeleccionado);
-    this.router.navigate(['/macronutrientes']);
+
+    if (!this.registroShared.datosCompletos()) {
+      alert('Faltan datos por completar');
+      return;
+    }
+
+    this.isLoading = true;
+    const datosCompletos = this.registroShared.obtenerDatos();
+
+    this.pacienteService.registrarUsuario(datosCompletos.usuarioCompleto!).subscribe({
+      next: (usuarioCreado) => {
+        const paciente = {
+          idusuario: { id: usuarioCreado.id },
+          altura: datosCompletos.datosSalud!.altura,
+          peso: datosCompletos.datosSalud!.peso,
+          edad: datosCompletos.datosSalud!.edad,
+          trigliceridos: datosCompletos.datosSalud!.trigliceridos,
+          actividadFisica: datosCompletos.nivelActividad!,
+          objetivo: datosCompletos.objetivo || '',
+          idplan: { id: this.planSeleccionado },
+          idPlanNutricional: { id: datosCompletos.idPlanNutricional }
+        };
+
+        this.pacienteService.registrarPaciente(paciente).subscribe({
+          next: () => {
+            this.isLoading = false;
+            this.router.navigate(['/macronutrientes']);
+          },
+          error: (error) => {
+            this.isLoading = false;
+            console.error('Error al registrar paciente:', error);
+            alert('Error al completar el registro');
+          }
+        });
+      },
+      error: (error) => {
+        this.isLoading = false;
+        console.error('Error al registrar usuario:', error);
+        alert('Error al registrar usuario');
+      }
+    });
   }
 }
