@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { PacienteService, PlanNutricionalDTO } from '../../service/paciente.service';
 import { RegistroSharedService } from '../../service/registro-shared.service';
+import Chart from 'chart.js/auto';
 
 @Component({
   selector: 'app-macronutrientes',
@@ -37,16 +38,18 @@ export class MacronutrientesComponent implements OnInit {
     this.calcularMacronutrientes(); // ✅ Calcular macros según los datos del paciente
   }
 
-  // ✅ Calcular macronutrientes según los datos ingresados
+  ngAfterViewInit(): void {
+    // ✅ Crear gráfico después de que el canvas esté renderizado
+    this.crearGraficoMacros();
+  }
+
   private calcularMacronutrientes(): void {
     const datos = this.registroShared.obtenerDatos();
 
-    if (datos.datosSalud && datos.nivelActividad && datos.objetivo) {
-      // Fórmula Harris-Benedict simplificada
+    if (datos.datosSalud && datos.nivelActividad && datos.idPlanNutricional) {
       const { peso, altura, edad } = datos.datosSalud;
-      let tmb = 10 * peso + 6.25 * (altura * 100) - 5 * edad + 5; // Hombre
+      let tmb = 10 * peso + 6.25 * (altura * 100) - 5 * edad + 5;
 
-      // Ajustar según nivel de actividad
       const factorActividad: { [key: string]: number } = {
         'sedentario': 1.2,
         'ligero': 1.375,
@@ -55,13 +58,16 @@ export class MacronutrientesComponent implements OnInit {
         'muy_activo': 1.9
       };
 
-      tmb *= factorActividad[datos.nivelActividad.toLowerCase()] || 1.375;
+      const nivelNormalizado = datos.nivelActividad.toLowerCase().replace(/\s+/g, '_');
+      tmb *= factorActividad[nivelNormalizado] || 1.375;
 
-      // Ajustar según objetivo
-      if (datos.objetivo === 'bajar_peso') {
+      // Obtener objetivo del plan nutricional
+      const planNutricional = this.planesNutricionales.find(p => p.id === datos.idPlanNutricional);
+      const objetivo = planNutricional?.objetivo?.toLowerCase() || '';
+      if (objetivo.includes('bajar') || objetivo.includes('perder')) {
         this.caloriasCalculadas = Math.round(tmb - 500);
         this.mesesObjetivo = 3;
-      } else if (datos.objetivo === 'aumentar_peso') {
+      } else if (objetivo.includes('aumentar') || objetivo.includes('subir')) {
         this.caloriasCalculadas = Math.round(tmb + 500);
         this.mesesObjetivo = 3;
       } else {
@@ -69,14 +75,49 @@ export class MacronutrientesComponent implements OnInit {
         this.mesesObjetivo = 2;
       }
 
-      // Calcular macros (40% carbos, 30% proteína, 30% grasa)
+      // Calcular macros
       this.proteinas = Math.round((this.caloriasCalculadas * 0.30) / 4);
       this.carbohidratos = Math.round((this.caloriasCalculadas * 0.40) / 4);
       this.grasas = Math.round((this.caloriasCalculadas * 0.30) / 9);
     }
   }
+  private crearGraficoMacros(): void {
+    const canvas = document.getElementById('macrosChart') as HTMLCanvasElement;
 
-  cargarPlanesNutricionales(): void {
+    if (!canvas) {
+      console.error('❌ Canvas no encontrado');
+      return;
+    }
+
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) {
+      console.error('❌ No se pudo obtener el contexto del canvas');
+      return;
+    }
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Proteínas', 'Carbohidratos', 'Grasas'],
+        datasets: [{
+          data: [this.proteinas, this.carbohidratos, this.grasas],
+          backgroundColor: ['#4CAF50', '#FF9800', '#F44336'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+  }
+
+   cargarPlanesNutricionales(): void {
     this.pacienteService.listarPlanesNutricionales().subscribe({
       next: (planes) => this.planesNutricionales = planes,
       error: (error) => console.error('Error al cargar planes nutricionales:', error)
@@ -121,7 +162,7 @@ export class MacronutrientesComponent implements OnInit {
             this.isLoading = false;
             this.registroShared.limpiarDatos();
             alert('¡Registro completado exitosamente!');
-            this.router.navigate(['/login']);
+            this.router.navigate(['/sistema/progreso-paciente']);
           },
           error: (error) => {
             this.isLoading = false;

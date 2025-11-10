@@ -122,6 +122,7 @@ export const routes: Routes = [
 
 
       { path: 'receta-paciente', loadComponent: () => import('./receta-paciente/receta-paciente').then(m => m.RecetaPaciente) },
+      {path:'progreso-paciente',loadComponent:()=>import('./progreso-paciente/progreso-paciente').then(m=>m.ProgresoPaciente)},
       { path: 'cambiar-plan', loadComponent: () => import('./cambiar-plan/cambiar-plan').then(m => m.CambiarPlan) },
       { path: 'perfil-paciente',loadComponent:()=>import('./perfil-paciente/perfil-paciente').then(m=>m.PerfilPacienteComponent)}
     ]
