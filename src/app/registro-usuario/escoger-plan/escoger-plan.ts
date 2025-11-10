@@ -76,6 +76,6 @@ export class EscogerPlanComponent implements OnInit {
     }
 
     this.registroShared.guardarPlan(this.planSeleccionado);
-    this.router.navigate(['/plan-nutricional']);
+    this.router.navigate(['/macronutrientes']);
   }
 }

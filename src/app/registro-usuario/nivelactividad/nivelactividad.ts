@@ -41,4 +41,5 @@ export class NivelActividadComponent implements OnInit {
     this.registroShared.guardarNivelActividad(this.nivelSeleccionado);
     this.router.navigate(['/escoger-plan']);
   }
+
 }
