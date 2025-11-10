@@ -51,7 +51,7 @@
 
       <!-- Plan Gratuito -->
       <div class="plan-card"
-           [class.selected]="planSeleccionado === 'gratuito'">
+           [class.selected]="planSeleccionado === planFreeId">
         <div class="plan-header">
           <h3>Plan Gratuito</h3>
           <p class="plan-precio">Gratis</p>
@@ -76,17 +76,17 @@
           </li>
         </ul>
 
-        <button class="btn-plan" (click)="selectPlan('gratuito')">
+        <button class="btn-plan" (click)="selectPlan(planFreeId)">
           Empezar gratis
         </button>
       </div>
 
       <!-- Plan Premium/Anual -->
       <div class="plan-card"
-           [class.selected]="planSeleccionado === 'premium'">
+           [class.selected]="planSeleccionado ===  planPremiumId">
         <div class="plan-header">
           <h3>Plan Anual</h3>
-          <p class="plan-precio">S/49.90</p>
+          <p class="plan-precio">S/95.99</p>
         </div>
 
         <p class="plan-descripcion">
@@ -116,7 +116,7 @@
           </li>
         </ul>
 
-        <button class="btn-plan" (click)="selectPlan('premium')">
+        <button class="btn-plan" (click)="selectPlan(planPremiumId)">
           Elegir Premium
         </button>
       </div>

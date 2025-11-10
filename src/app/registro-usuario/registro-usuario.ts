@@ -1,91 +1,95 @@
-import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import {Router} from '@angular/router';
+import { Router } from '@angular/router';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { CommonModule, NgClass, isPlatformBrowser } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { PacienteService, RolDTO, UsuarioDTO } from '../service/paciente.service';
+import { RegistroSharedService } from '../service/registro-shared.service';
 
 @Component({
   selector: 'app-registro',
   templateUrl: './registro-usuario.html',
-  imports: [
-    ReactiveFormsModule,
-    MatProgressBar,
-    NgClass,
-    CommonModule,
-
-  ],
+  standalone: true,
+  imports: [ReactiveFormsModule, MatProgressBar, CommonModule],
   styleUrls: ['./registro-usuario.css']
 })
-export class RegistroUsuarioComponent implements OnInit, OnDestroy {
-  registroForm: FormGroup;
-  showPassword: boolean = false;
-  progressValue: number = 20; // Paso 1 de 5
+export class RegistroUsuarioComponent implements OnInit {
+  registroForm!: FormGroup;
+  roles: RolDTO[] = [];
+  isLoading = false;
+  showPassword = false;
+  progressValue = 0;
+  mensaje: { tipo: 'success' | 'error', texto: string } | null = null;
 
   constructor(
     private fb: FormBuilder,
-    private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {
+    private pacienteService: PacienteService,
+    private registroShared: RegistroSharedService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    this.initForm();
+    this.cargarRoles();
+    this.registroShared.progress$.subscribe(progress => this.progressValue = progress);
+  }
+
+  initForm(): void {
     this.registroForm = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(2)]],
       dni: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
-      apellido: ['', [Validators.required, Validators.minLength(2)]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      nombre: ['', Validators.required],
+      apellido: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],
-      genero: ['', [Validators.required]]
+      genero: ['', Validators.required]
     });
   }
 
-  ngOnInit() {
-    // Solo ejecutar en el navegador
-    if (isPlatformBrowser(this.platformId)) {
-      const navbar = document.querySelector('app-navbar');
-      if (navbar) {
-        (navbar as HTMLElement).style.display = 'none';
-      }
-    }
+  cargarRoles(): void {
+    this.pacienteService.listarRoles().subscribe({
+      next: (roles) => this.roles = roles,
+      error: () => this.showError('Error al cargar roles')
+    });
   }
 
-  ngOnDestroy() {
-    // Solo ejecutar en el navegador
-    if (isPlatformBrowser(this.platformId)) {
-      const navbar = document.querySelector('app-navbar');
-      if (navbar) {
-        (navbar as HTMLElement).style.display = 'block';
-      }
-    }
-  }
-
-  togglePasswordVisibility() {
+  togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
 
-
-  onSubmit() {
-    if (this.registroForm.valid) {
-      const userData = this.registroForm.value;
-
-      console.log('Datos de registro:', userData);
-
-      // TODO: Llamar al servicio de registro
-      // this.authService.register(userData).subscribe(
-      //   response => {
-      //     console.log('Registro exitoso');
-      //     this.router.navigate(['/datos-salud']);  // Aquí se cambia la ruta
-      //   },
-      //   error => {
-      //     console.error('Error en el registro', error);
-      //   }
-      // );
-
-      // Simulando éxito
-
-      this.router.navigate(['/datos-salud']);  // Aquí se cambia la ruta
-    } else {
-      // Marcar todos los campos como touched para mostrar errores
-      Object.keys(this.registroForm.controls).forEach(key => {
-        this.registroForm.get(key)?.markAsTouched();
-      });
+  onSubmit(): void {
+    if (this.registroForm.invalid) {
+      this.showError('Por favor completa todos los campos correctamente');
+      return;
     }
+
+    this.isLoading = true;
+    const formValue = this.registroForm.value;
+    const rolPaciente = this.roles.find(r => r.tipo === 'PACIENTE') || this.roles[1];
+
+    const usuario: UsuarioDTO = {
+      dni: formValue.dni,
+      contraseña: formValue.password,
+      nombre: formValue.nombre,
+      apellido: formValue.apellido,
+      correo: formValue.correo,
+      genero: formValue.genero,
+      rol: rolPaciente,
+      estado: 'ACTIVO'
+    };
+
+    this.registroShared.guardarUsuarioCompleto(usuario);
+    this.isLoading = false;
+    this.showSuccess('Datos guardados', 'Ahora ingresa tus datos de salud');
+    setTimeout(() => this.router.navigate(['/datos-salud']), 1500);
+  }
+
+  private showSuccess(summary: string, detail: string): void {
+    this.mensaje = { tipo: 'success', texto: `${summary}: ${detail}` };
+    setTimeout(() => this.mensaje = null, 5000);
+  }
+
+  private showError(detail: string): void {
+    this.mensaje = { tipo: 'error', texto: `Error: ${detail}` };
+    setTimeout(() => this.mensaje = null, 5000);
   }
 }
