@@ -23,8 +23,8 @@ export interface UsuarioDTO {
 
 export interface TurnoDTO {
   id?: number;
-  inicioTurno: string; // formato: "HH:mm:ss"
-  finTurno: string;    // formato: "HH:mm:ss"
+  inicioTurno: string;
+  finTurno: string;
 }
 
 export interface NutricionistaDTO {

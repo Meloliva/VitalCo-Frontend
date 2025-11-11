@@ -1,11 +1,11 @@
 html, body {
   height: 100%;
-  margin: 0; /* evitar márgenes por defecto que cambian el layout */
+  margin: 0;
 }
 .layout-container {
   display: flex;
   height: 100vh;
-  overflow: hidden; /* evita scroll del layout completo */
+  overflow: hidden;
   box-sizing: border-box;
 }
 
@@ -33,7 +33,7 @@ html, body {
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
   display: flex;
   flex-direction: column;
-  overflow: auto; /* permite scroll interno si el contenido es muy largo */
+  overflow: auto;
   box-sizing: border-box;
 }
 
@@ -59,7 +59,7 @@ html, body {
 
 .main-content {
   flex: 1;
-  overflow: hidden; /* NO hay scroll aquí */
+  overflow: hidden;
   background: #f9fafb;
   padding: 28px;
   display: flex;
@@ -144,7 +144,7 @@ html, body {
 .sidebar-logout {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
   padding: 12px 20px;
   border: none;
@@ -153,7 +153,7 @@ html, body {
   font-size: 14px;
   cursor: pointer;
   border-radius: 8px;
-  margin: 20px;
+  margin: 20px 0 20px 0;
   position: relative;
   z-index: 20;
   transition: background-color 0.3s ease;
@@ -162,6 +162,7 @@ html, body {
 .sidebar-logout:hover {
   background-color: #ffffff;
 }
+
 
 /* CSS */
 :host(.no-page-card) .page-card {

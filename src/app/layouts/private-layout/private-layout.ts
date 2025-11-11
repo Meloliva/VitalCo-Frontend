@@ -28,7 +28,6 @@ export class PrivateLayout implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // Carga el usuario desde storage (solo navegador)
     this.userService.initUserFromStorage();
     this.loadUserData();
     this.checkRoute();
@@ -101,7 +100,7 @@ export class PrivateLayout implements OnInit, OnDestroy {
       this.userService.clearUser();
       localStorage.removeItem('token');
     }
-    this.router.navigate(['/iniciarsesion']);
+    this.router.navigate(['/inicio']);
 
   }
 
