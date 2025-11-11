@@ -2,7 +2,7 @@
 .main-content {
   flex-grow: 1;
   padding: 48px 28px;
-  background: linear-gradient(180deg, #eef1f4 0%, #e8ebef 100%);
+  background: #ffffff;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -12,7 +12,7 @@
 }
 
 .container {
-  background: #f5f5f5;
+  background: #ffffff;
   padding: 40px;
   border-radius: 24px;
   max-width: 900px;
@@ -26,11 +26,93 @@ h1 {
   margin-bottom: 24px;
 }
 
+/* ===== Mat-Card principal ===== */
 .form-card {
-  background: #fff;
-  border: 2px solid #16a34a;
-  border-radius: 16px;
-  padding: 32px;
+  background: #fff !important;
+  border: 2px solid #16a34a !important;
+  border-radius: 16px !important;
+  padding: 32px !important;
+  box-shadow: none !important;
+}
+
+.form-card mat-card-content {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* ===== Labels personalizados FUERA de mat-form-field ===== */
+.field-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.edit-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  text-align: center;
+  font-size: 14px;
+  display: block;
+}
+
+/* ===== Form Fields de Angular Material con outline ===== */
+::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}
+
+::ng-deep .full-width {
+  width: 100%;
+}
+
+/* Ocultar el label flotante de Material */
+::ng-deep .mat-mdc-form-field .mat-mdc-floating-label {
+  display: none !important;
+}
+
+/* Estilo del outline */
+::ng-deep .mat-mdc-text-field-wrapper {
+  background: #e0f2e9 !important;
+  border-radius: 12px !important;
+}
+
+::ng-deep .mdc-notched-outline {
+  display: none !important;
+}
+
+::ng-deep .mat-mdc-form-field-infix {
+  padding: 8px 0 !important;
+  min-height: auto !important;
+}
+
+::ng-deep .mat-mdc-input-element {
+  color: #333 !important;
+  font-size: 14px !important;
+  padding: 12px 16px !important;
+  background: transparent !important;
+  height: auto !important;
+}
+
+::ng-deep .mat-mdc-input-element::placeholder {
+  color: #999 !important;
+}
+
+/* Remover el subscript */
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+/* Remover el hint wrapper */
+::ng-deep .mat-mdc-form-field-bottom-align {
+  display: none !important;
+}
+
+/* Input disabled */
+::ng-deep .mat-mdc-input-element:disabled {
+  color: #666 !important;
+  opacity: 0.7;
 }
 
 .form-row {
@@ -46,34 +128,58 @@ h1 {
   flex-direction: column;
 }
 
-input[type="date"],
-input[type="text"],
-input[type="number"] {
-  background: #e0f2e9;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 16px;
-  font-size: 14px;
-}
-
+/* ===== Botones de Angular Material ===== */
 .btn-save {
-  background: #00bf61;
-  color: #fff;
-  padding: 12px 24px;
+  background: #00bf61 !important;
+  color: #fff !important;
+  padding: 12px 24px !important;
   border: none;
-  border-radius: 10px;
+  border-radius: 10px !important;
   cursor: pointer;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  height: auto !important;
+  line-height: normal !important;
 }
 
+.btn-save:hover {
+  background: #00a854 !important;
+}
+
+.btn-save-large {
+  margin-top: 30px;
+  padding: 14px 48px !important;
+  border-radius: 12px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+
+::ng-deep .btn-save .mdc-button__label {
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn-group {
+  display: flex;
+  align-items: flex-end;
+}
+
+/* ===== Tarjetas de pacientes ===== */
 .paciente-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
-  border: 1px solid #ddd;
-  border-radius: 12px;
+  padding: 16px !important;
+  border: 1px solid #ddd !important;
+  border-radius: 12px !important;
   margin-bottom: 10px;
-  background: #fff;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
+.paciente-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .foto {
@@ -81,6 +187,20 @@ input[type="number"] {
   height: 50px;
   background: #c7f9cc;
   border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.paciente-info h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.paciente-info p {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  color: #666;
 }
 
 .acciones {
@@ -88,13 +208,26 @@ input[type="number"] {
   gap: 12px;
 }
 
+/* ===== Botón de regreso con Material Icon ===== */
 .btn-back {
-  background: none;
+  background: none !important;
   border: none;
-  font-size: 24px;
-  color: #00bf61;
+  color: #00bf61 !important;
   cursor: pointer;
   margin-bottom: 20px;
+  padding: 8px !important;
+  width: 48px !important;
+  height: 48px !important;
+}
+
+.btn-back:hover {
+  background: rgba(0, 191, 97, 0.1) !important;
+}
+
+.btn-back mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
 }
 
 .fecha-box {
@@ -105,19 +238,23 @@ input[type="number"] {
   text-align: center;
   margin-bottom: 20px;
   display: inline-block;
+  font-weight: 600;
 }
 
+/* ===== Sección de gráfica ===== */
 .grafica-section {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 40px;
+  margin-bottom: 40px;
 }
 
 .grafica-circular {
   position: relative;
   width: 200px;
   height: 200px;
+  flex-shrink: 0;
 }
 
 .grafica-circular svg {
@@ -132,6 +269,7 @@ input[type="number"] {
   text-align: center;
   font-weight: bold;
   color: #333;
+  font-size: 16px;
 }
 
 .macros {
@@ -142,32 +280,105 @@ input[type="number"] {
   margin-bottom: 16px;
 }
 
+.macro-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
 .macro-bar {
   width: 100%;
   background: #e5e7eb;
   height: 10px;
   border-radius: 10px;
   overflow: hidden;
+  margin-bottom: 4px;
 }
 
 .macro-fill {
   height: 10px;
   background: #00bf61;
   transition: width 0.5s;
+  border-radius: 10px;
+}
+
+.macro-value {
+  font-size: 13px;
+  color: #666;
+}
+
+/* ===== Sección de comidas ===== */
+.comidas {
+  margin-top: 30px;
+}
+
+.comidas > div {
+  margin-bottom: 20px;
 }
 
 .comidas h3 {
   color: #16a34a;
   font-weight: bold;
   margin-bottom: 4px;
+  font-size: 16px;
 }
 
 .divider {
   border-bottom: 2px solid #16a34a;
   width: 50px;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 
+.comidas p {
+  margin: 0;
+  color: #333;
+  font-size: 14px;
+}
+
+/* ===== Editar Paciente ===== */
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #16a34a !important;
+  border-radius: 20px !important;
+  padding: 40px 60px !important;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.edit-form mat-card-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.edit-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.edit-field {
+  width: 100%;
+}
+
+::ng-deep .edit-field .mat-mdc-text-field-wrapper {
+  background: #f1f5f9 !important;
+}
+
+::ng-deep .edit-field .mat-mdc-input-element {
+  text-align: center;
+  font-size: 16px !important;
+}
+
+/* ===== Confirmación ===== */
 .confirm-box {
   text-align: center;
 }
@@ -178,52 +389,66 @@ input[type="number"] {
   padding: 20px;
   border-radius: 12px;
   font-weight: bold;
-}
-
-/* ---- Editar Paciente ---- */
-.edit-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid #16a34a;
-  border-radius: 20px;
-  padding: 40px 60px;
-  max-width: 500px;
-  margin: 0 auto;
-}
-
-.edit-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-  width: 100%;
-}
-
-.edit-group label {
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 8px;
-  text-align: center;
-}
-
-.edit-group input {
-  width: 100%;
-  max-width: 300px;
-  text-align: center;
-  background: #f1f5f9;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 0;
   font-size: 16px;
-  color: #333;
 }
 
-.edit-form .btn-save {
-  margin-top: 30px;
-  padding: 14px 48px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 24px 16px;
+  }
+
+  .container {
+    padding: 20px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .grafica-section {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .grafica-circular {
+    width: 180px;
+    height: 180px;
+  }
+
+  .edit-form {
+    padding: 30px 20px !important;
+  }
+
+  .paciente-card {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .acciones {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  /* INPUT RECTANGULAR VERDE */
+  .input-green {
+    width: 100%;
+    background: #e0f8e7;
+    border: 2px solid #16a34a;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 14px;
+    outline: none;
+  }
+
+  .input-green:disabled {
+    opacity: 0.7;
+  }
+
+  /* ELIMINA diseño mat que bloqueaba tu input */
+  ::ng-deep .mat-mdc-form-field {
+    display: none !important;
+  }
+
 }
