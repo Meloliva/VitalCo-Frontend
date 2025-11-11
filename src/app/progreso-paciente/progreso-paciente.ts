@@ -118,7 +118,7 @@ export class ProgresoPaciente {
   getCalorieGradient(): string {
     const percentage = (this.calories.current / this.calories.total) * 100;
     const degrees = (percentage / 100) * 360;
-    const progressColor = '#28a745';
+    const progressColor = '#fff390';
     const trackColor = '#f0f0f0';
     return `conic-gradient(${progressColor} 0deg ${degrees}deg, ${trackColor} ${degrees}deg 360deg)`;
   }

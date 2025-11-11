@@ -126,14 +126,14 @@
   width: 100%;
   background-color: #f0f0f0;
   border-radius: 50px;
-  height: 10px;
+  height: 20px;
   overflow: hidden;
 }
 
 .progress-bar {
   height: 100%;
-  width: 0%; /* Valor inicial */
-  background-color: #8a8a8a;
+  width: 100%; /* Valor inicial */
+  background-color: #9bd15b;
   border-radius: 50px;
   transition: width 0.5s ease-out;
 }
