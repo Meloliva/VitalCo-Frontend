@@ -73,13 +73,24 @@ export class Iniciarsesion implements OnInit {
       }).subscribe({
         next: (response) => {
           console.log('🔑 JWT recibido:', response.jwt);
+          console.log('👤 Roles:', response.roles);
 
           if (response.jwt) {
             localStorage.setItem('token', response.jwt);
-            console.log('✅ Token guardado:', localStorage.getItem('token'));
+            localStorage.setItem('roles', JSON.stringify(response.roles));
 
-            this.router.navigate(['/sistema/progreso-paciente']);
+            const roles = response.roles.map(r => r.replace('ROLE_', ''));
+
+            if (roles.includes('NUTRICIONISTA')) {
+              this.router.navigate(['/nutricionista/perfil']);
+            } else if (roles.includes('PACIENTE')) {
+              this.router.navigate(['/sistema/progreso-paciente']);
+            } else {
+              this.router.navigate(['/']);
+            }
+
           }
+
           this.isLoading = false;
         },
         error: (error) => {
@@ -90,10 +101,6 @@ export class Iniciarsesion implements OnInit {
       });
     }
   }
-
-
-
-
 
   loginWithFacebook(): void {
     console.log('Login con Facebook');

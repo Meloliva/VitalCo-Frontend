@@ -22,19 +22,20 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  // Login
+  // 🔹 Login
   login(credentials: AuthRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/authenticate`, credentials)
       .pipe(
         tap(response => {
           if (response.jwt) {
             this.setToken(response.jwt);
+            this.setRoles(response.roles);
           }
         })
       );
   }
 
-  // Guardar token
+  // 🔹 Guardar token
   private setToken(token: string): void {
     if (typeof window !== 'undefined') {
       localStorage.setItem('token', token);
@@ -42,7 +43,23 @@ export class AuthService {
     }
   }
 
-  // Obtener token
+  // 🔹 Guardar roles
+  private setRoles(roles: string[]): void {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('roles', JSON.stringify(roles));
+    }
+  }
+
+  // 🔹 Obtener roles
+  getRoles(): string[] {
+    if (typeof window !== 'undefined') {
+      const roles = localStorage.getItem('roles');
+      return roles ? JSON.parse(roles) : [];
+    }
+    return [];
+  }
+
+  // 🔹 Obtener token
   getToken(): string | null {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('token');
@@ -50,20 +67,21 @@ export class AuthService {
     return null;
   }
 
-  // Verificar si está autenticado
+  // 🔹 Verificar autenticación
   isAuthenticated(): boolean {
     return !!this.getToken();
   }
 
-  // Logout
+  // 🔹 Logout
   logout(): void {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('token');
+      localStorage.removeItem('roles');
       this.tokenSubject.next(null);
     }
   }
 
-  // Obtener headers con token
+  // 🔹 Headers con token
   getAuthHeaders(): HttpHeaders {
     const token = this.getToken();
     return new HttpHeaders({
