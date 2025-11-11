@@ -1,17 +1,30 @@
 <div class="main-content">
-  <!-- 1️⃣ Pantalla de búsqueda -->
+
   <div *ngIf="vistaActual === 'buscar'" class="container">
     <h1>Progreso de Pacientes</h1>
+
     <div class="form-card">
       <div class="form-row">
+
         <div class="form-group">
-          <label>Fecha de Seguimiento</label>
-          <input type="date" [(ngModel)]="fechaSeguimiento">
+          <label class="field-label">Fecha de Seguimiento</label>
+          <input
+            type="date"
+            class="input-green"
+            [(ngModel)]="fechaSeguimiento"
+          />
         </div>
+
         <div class="form-group">
-          <label>Filtrar por DNI</label>
-          <input type="text" [(ngModel)]="dniFiltro" placeholder="Buscar por DNI">
+          <label class="field-label">Filtrar por DNI</label>
+          <input
+            type="text"
+            class="input-green"
+            placeholder="Buscar por DNI"
+            [(ngModel)]="dniFiltro"
+          />
         </div>
+
         <div class="form-group btn-group">
           <button class="btn-save" (click)="buscar()">Buscar</button>
         </div>
@@ -19,28 +32,44 @@
     </div>
   </div>
 
-  <!-- 2️⃣ Resultados -->
+
+  <!-- RESULTADOS -->
   <div *ngIf="vistaActual === 'resultados'" class="container">
     <h1>Progreso de Pacientes</h1>
 
     <div class="form-card">
-      <!-- Mostrar fecha y DNI arriba -->
       <div class="form-row">
+
         <div class="form-group">
-          <label>Fecha de Seguimiento</label>
-          <input type="date" [(ngModel)]="fechaSeguimiento" disabled>
+          <label class="field-label">Fecha de Seguimiento</label>
+          <input
+            class="input-green"
+            type="date"
+            [(ngModel)]="fechaSeguimiento"
+            disabled
+          />
         </div>
+
         <div class="form-group">
-          <label>Filtrar por DNI</label>
-          <input type="text" [(ngModel)]="dniFiltro" disabled>
+          <label class="field-label">Filtrar por DNI</label>
+          <input
+            class="input-green"
+            type="text"
+            [(ngModel)]="dniFiltro"
+            disabled
+          />
         </div>
+
         <div class="form-group btn-group">
           <button class="btn-save" (click)="buscar()">Buscar</button>
         </div>
+
       </div>
 
-      <!-- Progreso del paciente debajo -->
-      <div class="paciente-card" *ngFor="let p of pacientes">
+      <mat-card
+        class="paciente-card"
+        *ngFor="let p of pacientes"
+      >
         <div class="paciente-info">
           <div class="foto"></div>
           <div>
@@ -48,17 +77,21 @@
             <p>{{ p.estado }}</p>
           </div>
         </div>
+
         <div class="acciones">
           <button class="btn-save" (click)="verPaciente(p)">Ver</button>
           <button class="btn-save" (click)="editarPaciente(p)">Editar</button>
         </div>
-      </div>
+      </mat-card>
     </div>
   </div>
 
+
   <!-- 3️⃣ Ver paciente -->
   <div *ngIf="vistaActual === 'ver'" class="container">
-    <button class="btn-back" (click)="volver()">←</button>
+    <button mat-icon-button class="btn-back" (click)="volver()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     <div class="fecha-box">{{ pacienteSeleccionado?.fecha }}</div>
 
     <div class="grafica-section">
@@ -105,20 +138,28 @@
 
   <!-- 4️⃣ Editar paciente -->
   <div *ngIf="vistaActual === 'editar'" class="container">
-    <button class="btn-back" (click)="volver()">←</button>
+    <button mat-icon-button class="btn-back" (click)="volver()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     <h1>Modificar Macronutrientes</h1>
-    <div class="form-card edit-form">
-      <div class="edit-group" *ngFor="let campo of ['calorias','proteinas','grasas','carbohidratos','tiempo']">
-        <label>{{ campo | titlecase }}</label>
-        <input [(ngModel)]="metasEditadas[campo]" [type]="campo==='tiempo'?'text':'number'">
-      </div>
-      <button class="btn-save" (click)="guardarCambios()">Guardar</button>
-    </div>
+    <mat-card class="form-card edit-form">
+      <mat-card-content>
+        <div class="edit-group" *ngFor="let campo of ['calorias','proteinas','grasas','carbohidratos','tiempo']">
+          <label class="edit-label">{{ campo | titlecase }}</label>
+          <mat-form-field appearance="outline" class="edit-field">
+            <input matInput [(ngModel)]="metasEditadas[campo]" [type]="campo==='tiempo'?'text':'number'">
+          </mat-form-field>
+        </div>
+        <button mat-raised-button class="btn-save btn-save-large" (click)="guardarCambios()">Guardar</button>
+      </mat-card-content>
+    </mat-card>
   </div>
 
   <!-- 5️⃣ Confirmación -->
   <div *ngIf="vistaActual === 'confirmacion'" class="container confirm-box">
-    <button class="btn-back" (click)="volver()">←</button>
+    <button mat-icon-button class="btn-back" (click)="volver()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     <div class="success-msg">{{ mensajeConfirmacion }}</div>
   </div>
 </div>
