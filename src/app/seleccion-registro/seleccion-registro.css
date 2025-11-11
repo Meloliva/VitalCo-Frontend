@@ -6,17 +6,18 @@
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #f5f5f5 0%, #e8f5e9 100%);
-  padding: 50px;
+  padding: 50px 20px;
   font-family: 'Poppins', sans-serif;
 }
 
+/* Material Card principal */
 .seleccion-card {
-  background: white;
-  border-radius: 20px;
-  padding: 40px;
+  background: white !important;
+  border-radius: 20px !important;
+  padding: 40px !important;
   max-width: 900px;
   width: 100%;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
   position: relative;
   overflow: hidden;
 }
@@ -81,33 +82,46 @@ h1 {
   margin-bottom: 30px;
 }
 
+/* Material Cards de opciones */
 .opcion-card {
-  background: #f9f9f9;
+  background: #f9f9f9 !important;
   border: 2px solid #e0e0e0;
-  border-radius: 15px;
-  padding: 30px;
-  text-align: center;
+  border-radius: 15px !important;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: none !important;
 }
 
 .opcion-card:hover {
   border-color: #00BF61;
   transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 191, 97, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 191, 97, 0.2) !important;
 }
 
+.opcion-card mat-card-content {
+  padding: 30px !important;
+  text-align: center;
+}
+
+/* Iconos usando Material Icons */
 .opcion-icon {
   margin-bottom: 20px;
   display: flex;
   justify-content: center;
 }
 
+.icon-large {
+  font-size: 80px !important;
+  width: 80px !important;
+  height: 80px !important;
+  color: #00BF61;
+}
+
 .opcion-card h3 {
   font-size: 1.5rem;
   font-weight: 600;
   color: #333;
-  margin-bottom: 15px;
+  margin: 0 0 15px 0;
 }
 
 .opcion-card p {
@@ -118,37 +132,43 @@ h1 {
   min-height: 60px;
 }
 
+/* Botones con Material */
 .btn-opcion {
-  width: 100%;
-  padding: 12px 20px;
-  background: white;
-  color: #00BF61;
-  border: 2px solid #00BF61;
-  border-radius: 25px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-family: 'Poppins', sans-serif;
+  width: 100% !important;
+  padding: 12px 20px !important;
+  border-radius: 25px !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  font-family: 'Poppins', sans-serif !important;
+  text-transform: none !important;
+  letter-spacing: 0.3px !important;
+  transition: all 0.3s ease !important;
 }
 
-.btn-opcion:hover {
-  background: #00BF61;
-  color: white;
+/* Colores Material personalizados */
+::ng-deep .mat-mdc-raised-button.mat-primary {
+  --mdc-protected-button-container-color: white !important;
+  --mdc-protected-button-label-text-color: #00BF61 !important;
+  border: 2px solid #00BF61 !important;
+}
+
+::ng-deep .mat-mdc-raised-button.mat-primary:hover {
+  --mdc-protected-button-container-color: #00BF61 !important;
+  --mdc-protected-button-label-text-color: white !important;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 191, 97, 0.3);
-}
-/*
-.btn-opcion.nutricionista {
-  background: #00BF61;
-  color: white;
+  box-shadow: 0 6px 20px rgba(0, 191, 97, 0.3) !important;
 }
 
-.btn-opcion.nutricionista:hover {
-  background: #009e4f;
+::ng-deep .mat-mdc-raised-button.mat-accent {
+  --mdc-protected-button-container-color: #00BF61 !important;
+  --mdc-protected-button-label-text-color: white !important;
 }
-*/
 
+::ng-deep .mat-mdc-raised-button.mat-accent:hover {
+  --mdc-protected-button-container-color: #009e4f !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 191, 97, 0.3) !important;
+}
 
 .login-link {
   text-align: center;
@@ -158,24 +178,29 @@ h1 {
 .login-link p {
   font-size: 0.9rem;
   color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 }
 
 .login-link a {
-  color: #00BF61;
-  text-decoration: none;
-  font-weight: 600;
-  transition: opacity 0.3s;
+  color: #00BF61 !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  min-width: auto !important;
+  padding: 0 4px !important;
 }
 
 .login-link a:hover {
-  opacity: 0.7;
   text-decoration: underline;
+  background: transparent !important;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .seleccion-card {
-    padding: 30px 20px;
+    padding: 30px 20px !important;
   }
 
   h1 {

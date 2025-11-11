@@ -1,5 +1,5 @@
 <div class="seleccion-container">
-  <div class="seleccion-card">
+  <mat-card class="seleccion-card">
     <img src="/Images/iconos/shaperegistro.png" alt="" class="decorative-circle circle-1">
     <img src="/Images/iconos/shaperegistro1.png" alt="" class="decorative-circle circle-2">
 
@@ -12,39 +12,36 @@
 
     <div class="opciones-container">
       <!-- Opción Paciente -->
-      <div class="opcion-card" (click)="registrarPaciente()">
-        <div class="opcion-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#00BF61" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-        </div>
-        <h3>Paciente</h3>
-        <p>Accede a planes personalizados, recetas y seguimiento de tu salud</p>
-        <button class="btn-opcion">Registrarme como Paciente</button>
-      </div>
+      <mat-card class="opcion-card" (click)="registrarPaciente()">
+        <mat-card-content>
+          <div class="opcion-icon">
+            <mat-icon class="icon-large">person</mat-icon>
+          </div>
+          <h3>Paciente</h3>
+          <p>Accede a planes personalizados, recetas y seguimiento de tu salud</p>
+          <button mat-raised-button color="primary" class="btn-opcion">
+            Registrarme como Paciente
+          </button>
+        </mat-card-content>
+      </mat-card>
 
       <!-- Opción Nutricionista -->
-      <div class="opcion-card" (click)="registrarNutricionista()">
-        <div class="opcion-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#00BF61" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            <path d="M12 11h.01"></path>
-            <path d="M12 14h.01"></path>
-            <path d="M12 17h.01"></path>
-          </svg>
-        </div>
-        <h3>Nutricionista</h3>
-        <p>Gestiona pacientes, crea planes alimenticios y realiza consultas virtuales</p>
-        <button class="btn-opcion nutricionista">Registrarme como Nutricionista</button>
-      </div>
+      <mat-card class="opcion-card nutricionista" (click)="registrarNutricionista()">
+        <mat-card-content>
+          <div class="opcion-icon">
+            <mat-icon class="icon-large">group</mat-icon>
+          </div>
+          <h3>Nutricionista</h3>
+          <p>Gestiona pacientes, crea planes alimenticios y realiza consultas virtuales</p>
+          <button mat-raised-button color="accent" class="btn-opcion">
+            Registrarme como Nutricionista
+          </button>
+        </mat-card-content>
+      </mat-card>
     </div>
 
     <div class="login-link">
-      <p>¿Ya tienes una cuenta? <a href="/iniciarsesion">Inicia sesión</a></p>
+      <p>¿Ya tienes una cuenta? <a href="/iniciarsesion" mat-button>Inicia sesión</a></p>
     </div>
-  </div>
+  </mat-card>
 </div>
