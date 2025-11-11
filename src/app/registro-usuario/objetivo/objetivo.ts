@@ -49,34 +49,25 @@ export class ObjetivoComponent implements OnInit {
       return;
     }
 
-    const [objetivoTexto, meses] = this.objetivoSeleccionado.split('-');
-    const duracionBuscada = `${meses} meses`;
+    // Extraemos los valores seleccionados
+    const [objetivoTexto, duracion] = this.objetivoSeleccionado.split(' - ');
 
-    const normalizar = (texto: string) => texto.toLowerCase().trim().replace(/\s+/g, ' ');
-
-    const planEncontrado = this.planesNutricionales.find(plan => {
-      const objetivoNormalizado = normalizar(plan.objetivo || '');
-      const duracionNormalizada = normalizar(plan.duracion || '');
-      const buscarObjetivo = normalizar(objetivoTexto === 'bajar' ? 'bajar trigliceridos' : 'mantener tu salud');
-      const buscarDuracion = normalizar(duracionBuscada);
-
-      return objetivoNormalizado === buscarObjetivo && duracionNormalizada === buscarDuracion;
-    });
+    const planEncontrado = this.planesNutricionales.find(plan =>
+      plan.objetivo.trim().toLowerCase() === objetivoTexto.trim().toLowerCase() &&
+      plan.duracion.trim().toLowerCase() === duracion.trim().toLowerCase()
+    );
 
     if (!planEncontrado || !planEncontrado.id) {
       alert('No se encontró un plan nutricional que coincida.');
       return;
     }
 
-    // ✅ Solo guardar el plan nutricional (que ya incluye el objetivo)
+    // Guardamos solo el ID del plan
     this.registroShared.guardarPlanNutricional(planEncontrado.id);
 
     console.log('📊 Plan nutricional guardado:', planEncontrado);
-    console.log('✅ Datos completos:', this.registroShared.obtenerDatos());
-
     this.router.navigate(['/nivelactividad']);
   }
-
 
   goBack(): void {
     this.router.navigate(['/datos-salud']);

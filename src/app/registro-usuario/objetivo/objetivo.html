@@ -41,22 +41,20 @@
       </div>
     </div>
 
-    <!-- Selector dropdown -->
     <div class="selector-wrapper">
       <select
         class="custom-select"
         [(ngModel)]="objetivoSeleccionado"
         (change)="onSelectChange()">
         <option value="">Selecciona tu objetivo</option>
-        <option value="bajar-12">bajar trigliceridos - 12 meses</option>
-        <option value="bajar-3">bajar trigliceridos - 3 meses</option>
-        <option value="bajar-6">bajar trigliceridos - 6 meses</option>
-        <option value="mantener-12">mantener tu salud - 12 meses</option>
-        <option value="mantener-3">mantener tu salud - 3 meses</option>
-        <option value="mantener-6">mantener tu salud - 6 meses</option>
+        <option *ngFor="let plan of planesNutricionales"
+                [value]="plan.objetivo + ' - ' + plan.duracion">
+          {{ plan.objetivo }} - {{ plan.duracion }}
+        </option>
       </select>
       <i class="fas fa-chevron-down select-arrow"></i>
     </div>
+
 
     <!-- Mensaje informativo con icono de bombilla -->
     <div class="info-message">
