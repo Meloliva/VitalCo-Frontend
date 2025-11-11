@@ -10,7 +10,8 @@ import {filter} from 'rxjs/operators';
   standalone: true,
   imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
   templateUrl: './private-layout.html',
-  styleUrl: './private-layout.css',
+  styleUrls: ['./private-layout.css'],
+
 })
 export class PrivateLayout implements OnInit, OnDestroy {
   userAvatar: string = '/Images/iconos/iconoSistemas/image 18.png';
@@ -95,11 +96,13 @@ export class PrivateLayout implements OnInit, OnDestroy {
   }
 
   logout() {
+    console.log('🚪 Cerrando sesión...'); // 👈 para probar
     if (isPlatformBrowser(this.platformId)) {
       this.userService.clearUser();
       localStorage.removeItem('token');
     }
-    this.router.navigate(['/login']);
+    this.router.navigate(['/iniciarsesion']);
+
   }
 
   updateUserAvatar(newAvatarUrl: string) {
