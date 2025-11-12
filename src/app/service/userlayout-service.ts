@@ -1,3 +1,5 @@
+// typescript
+// File: `src/app/service/userlayout-service.ts`
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
@@ -36,7 +38,6 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  /** 🔹 Inicializa el usuario desde el storage solo si estamos en navegador */
   initUserFromStorage(): void {
     if (typeof window === 'undefined') return;
     this.loadUserFromStorage();
@@ -58,38 +59,135 @@ export class UserService {
 
   private getHeaders(): HttpHeaders {
     const token = (typeof window !== 'undefined') ? localStorage.getItem('token') : null;
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
+    const headersConfig: any = { 'Content-Type': 'application/json' };
+    if (token) {
+      headersConfig['Authorization'] = `Bearer ${token}`;
+    }
+    return new HttpHeaders(headersConfig);
   }
 
-  getCurrentUserProfile(): Observable<UserProfile> {
-    return this.http.get<UserProfile[]>(`${this.apiUrl}/listarUsuarios`, {
-      headers: this.getHeaders()
-    }).pipe(
-      map(usuarios => {
-        if (!usuarios || usuarios.length === 0) {
-          throw new Error('No hay usuarios disponibles');
-        }
-        if (typeof window !== 'undefined') {
-          const storedId = localStorage.getItem('userId');
-          if (storedId) {
-            const idNum = parseInt(storedId, 10);
-            const foundById = usuarios.find(u => u.id === idNum);
-            if (foundById) return foundById;
-          }
-          const pacienteUser = usuarios.find(u => u.rol?.nombre?.toUpperCase() === 'PACIENTE');
-          if (pacienteUser) return pacienteUser;
-        }
-        return usuarios[0];
-      }),
+  private buildUrlWithHash(url: string, hash?: string): string {
+    if (!hash) return url;
+    return `${url}${url.includes('?') ? '&' : '?'}hash=${encodeURIComponent(hash)}`;
+  }
+
+  listarUsuariosPorRol(rol: string, hash?: string): Observable<UserProfile[]> {
+    const url = this.buildUrlWithHash(`${this.apiUrl}/usuarios?rol=${encodeURIComponent(rol)}`, hash);
+    return this.http.get<UserProfile[]>(url, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('Error al listar usuarios por rol:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getUserById(id: number, hash?: string): Observable<UserProfile> {
+    const url = this.buildUrlWithHash(`${this.apiUrl}/usuarios/${id}`, hash);
+    return this.http.get<UserProfile>(url, { headers: this.getHeaders() }).pipe(
       tap(user => {
         this.currentUserSubject.next(user);
         if (typeof window !== 'undefined') this.saveUserToStorage(user);
       }),
       catchError(error => {
-        console.error('Error al obtener usuario:', error);
+        console.error('Error al obtener usuario por id:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getUsuarioPaciente(): Observable<UserProfile> {
+    return this.http.get<UserProfile>(`${this.apiUrl}/usuarioPaciente`, {
+      headers: this.getHeaders()
+    }).pipe(
+      tap(user => {
+        this.currentUserSubject.next(user);
+        if (typeof window !== 'undefined') this.saveUserToStorage(user);
+      }),
+      catchError(error => {
+        console.error('Error al obtener usuario paciente:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getUsuarioNutricionista(): Observable<UserProfile> {
+    return this.http.get<UserProfile>(`${this.apiUrl}/usuarioNutricionista`, {
+      headers: this.getHeaders()
+    }).pipe(
+      tap(user => {
+        this.currentUserSubject.next(user);
+        if (typeof window !== 'undefined') this.saveUserToStorage(user);
+      }),
+      catchError(error => {
+        console.error('Error al obtener usuario nutricionista:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  fetchPerfilAutenticado(): Observable<UserProfile> {
+    const current = this.currentUserSubject.value;
+    const role = current?.rol?.nombre?.toUpperCase()
+      || (typeof window !== 'undefined' ? (localStorage.getItem('userRole') || '').toUpperCase() : '');
+
+    if (role === 'PACIENTE') {
+      return this.getUsuarioPaciente();
+    }
+
+    if (role === 'NUTRICIONISTA') {
+      return this.getUsuarioNutricionista();
+    }
+
+    return this.getUsuarioPaciente().pipe(
+      catchError(() => this.getUsuarioNutricionista())
+    );
+  }
+
+  getCurrentUserProfile(identifier?: number | string, hash?: string): Observable<UserProfile> {
+    if (typeof identifier === 'number') {
+      return this.getUserById(identifier, hash);
+    }
+
+    if (typeof identifier === 'string') {
+      const roleUpper = identifier.toUpperCase();
+      if (roleUpper === 'PACIENTE') {
+        return this.getUsuarioPaciente();
+      }
+      if (roleUpper === 'NUTRICIONISTA') {
+        return this.getUsuarioNutricionista();
+      }
+      return this.listarUsuariosPorRol(identifier, hash).pipe(
+        map(usuarios => {
+          if (!usuarios || usuarios.length === 0) throw new Error('No hay usuarios para el rol solicitado');
+          if (typeof window !== 'undefined') {
+            const storedId = localStorage.getItem('userId');
+            if (storedId) {
+              const idNum = parseInt(storedId, 10);
+              const found = usuarios.find(u => u.id === idNum);
+              if (found) return found;
+            }
+          }
+          return usuarios[0];
+        }),
+        tap(user => {
+          this.currentUserSubject.next(user);
+          if (typeof window !== 'undefined') this.saveUserToStorage(user);
+        }),
+        catchError(error => {
+          console.error('Error al obtener usuario por rol:', error);
+          return throwError(() => error);
+        })
+      );
+    }
+
+    // Sin identifier: usar endpoints que obtienen el usuario desde el JWT (evita llamar /listarUsuarios)
+    return this.fetchPerfilAutenticado().pipe(
+      tap(user => {
+        this.currentUserSubject.next(user);
+        if (typeof window !== 'undefined') this.saveUserToStorage(user);
+      }),
+      catchError(error => {
+        console.error('Error al obtener perfil autenticado:', error);
         return throwError(() => error);
       })
     );
@@ -117,10 +215,8 @@ export class UserService {
     if (!user) return false;
 
     const roleName = user.rol?.nombre?.toUpperCase() || '';
+    if (roleName !== 'PACIENTE') return false;
 
-    if (roleName !== 'PACIENTE') {
-      return false;
-    }
     const plan = user.paciente?.idPlan;
     if (plan?.premium === true) return true;
     const tipo = plan?.tipo;
@@ -156,9 +252,6 @@ export class UserService {
     if (user.fotoPerfil) {
       localStorage.setItem('userAvatar', user.fotoPerfil);
     }
-    //else {
-    //       localStorage.removeItem('userAvatar');
-    //     }
   }
 
   private loadUserFromStorage(): void {
@@ -171,12 +264,14 @@ export class UserService {
     const userPlan = localStorage.getItem('userPlan');
 
     if (userId && userName && userRole) {
-      const [nombre, apellido] = userName.split(' ');
+      const parts = userName.split(' ');
+      const nombre = parts.shift() || '';
+      const apellido = parts.join(' ') || '';
       this.currentUserSubject.next({
         id: parseInt(userId),
         dni: '',
-        nombre: nombre || '',
-        apellido: apellido || '',
+        nombre: nombre,
+        apellido: apellido,
         correo: '',
         genero: '',
         estado: '',
