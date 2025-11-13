@@ -1,5 +1,3 @@
-// typescript
-// File: `src/app/service/userlayout-service.ts`
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
@@ -16,11 +14,10 @@ export interface UserProfile {
   fotoPerfil?: string;
   rol: {
     id: number;
-    nombre: string;
+    tipo: string; // ← Cambio: era "nombre", ahora es "tipo"
   };
   paciente?: {
     idPlan?: {
-      premium?: boolean;
       tipo?: string;
       [key: string]: any;
     };
@@ -96,15 +93,23 @@ export class UserService {
   }
 
   getUsuarioPaciente(): Observable<UserProfile> {
+    console.log('🏥 Llamando a /usuarioPaciente');
     return this.http.get<UserProfile>(`${this.apiUrl}/usuarioPaciente`, {
       headers: this.getHeaders()
     }).pipe(
       tap(user => {
+        console.log('✅ Usuario paciente recibido del backend:', user);
+        console.log('📋 Rol recibido:', user.rol);
+        console.log('📋 Tipo del rol:', user.rol?.tipo);
+        console.log('📋 Paciente recibido:', user.paciente);
+        console.log('📋 Plan recibido:', user.paciente?.idPlan);
+        console.log('📋 Tipo de plan recibido:', user.paciente?.idPlan?.tipo);
+
         this.currentUserSubject.next(user);
         if (typeof window !== 'undefined') this.saveUserToStorage(user);
       }),
       catchError(error => {
-        console.error('Error al obtener usuario paciente:', error);
+        console.error('❌ Error al obtener usuario paciente:', error);
         return throwError(() => error);
       })
     );
@@ -127,8 +132,12 @@ export class UserService {
 
   fetchPerfilAutenticado(): Observable<UserProfile> {
     const current = this.currentUserSubject.value;
-    const role = current?.rol?.nombre?.toUpperCase()
+    console.log('🎯 fetchPerfilAutenticado - Usuario actual:', current);
+
+    const role = current?.rol?.tipo?.toUpperCase()
       || (typeof window !== 'undefined' ? (localStorage.getItem('userRole') || '').toUpperCase() : '');
+
+    console.log('🎯 fetchPerfilAutenticado - Rol detectado:', role);
 
     if (role === 'PACIENTE') {
       return this.getUsuarioPaciente();
@@ -180,7 +189,6 @@ export class UserService {
       );
     }
 
-    // Sin identifier: usar endpoints que obtienen el usuario desde el JWT (evita llamar /listarUsuarios)
     return this.fetchPerfilAutenticado().pipe(
       tap(user => {
         this.currentUserSubject.next(user);
@@ -212,17 +220,26 @@ export class UserService {
 
   isPremium(): boolean {
     const user = this.currentUserSubject.value;
-    if (!user) return false;
+    console.log('🔍 isPremium - Usuario actual:', user);
 
-    const roleName = user.rol?.nombre?.toUpperCase() || '';
-    if (roleName !== 'PACIENTE') return false;
+    if (!user) {
+      console.log('❌ isPremium - No hay usuario');
+      return false;
+    }
 
-    const plan = user.paciente?.idPlan;
-    if (plan?.premium === true) return true;
-    const tipo = plan?.tipo;
-    if (typeof tipo === 'string' && tipo.toLowerCase().includes('premium')) return true;
+    const roleTipo = user.rol?.tipo?.toUpperCase() || '';
+    console.log('👤 isPremium - Rol:', roleTipo);
 
-    return false;
+    if (roleTipo !== 'PACIENTE') {
+      console.log('❌ isPremium - No es paciente');
+      return false;
+    }
+
+    const planTipo = user.paciente?.idPlan?.tipo;
+    console.log('📋 isPremium - Tipo de plan:', planTipo);
+    console.log('✅ isPremium - Es premium:', planTipo === 'Plan premium');
+
+    return planTipo === 'Plan premium';
   }
 
   getUserFullName(): string {
@@ -244,10 +261,12 @@ export class UserService {
 
     localStorage.setItem('userId', user.id.toString());
     localStorage.setItem('userName', `${user.nombre} ${user.apellido}`);
-    localStorage.setItem('userRole', user.rol.nombre);
-    const plan = user.paciente?.idPlan;
-    const isPremium = plan?.premium === true || (typeof plan?.tipo === 'string' && plan!.tipo!.toLowerCase().includes('premium'));
-    localStorage.setItem('userPlan', isPremium ? 'premium' : 'free');
+    localStorage.setItem('userRole', user.rol.tipo);
+
+    const planTipo = user.paciente?.idPlan?.tipo || 'Plan free';
+    console.log('💾 Guardando plan en localStorage:', planTipo);
+    console.log('💾 Guardando rol en localStorage:', user.rol.tipo);
+    localStorage.setItem('userPlan', planTipo);
 
     if (user.fotoPerfil) {
       localStorage.setItem('userAvatar', user.fotoPerfil);
@@ -263,10 +282,19 @@ export class UserService {
     const userAvatar = localStorage.getItem('userAvatar');
     const userPlan = localStorage.getItem('userPlan');
 
+    console.log('📥 localStorage completo:', {
+      userId,
+      userName,
+      userRole,
+      userAvatar,
+      userPlan
+    });
+
     if (userId && userName && userRole) {
       const parts = userName.split(' ');
       const nombre = parts.shift() || '';
       const apellido = parts.join(' ') || '';
+
       this.currentUserSubject.next({
         id: parseInt(userId),
         dni: '',
@@ -278,12 +306,11 @@ export class UserService {
         fotoPerfil: userAvatar || undefined,
         rol: {
           id: 0,
-          nombre: userRole
+          tipo: userRole
         },
         paciente: {
           idPlan: {
-            premium: userPlan === 'premium',
-            tipo: userPlan === 'premium' ? 'Plan premium' : 'Plan free'
+            tipo: userPlan || 'Plan free'
           }
         }
       });

@@ -89,7 +89,7 @@ export class PrivateLayout implements OnInit, OnDestroy {
     const userName = localStorage.getItem('userName');
     const userAvatar = localStorage.getItem('userAvatar');
 
-    this.isPremium = userPlan === 'premium';
+    this.isPremium = userPlan === 'Plan premium';
     this.userName = userName || 'Nombre de Usuario';
     this.userAvatar = userAvatar || '/Images/iconos/iconoSistemas/image 18.png';
   }
