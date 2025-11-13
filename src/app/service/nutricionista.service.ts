@@ -1,7 +1,11 @@
-// src/app/service/nutricionista.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { getLocalStorageItem } from '../utils/browser-utils';
+
+/* ================================
+   📦 INTERFACES (DTOs)
+================================= */
 
 export interface RolDTO {
   id: number;
@@ -16,7 +20,7 @@ export interface UsuarioDTO {
   apellido: string;
   correo: string;
   genero: string;
-  rol: RolDTO;
+  rol?: RolDTO;
   estado?: string;
   fotoPerfil?: string;
 }
@@ -34,6 +38,17 @@ export interface NutricionistaDTO {
   universidad: string;
   idturno: TurnoDTO;
   gradoAcademico: string;
+}
+
+export interface EditarNutricionistaDTO {
+  id: number;
+  asociaciones?: string;
+  gradoAcademico?: string;
+  universidad?: string;
+  idTurno?: number;
+  correo?: string;
+  contraseña?: string;
+  fotoPerfil?: string;
 }
 
 export interface RegistroNutricionistaRequest {
@@ -54,31 +69,84 @@ export interface RegistroNutricionistaRequest {
   };
 }
 
+/* ================================
+   💼 SERVICIO NUTRICIONISTA
+================================= */
+
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NutricionistaService {
-  private apiUrl = 'http://localhost:8080/api';
+  private readonly apiUrl = 'http://localhost:8080/api';
 
   constructor(private http: HttpClient) {}
 
-  // Listar roles (para obtener el ID del rol NUTRICIONISTA)
+  /** 🔐 Headers seguros con token si existe */
+  private getHeaders(): HttpHeaders {
+    const token = getLocalStorageItem('token');
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    return new HttpHeaders(headers);
+  }
+
+  /* ================================
+     🔹 MÉTODOS API
+  ================================= */
+
+  /** 🧾 Listar roles (generalmente sin token) */
   listarRoles(): Observable<RolDTO[]> {
     return this.http.get<RolDTO[]>(`${this.apiUrl}/listarRoles`);
   }
 
-  // Listar turnos disponibles
+  /** 🕒 Listar turnos disponibles */
   listarTurnos(): Observable<TurnoDTO[]> {
-    return this.http.get<TurnoDTO[]>(`${this.apiUrl}/listarTurnos`);
+    return this.http.get<TurnoDTO[]>(`${this.apiUrl}/listarTurnos`, {
+      headers: this.getHeaders(),
+    });
   }
 
-  // Registrar usuario
+  /** 👤 Registrar usuario base */
   registrarUsuario(usuario: UsuarioDTO): Observable<UsuarioDTO> {
-    return this.http.post<UsuarioDTO>(`${this.apiUrl}/registrarUsuario`, usuario);
+    return this.http.post<UsuarioDTO>(`${this.apiUrl}/registrarUsuario`, usuario, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+    });
   }
 
-  // Registrar nutricionista
+  /** 🩺 Registrar nutricionista */
   registrarNutricionista(nutricionista: NutricionistaDTO): Observable<NutricionistaDTO> {
-    return this.http.post<NutricionistaDTO>(`${this.apiUrl}/registrarNutricionista`, nutricionista);
+    return this.http.post<NutricionistaDTO>(
+      `${this.apiUrl}/registrarNutricionista`,
+      nutricionista,
+      { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }
+    );
   }
+
+  /** 📋 Obtener perfil del nutricionista autenticado */
+  obtenerDatosNutricionista(): Observable<NutricionistaDTO> {
+    return this.http.get<NutricionistaDTO>(`${this.apiUrl}/usuarioNutricionista`, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  /** ✏️ Editar perfil del nutricionista autenticado */
+  editarNutricionista(datos: EditarNutricionistaDTO): Observable<NutricionistaDTO> {
+    return this.http.put<NutricionistaDTO>(`${this.apiUrl}/editarNutricionista`, datos, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  /** ❌ Eliminar cuenta de usuario nutricionista */
+  eliminarUsuario(): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/eliminarUsuario`, {
+      headers: this.getHeaders(),
+    });
+  }
+  login(credenciales: { correo: string; contraseña: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/login`, credenciales, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+    });
+  }
+
 }

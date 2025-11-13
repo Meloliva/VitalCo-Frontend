@@ -128,37 +128,61 @@ export class Registro implements OnInit {
       next: (usuarioCreado) => {
         console.log('Usuario creado:', usuarioCreado);
 
-        // Paso 2: Registrar nutricionista con el usuario creado
-        const turnoSeleccionado = this.turnos.find(
-          t => t.id === parseInt(this.registroProfesionalForm.value.turno)
-        );
+        // Guardamos referencia local
+        const usuarioTemporal = usuarioCreado;
 
-        if (!turnoSeleccionado) {
-          this.errorMessage = 'Error: Turno no válido';
-          this.isLoading = false;
-          return;
-        }
+        // Paso 2: login automático para obtener token
+        this.nutricionistaService.login({
+          correo: this.registroForm.value.correo,
+          contraseña: this.registroForm.value.password
+        }).subscribe({
+          next: (loginResponse) => {
+            const token = loginResponse.token;
+            if (token) {
+              localStorage.setItem('token', token);
+              console.log('✅ Token guardado correctamente');
+            } else {
+              console.warn('⚠️ No se recibió token del backend');
+            }
 
-        const datosNutricionista = {
-          idusuario: usuarioCreado,
-          asociaciones: this.registroProfesionalForm.value.asociacion,
-          universidad: this.registroProfesionalForm.value.universidad,
-          gradoAcademico: this.registroProfesionalForm.value.gradoAcademico,
-          idturno: turnoSeleccionado
-        };
+            // Paso 3: Registrar nutricionista
+            const turnoSeleccionado = this.turnos.find(
+              t => t.id === parseInt(this.registroProfesionalForm.value.turno)
+            );
 
-        this.nutricionistaService.registrarNutricionista(datosNutricionista).subscribe({
-          next: (nutricionistaCreado) => {
-            console.log('Nutricionista creado:', nutricionistaCreado);
-            this.isLoading = false;
-            this.step.set(3);
-            this.progressValue = 100;
+            if (!turnoSeleccionado) {
+              this.errorMessage = 'Error: Turno no válido';
+              this.isLoading = false;
+              return;
+            }
+
+            const datosNutricionista = {
+              idusuario: usuarioTemporal, // 🔹 usamos la variable guardada
+              asociaciones: this.registroProfesionalForm.value.asociacion,
+              universidad: this.registroProfesionalForm.value.universidad,
+              gradoAcademico: this.registroProfesionalForm.value.gradoAcademico,
+              idturno: turnoSeleccionado
+            };
+
+            this.nutricionistaService.registrarNutricionista(datosNutricionista).subscribe({
+              next: (nutricionistaCreado) => {
+                console.log('Nutricionista creado:', nutricionistaCreado);
+                this.isLoading = false;
+                this.step.set(3);
+                this.progressValue = 100;
+              },
+              error: (error) => {
+                console.error('Error al registrar nutricionista:', error);
+                this.errorMessage = error.error?.message || 'Error al completar el registro profesional';
+                this.isLoading = false;
+                alert(this.errorMessage);
+              }
+            });
           },
           error: (error) => {
-            console.error('Error al registrar nutricionista:', error);
-            this.errorMessage = error.error?.message || 'Error al completar el registro profesional';
+            console.error('Error al iniciar sesión automáticamente:', error);
+            this.errorMessage = 'Error al iniciar sesión automáticamente';
             this.isLoading = false;
-            alert(this.errorMessage);
           }
         });
       },
