@@ -92,9 +92,9 @@ export class UserService {
     );
   }
 
-  getUsuarioPaciente(): Observable<UserProfile> {
+  getUsuario(): Observable<UserProfile> {
     console.log('🏥 Llamando a /usuarioPaciente');
-    return this.http.get<UserProfile>(`${this.apiUrl}/usuarioPaciente`, {
+    return this.http.get<UserProfile>(`${this.apiUrl}/usuarioNormal`, {
       headers: this.getHeaders()
     }).pipe(
       tap(user => {
@@ -109,6 +109,53 @@ export class UserService {
         if (typeof window !== 'undefined') this.saveUserToStorage(user);
       }),
       catchError(error => {
+        console.error('❌ Error al obtener usuario paciente:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+  getUsuarioPaciente(): Observable<UserProfile> {
+    return this.http.get<any>(`${this.apiUrl}/usuarioPaciente`, {
+      headers: this.getHeaders()
+    }).pipe(
+      tap((paciente) => {
+        console.log('🩺 Usuario paciente recibido del backend:', paciente);
+
+        // Adaptar estructura del backend (PacienteDTO) al UserProfile esperado
+        const userAdaptado: UserProfile = {
+          id: paciente.idusuario?.id || paciente.id,
+          dni: paciente.idusuario?.dni || '',
+          nombre: paciente.idusuario?.nombre || '',
+          apellido: paciente.idusuario?.apellido || '',
+          correo: paciente.idusuario?.correo || '',
+          genero: paciente.idusuario?.genero || '',
+          estado: paciente.idusuario?.estado || '',
+          fotoPerfil: paciente.idusuario?.fotoPerfil || null,
+          rol: {
+            id: paciente.idusuario?.rol?.id || 0,
+            tipo: paciente.idusuario?.rol?.tipo || 'PACIENTE'
+          },
+          paciente: {
+            edad: paciente.edad,
+            altura: paciente.altura,
+            peso: paciente.peso,
+            cntTrigliceridos: paciente.trigliceridos,
+            actividadFisica: paciente.actividadFisica,
+            idPlan: paciente.idplan
+              ? {
+                tipo: paciente.idplan.tipo,
+                premium: paciente.idplan.tipo?.toLowerCase().includes('premium')
+              }
+              : undefined,
+            idPlanNutricional: paciente.idPlanNutricional
+          }
+        };
+
+        // Guardar y emitir el usuario adaptado
+        this.currentUserSubject.next(userAdaptado);
+        if (typeof window !== 'undefined') this.saveUserToStorage(userAdaptado);
+      }),
+      catchError((error) => {
         console.error('❌ Error al obtener usuario paciente:', error);
         return throwError(() => error);
       })
@@ -147,7 +194,7 @@ export class UserService {
       return this.getUsuarioNutricionista();
     }
 
-    return this.getUsuarioPaciente().pipe(
+    return this.getUsuario().pipe(
       catchError(() => this.getUsuarioNutricionista())
     );
   }
