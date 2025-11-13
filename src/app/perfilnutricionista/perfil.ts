@@ -198,4 +198,5 @@ export class PerfilNutricionistaComponent implements OnInit {
       panelClass: error ? ['snack-error'] : ['snack-success']
     });
   }
+
 }
