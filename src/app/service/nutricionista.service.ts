@@ -130,6 +130,13 @@ export class NutricionistaService {
     });
   }
 
+  obtenerNutricionistaPorUsuario(idUsuario: number): Observable<NutricionistaDTO> {
+    return this.http.get<NutricionistaDTO>(
+      `${this.apiUrl}/nutricionistaPorUsuario/${idUsuario}`,
+      { headers: this.getHeaders() }
+    );
+  }
+
   /** ✏️ Editar perfil del nutricionista autenticado */
   editarNutricionista(datos: EditarNutricionistaDTO): Observable<NutricionistaDTO> {
     return this.http.put<NutricionistaDTO>(`${this.apiUrl}/editarNutricionista`, datos, {

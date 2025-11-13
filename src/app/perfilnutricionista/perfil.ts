@@ -71,11 +71,23 @@ export class PerfilNutricionistaComponent implements OnInit {
     try {
       this.cargando = true;
 
-      const data = await firstValueFrom(this.nutricionistaService.obtenerDatosNutricionista());
+      // 1️⃣ Primero obtenemos el usuario autenticado
+      const usuario = await firstValueFrom(this.nutricionistaService.obtenerDatosNutricionista());
+      console.log('👤 Usuario autenticado:', usuario);
+
+      if (!usuario.id) {
+        throw new Error('El ID del usuario no está definido');
+      }
+
+      const data = await firstValueFrom(
+        this.nutricionistaService.obtenerNutricionistaPorUsuario(usuario.id)
+      );
       console.log('✅ Datos del nutricionista cargados:', data);
 
-      this.nutricionistaId = data.id || null;
+      // 4️⃣ Guardamos el ID del nutricionista, manejando undefined -> null (evita TS2322)
+      this.nutricionistaId = data.id ?? null;
 
+      // 5️⃣ Cargamos los valores en el formulario
       this.perfilForm.patchValue({
         asociacion: data.asociaciones || '',
         grado: data.gradoAcademico || '',
