@@ -120,6 +120,7 @@ export class UserService {
     }).pipe(
       tap((paciente) => {
         console.log('🩺 Usuario paciente recibido del backend:', paciente);
+        console.log('🎯 Rol completo:', JSON.stringify(paciente.idusuario?.rol, null, 2));
 
         // Adaptar estructura del backend (PacienteDTO) al UserProfile esperado
         const userAdaptado: UserProfile = {
@@ -132,7 +133,7 @@ export class UserService {
           estado: paciente.idusuario?.estado || '',
           fotoPerfil: paciente.idusuario?.fotoPerfil || null,
           rol: {
-            id: paciente.idusuario?.rol?.id || 0,
+            id: Number(paciente.idusuario?.rol?.id) || 0,
             tipo: paciente.idusuario?.rol?.tipo || 'PACIENTE'
           },
           paciente: {
@@ -150,6 +151,8 @@ export class UserService {
             idPlanNutricional: paciente.idPlanNutricional
           }
         };
+        console.log('✅ Rol adaptado con id:', userAdaptado.rol.id);
+        console.log('💾 Guardando en localStorage - Rol ID:', userAdaptado.rol.id);
 
         // Guardar y emitir el usuario adaptado
         this.currentUserSubject.next(userAdaptado);
@@ -309,10 +312,12 @@ export class UserService {
     localStorage.setItem('userId', user.id.toString());
     localStorage.setItem('userName', `${user.nombre} ${user.apellido}`);
     localStorage.setItem('userRole', user.rol.tipo);
+    localStorage.setItem('userRoleId', user.rol.id.toString());
 
     const planTipo = user.paciente?.idPlan?.tipo || 'Plan free';
     console.log('💾 Guardando plan en localStorage:', planTipo);
     console.log('💾 Guardando rol en localStorage:', user.rol.tipo);
+    console.log('💾 Guardando rol ID en localStorage:', user.rol.id);
     localStorage.setItem('userPlan', planTipo);
 
     if (user.fotoPerfil) {
@@ -325,6 +330,7 @@ export class UserService {
 
     const userId = localStorage.getItem('userId');
     const userName = localStorage.getItem('userName');
+    const userRoleId = localStorage.getItem('userRoleId');
     const userRole = localStorage.getItem('userRole');
     const userAvatar = localStorage.getItem('userAvatar');
     const userPlan = localStorage.getItem('userPlan');
@@ -334,6 +340,7 @@ export class UserService {
       userName,
       userRole,
       userAvatar,
+      userRoleId,
       userPlan
     });
 
@@ -352,7 +359,7 @@ export class UserService {
         estado: '',
         fotoPerfil: userAvatar || undefined,
         rol: {
-          id: 0,
+          id: userRoleId ? parseInt(userRoleId) : 0,
           tipo: userRole
         },
         paciente: {
@@ -372,5 +379,6 @@ export class UserService {
     localStorage.removeItem('userRole');
     localStorage.removeItem('userAvatar');
     localStorage.removeItem('userPlan');
+    localStorage.removeItem('userRoleId');
   }
 }
