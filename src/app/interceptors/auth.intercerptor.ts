@@ -5,7 +5,12 @@ import { isPlatformBrowser } from '@angular/common';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const platformId = inject(PLATFORM_ID);
 
-  // ✅ Solo acceder a localStorage en el navegador
+  const publicUrls = ['/authenticate', '/registrarUsuario', '/listarRoles'];
+
+  if (publicUrls.some(url => req.url.includes(url))) {
+    return next(req);
+  }
+
   if (isPlatformBrowser(platformId)) {
     const token = localStorage.getItem('token');
 

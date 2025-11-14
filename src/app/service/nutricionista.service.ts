@@ -150,10 +150,4 @@ export class NutricionistaService {
       headers: this.getHeaders(),
     });
   }
-  login(credenciales: { correo: string; contraseña: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, credenciales, {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-    });
-  }
-
 }
