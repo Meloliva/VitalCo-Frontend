@@ -7,87 +7,88 @@
     <form [formGroup]="recetaForm" class="receta-form">
       <div class="form-container">
 
-        <!-- Primera fila: Nombre y Tiempo -->
         <div class="row">
           <div class="campo-wrapper field-nombre">
             <label class="label-campo">Nombre</label>
             <mat-form-field appearance="outline">
-              <input matInput formControlName="nombre" placeholder="Nombre de la receta">
+              <input matInput formControlName="nombre">
             </mat-form-field>
           </div>
 
           <div class="campo-wrapper field-tiempo">
             <label class="label-campo">Tiempo</label>
             <mat-form-field appearance="outline">
-              <input matInput formControlName="tiempo" placeholder="Ej: 30 min">
+              <input matInput formControlName="tiempo">
             </mat-form-field>
           </div>
         </div>
 
-        <!-- Tipo de comida -->
+        <div class="campo-wrapper field-descripcion">
+          <label>Descripción</label>
+          <mat-form-field appearance="outline">
+            <textarea matInput rows="4" formControlName="descripcion"></textarea>
+          </mat-form-field>
+        </div>
+        <!-- Horario dinámico -->
         <div class="row">
           <div class="campo-wrapper field-tipo">
-            <label class="label-campo">Tipo de comida</label>
+            <label class="label-campo">Horario</label>
             <mat-form-field appearance="outline">
-              <mat-select formControlName="tipoComida">
-                <mat-option value="desayuno">Desayuno</mat-option>
-                <mat-option value="almuerzo">Almuerzo</mat-option>
-                <mat-option value="snack">Snack</mat-option>
-                <mat-option value="cena">Cena</mat-option>
+              <mat-select formControlName="horario">
+                <mat-option *ngFor="let h of horarios" [value]="h.id">
+                  {{ h.nombre }}
+                </mat-option>
               </mat-select>
             </mat-form-field>
           </div>
         </div>
 
-        <!-- Sección Informe Nutricional -->
+        <!-- Info nutricional -->
         <div class="seccion-nutricional">
           <h3 class="subtitulo-nutricional">Informe Nutricional</h3>
 
-          <!-- Primera fila nutricional -->
           <div class="row-nutricional">
             <div class="campo-wrapper field-nutricion">
-              <label class="label-campo">Peso de la porción (g)</label>
+              <label>Peso por porción (g)</label>
               <mat-form-field appearance="outline">
                 <input matInput type="number" formControlName="pesoPorcion">
               </mat-form-field>
             </div>
 
             <div class="campo-wrapper field-nutricion">
-              <label class="label-campo">Calorías (kcal)</label>
+              <label>Calorías</label>
               <mat-form-field appearance="outline">
                 <input matInput type="number" formControlName="calorias">
               </mat-form-field>
             </div>
           </div>
 
-          <!-- Segunda fila nutricional -->
           <div class="row-nutricional">
             <div class="campo-wrapper field-nutricion">
-              <label class="label-campo">Grasa saturada (g)</label>
+              <label>Grasa saturada</label>
               <mat-form-field appearance="outline">
                 <input matInput type="number" formControlName="grasaSaturada">
               </mat-form-field>
             </div>
 
             <div class="campo-wrapper field-nutricion">
-              <label class="label-campo">Grasa trans (g)</label>
+              <label>Grasa trans</label>
               <mat-form-field appearance="outline">
                 <input matInput type="number" formControlName="grasaTrans">
               </mat-form-field>
             </div>
           </div>
 
-          <!-- Tercera fila nutricional -->
           <div class="row-nutricional">
             <div class="campo-wrapper field-nutricion">
-              <label class="label-campo">Proteína (g)</label>
+              <label>Proteína</label>
               <mat-form-field appearance="outline">
                 <input matInput type="number" formControlName="proteina">
               </mat-form-field>
             </div>
 
             <div class="campo-wrapper field-nutricion">
-              <label class="label-campo">Azúcares (g)</label>
+              <label>Azúcares</label>
               <mat-form-field appearance="outline">
                 <input matInput type="number" formControlName="azucares">
               </mat-form-field>
@@ -95,28 +96,33 @@
           </div>
         </div>
 
-        <!-- Descripción -->
         <div class="campo-wrapper field-descripcion">
-          <label class="label-campo">Descripción</label>
+          <label>Ingredientes</label>
           <mat-form-field appearance="outline">
-            <textarea matInput formControlName="descripcion" rows="4" placeholder="Describe tu receta..."></textarea>
+            <textarea matInput rows="4" formControlName="ingredientes"></textarea>
+          </mat-form-field>
+        </div>
+        <div class="campo-wrapper field-descripcion">
+          <label>Preparacion</label>
+          <mat-form-field appearance="outline">
+            <textarea matInput rows="4" formControlName="preparacion"></textarea>
           </mat-form-field>
         </div>
 
-        <!-- Imagen -->
+        <!-- Imagen opcional -->
         <div class="imagen-container">
           <div class="imagen-upload" (click)="fileInput.click()">
-            <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" hidden>
+            <input #fileInput type="file" accept="image/*" hidden (change)="onFileSelected($event)">
 
-            <ng-container *ngIf="!imagenPreview; else imagenPreviewTpl">
+            <ng-container *ngIf="!imagenPreview; else showImg">
               <div class="placeholder-imagen">
-                <mat-icon class="icono-camara">photo_camera</mat-icon>
-                <p>Subir imagen</p>
+                <mat-icon>photo_camera</mat-icon>
+                <p>Subir imagen (opcional)</p>
               </div>
             </ng-container>
 
-            <ng-template #imagenPreviewTpl>
-              <img [src]="imagenPreview" alt="Vista previa" class="imagen-preview">
+            <ng-template #showImg>
+              <img [src]="imagenPreview" class="imagen-preview">
             </ng-template>
           </div>
         </div>
@@ -130,4 +136,3 @@
     <button mat-raised-button class="btn-guardar" (click)="guardar()">Guardar</button>
   </mat-card-actions>
 </mat-card>
-

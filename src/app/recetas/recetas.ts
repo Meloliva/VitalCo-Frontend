@@ -7,6 +7,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatOptionModule } from '@angular/material/core';
+import { firstValueFrom } from 'rxjs';
+
+import { NutricionistaService, HorarioDTO, RecetaDTO } from '../service/nutricionista.service';
 
 @Component({
   selector: 'app-recetas',
@@ -19,74 +23,132 @@ import { MatIconModule } from '@angular/material/icon';
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
+    MatOptionModule,
     MatIconModule
   ],
   templateUrl: './recetas.html',
   styleUrls: ['./recetas.css']
 })
 export class RecetasComponent implements OnInit {
+
   recetaForm!: FormGroup;
   imagenPreview: string | null = null;
-  archivoImagen: File | null = null;
+  archivoBase64: string | null = null;
 
-  constructor(private fb: FormBuilder) {}
+  horarios: HorarioDTO[] = [];
 
-  ngOnInit(): void {
+  constructor(
+    private fb: FormBuilder,
+    private nutricionistaService: NutricionistaService
+  ) {}
+
+  async ngOnInit() {
+    this.inicializarFormulario();
+    await this.cargarHorarios();
+  }
+
+  inicializarFormulario() {
     this.recetaForm = this.fb.group({
       nombre: ['', Validators.required],
       tiempo: ['', Validators.required],
-      tipoComida: ['', Validators.required],
+      horario: [null, Validators.required],
       pesoPorcion: ['', [Validators.required, Validators.min(1)]],
       calorias: ['', [Validators.required, Validators.min(1)]],
       grasaSaturada: ['', [Validators.required, Validators.min(0)]],
       grasaTrans: ['', [Validators.required, Validators.min(0)]],
       proteina: ['', [Validators.required, Validators.min(0)]],
       azucares: ['', [Validators.required, Validators.min(0)]],
-      descripcion: ['', Validators.required]
+      descripcion: ['', Validators.required],
+      ingredientes: ['', Validators.required],
+      preparacion: ['', Validators.required]
     });
+  }
+
+  async cargarHorarios() {
+    try {
+      this.horarios = await firstValueFrom(this.nutricionistaService.listarHorarios());
+      console.log("✔ Horarios cargados:", this.horarios);
+
+      // Selecciona el primer horario por defecto
+      if (this.horarios.length > 0) {
+        this.recetaForm.patchValue({ horario: this.horarios[0].id });
+      }
+    } catch (e) {
+      console.error("❌ Error al cargar horarios:", e);
+    }
   }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
+
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      this.archivoImagen = file;
 
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = e => {
-          this.imagenPreview = e.target?.result as string;
-        };
-        reader.readAsDataURL(file);
-      } else {
-        alert('Por favor, selecciona una imagen válida.');
+      if (!file.type.startsWith("image/")) {
+        alert("Archivo inválido, solo imágenes.");
+        return;
       }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.imagenPreview = e.target?.result as string;
+        this.archivoBase64 = this.imagenPreview; // guardamos base64
+      };
+
+      reader.readAsDataURL(file);
     }
   }
 
-  guardar(): void {
-    if (this.recetaForm.valid) {
-      const data = { ...this.recetaForm.value, imagen: this.archivoImagen?.name };
-      console.log('Receta guardada:', data);
-      alert('✅ ¡Receta guardada exitosamente!');
+  async guardar(): Promise<void> {
+    if (this.recetaForm.invalid) {
+      alert("⚠️ Completa los campos obligatorios.");
+      return;
+    }
+
+    const valores = this.recetaForm.value;
+
+    const receta: RecetaDTO = {
+      nombre: valores.nombre,
+      descripcion: valores.descripcion,
+      tiempo: valores.tiempo,
+      carbohidratos: valores.azucares,
+      grasas: valores.grasaSaturada + valores.grasaTrans,
+      proteinas: valores.proteina,
+      calorias: valores.calorias,
+      cantidadPorcion: valores.pesoPorcion,
+      ingredientes: valores.ingredientes,
+      preparacion: valores.preparacion,
+      foto: null, // imagen opcional
+      idhorario: {
+        id: valores.horario,
+        nombre: ""
+      }
+    };
+
+    console.log("📤 Enviando receta:", receta);
+
+    try {
+      await firstValueFrom(this.nutricionistaService.registrarReceta(receta));
+      alert("✅ Receta registrada correctamente");
       this.limpiarFormulario();
-    } else {
-      alert('⚠️ Por favor completa todos los campos.');
+    } catch (e) {
+      console.error("❌ Error al registrar receta:", e);
+      alert("❌ Error al guardar la receta");
     }
   }
 
-  modificar(): void {
-    if (this.recetaForm.valid) {
-      console.log('Receta modificada:', this.recetaForm.value);
-      alert('✏️ Receta lista para modificar.');
-    } else {
-      alert('⚠️ Completa todos los campos antes de modificar.');
-    }
-  }
-
-  limpiarFormulario(): void {
+  limpiarFormulario() {
     this.recetaForm.reset();
+    this.archivoBase64 = null;
     this.imagenPreview = null;
-    this.archivoImagen = null;
+
+    // Reaplicar el primer horario como valor por defecto
+    if (this.horarios.length > 0) {
+      this.recetaForm.patchValue({ horario: this.horarios[0].id });
+    }
+  }
+
+  modificar() {
+    alert("✏️ Función de modificar receta próximamente.");
   }
 }

@@ -1,60 +1,56 @@
-/* Fondo general de la página */
-body {
-  background-color: #ffffff;
-}
-
+/* ==========================
+   🌿 Estilo General
+   ========================== */
 .receta-card {
   max-width: 900px;
   margin: 30px auto;
-  padding: 25px;
   background-color: #ffffff;
+  box-sizing: border-box;
+  border: none;
   border-radius: 0;
+  padding: 0;
   box-shadow: none;
 }
 
 .titulo {
-  color: #2d7a4f;
-  font-size: 26px;
-  font-weight: 600;
-  margin-bottom: 20px;
+  color: #16a34a;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 25px;
+  text-align: center;
 }
 
 .receta-form {
   width: 100%;
 }
 
+/* ==========================
+   💊 Campos del Formulario
+   ========================== */
 .form-container {
   border: 2px solid #10b981;
   border-radius: 16px;
   padding: 30px;
-  margin-bottom: 25px;
   background-color: #ffffff;
 }
 
-/* Campos de formulario */
 .campo-wrapper {
   margin-bottom: 20px;
 }
 
-/* 🔹 Aumentar separación entre los recuadros (inputs) */
-.campo-wrapper mat-form-field {
-  margin-right: 10px;
-}
-
 .label-campo {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
   font-weight: 500;
   color: #374151;
-  margin-bottom: 6px;
-  display: block;
-  font-size: 14px;
 }
 
-/* Filas y distribución */
-.row {
+/* Flex rows */
+.row, .row-nutricional {
   display: flex;
   flex-wrap: wrap;
-  gap: 25px; /* Más espacio entre columnas */
-  margin-bottom: 20px;
+  gap: 20px;
 }
 
 .field-nombre {
@@ -62,68 +58,54 @@ body {
 }
 
 .field-tiempo {
-  width: 250px;
+  width: 220px;
 }
 
 .field-tipo {
-  width: 300px;
+  width: 280px;
 }
 
 .field-descripcion {
   width: 100%;
 }
 
-/* Sección Nutricional */
+/* ==========================
+   💚 Sección Nutricional
+   ========================== */
 .seccion-nutricional {
-  margin: 25px 0;
+  margin: 30px 0;
 }
 
 .subtitulo-nutricional {
-  color: #84cc16;
+  color: #22c55e;
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 20px;
 }
 
-.row-nutricional {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 25px; /* 🔹 Espacio visible entre los campos grises */
-  margin-bottom: 20px;
-}
-
 .field-nutricion {
   flex: 1;
-  min-width: 200px;
+  min-width: 180px;
 }
 
-/* Estilos de Angular Material */
+/* ==========================
+   🟢 Inputs y selects (Angular Material)
+   ========================== */
 .mat-mdc-form-field {
   width: 100%;
-  background-color: #f3f4f6 !important; /* gris claro uniforme */
+  background-color: #f3f4f6 !important;
   border-radius: 8px;
   padding: 4px 12px;
   box-sizing: border-box;
 }
 
-/* 🔹 Añadir separación interna a los recuadros grises */
-.mat-mdc-form-field:not(:last-child) {
-  margin-right: 15px;
-}
-
-.mat-mdc-text-field-wrapper {
-  background-color: transparent !important;
-  border-radius: 8px;
-  padding: 0 !important;
-}
-
 .mat-mdc-input-element,
 textarea.mat-mdc-input-element {
-  background-color: transparent;
-  padding: 12px 0;
   font-size: 15px;
   font-weight: 400;
   color: #111827;
+  background-color: transparent;
+  padding: 12px 0;
 }
 
 .mat-mdc-select {
@@ -133,7 +115,23 @@ textarea.mat-mdc-input-element {
   color: #111827;
 }
 
-/* Imagen */
+.mat-mdc-select-panel {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+}
+
+.mat-mdc-option {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+}
+
+.mat-mdc-option:hover {
+  background-color: #d1fae5 !important;
+}
+
+/* ==========================
+   🖼 Imagen
+   ========================== */
 .imagen-container {
   display: flex;
   justify-content: center;
@@ -141,9 +139,9 @@ textarea.mat-mdc-input-element {
 }
 
 .imagen-upload {
-  width: 200px;
-  height: 120px;
-  border: 3px dashed #84cc16;
+  width: 220px;
+  height: 140px;
+  border: 2px dashed #22c55e;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -155,8 +153,8 @@ textarea.mat-mdc-input-element {
 }
 
 .imagen-upload:hover {
-  background-color: #f0fdf4;
-  border-color: #65a30d;
+  background-color: #ecfdf5;
+  border-color: #16a34a;
 }
 
 .placeholder-imagen {
@@ -164,61 +162,68 @@ textarea.mat-mdc-input-element {
   color: #9ca3af;
 }
 
-.icono-camara {
+.placeholder-imagen mat-icon {
   font-size: 48px;
-  color: #9ca3af;
   margin-bottom: 6px;
-}
-
-.placeholder-imagen p {
-  margin: 0;
-  font-size: 14px;
-  color: #9ca3af;
 }
 
 .imagen-preview {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 8px;
 }
 
-/* Botones */
+/* ==========================
+   🔘 Botones
+   ========================== */
 .botones-accion {
   display: flex;
   justify-content: center;
   gap: 20px;
-  padding-top: 15px;
+  margin-top: 20px;
+}
+
+.btn-modificar,
+.btn-guardar {
+  padding: 12px 40px;
+  font-size: 16px;
+  border-radius: 10px;
+  font-weight: 500;
+  text-transform: none;
+  transition: all 0.3s ease;
 }
 
 .btn-modificar {
-  background-color: #84cc16 !important;
-  color: white !important;
-  padding: 12px 50px !important;
-  font-size: 16px !important;
-  border-radius: 10px !important;
-  text-transform: none !important;
-  font-weight: 500 !important;
+  background-color: #22c55e;
+  color: white;
 }
 
 .btn-modificar:hover {
-  background-color: #65a30d !important;
+  background-color: #16a34a;
 }
 
 .btn-guardar {
-  background-color: #10b981 !important;
-  color: white !important;
-  padding: 12px 50px !important;
-  font-size: 16px !important;
-  border-radius: 10px !important;
-  text-transform: none !important;
-  font-weight: 500 !important;
+  background-color: #10b981;
+  color: white;
 }
 
 .btn-guardar:hover {
-  background-color: #059669 !important;
+  background-color: #059669;
 }
 
-/* Responsive */
+/* ==========================
+   📝 Textarea
+   ========================== */
+textarea.mat-mdc-input-element {
+  min-height: 120px;
+  resize: vertical;
+  border-radius: 8px;
+}
+
+/* ==========================
+   📱 Responsive
+   ========================== */
 @media (max-width: 768px) {
   .row, .row-nutricional {
     flex-direction: column;
@@ -254,21 +259,4 @@ textarea.mat-mdc-input-element {
   .form-container {
     padding: 20px;
   }
-}
-
-/* Eliminar sombras y bordes de Material */
-::ng-deep .mat-mdc-card {
-  box-shadow: none !important;
-}
-
-::ng-deep .mdc-notched-outline__leading,
-::ng-deep .mdc-notched-outline__notch,
-::ng-deep .mdc-notched-outline__trailing {
-  border: none !important;
-}
-
-/* Ajuste del textarea */
-textarea.mat-mdc-input-element {
-  min-height: 100px;
-  resize: vertical;
 }

@@ -69,6 +69,28 @@ export interface RegistroNutricionistaRequest {
   };
 }
 
+export interface RecetaDTO {
+  idReceta?: number;
+  idhorario: HorarioDTO | null;
+  descripcion: string;
+  tiempo: number;
+  carbohidratos: number;
+  calorias: number;
+  grasas: number;
+  proteinas: number;
+  ingredientes: string;
+  nombre: string;
+  preparacion: string;
+  cantidadPorcion: number;
+  foto?: null;  // <-- opcional
+}
+
+export interface HorarioDTO {
+  id: number;
+  nombre: string;
+}
+
+
 /* ================================
    💼 SERVICIO NUTRICIONISTA
 ================================= */
@@ -103,6 +125,11 @@ export class NutricionistaService {
   /** 🕒 Listar turnos disponibles */
   listarTurnos(): Observable<TurnoDTO[]> {
     return this.http.get<TurnoDTO[]>(`${this.apiUrl}/listarTurnos`, {
+      headers: this.getHeaders(),
+    });
+  }
+  listarHorarios(): Observable<HorarioDTO[]> {
+    return this.http.get<HorarioDTO[]>(`${this.apiUrl}/listarHorarios`, {
       headers: this.getHeaders(),
     });
   }
@@ -150,4 +177,9 @@ export class NutricionistaService {
       headers: this.getHeaders(),
     });
   }
+
+  registrarReceta(receta: RecetaDTO): Observable<RecetaDTO> {
+    return this.http.post<RecetaDTO>(`${this.apiUrl}/registrarReceta`, receta);
+  }
+
 }
