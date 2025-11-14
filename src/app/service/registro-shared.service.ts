@@ -25,7 +25,7 @@ export class RegistroSharedService {
   private progressSubject = new BehaviorSubject<number>(0);
   public progress$: Observable<number> = this.progressSubject.asObservable();
 
-  private totalPasos = 6;
+  private totalPasos = 5;
 
   constructor() {}
 

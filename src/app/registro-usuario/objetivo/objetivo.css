@@ -342,31 +342,7 @@ html, body {
     display: none;
   }
 
-  .registro-header {
-    margin-top: 80px;
-  }
-
   .registro-header h1 {
-    font-size: 1.5rem;
-  }
-
-  .header-icon {
-    width: 80px;
-    height: 80px;
-  }
-
-  .icon-above-progress .icono-fitia {
-    width: 70px;
-    height: 70px;
-  }
-
-  .progress-container {
-    top: 65px;
-  }
-
-  .back-button {
-    top: 20px;
-    left: 15px;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
   }
 }
