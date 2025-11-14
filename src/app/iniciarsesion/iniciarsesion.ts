@@ -54,7 +54,13 @@ export class Iniciarsesion implements OnInit {
           ]],// ← Solo 8 dígitos numéricos
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+    this.loginForm.valueChanges.subscribe(() => {
+      if (this.errorMessage) {
+        this.errorMessage = '';
+      }
+    });
   }
+
 
   togglePassword(): void {
     this.showPassword = !this.showPassword;
@@ -84,7 +90,7 @@ export class Iniciarsesion implements OnInit {
             if (roles.includes('NUTRICIONISTA')) {
               this.router.navigate(['/nutricionista/perfil']);
             } else if (roles.includes('PACIENTE')) {
-              this.router.navigate(['/sistema/progreso-paciente']);
+              this.router.navigate(['/sistema/perfil-paciente']);
             } else {
               this.router.navigate(['/']);
             }
@@ -95,7 +101,17 @@ export class Iniciarsesion implements OnInit {
         },
         error: (error) => {
           console.error('❌ Error en login:', error);
-          this.errorMessage = 'Usuario o contraseña incorrectos';
+          console.error('❌ Status:', error.status);
+          console.error('❌ Error body:', error.error);
+
+          // ✅ Mostrar mensaje específico del backend
+          if (error.status === 403) {
+            this.errorMessage = error.error?.message || 'Tu cuenta ha sido desactivada';
+          } else if (error.status === 401) {
+            this.errorMessage = error.error?.message || 'DNI o contraseña incorrectos';
+          } else {
+            this.errorMessage = error.error?.message || 'Error al iniciar sesión. Intenta nuevamente.';
+          }
           this.isLoading = false;
         }
       });

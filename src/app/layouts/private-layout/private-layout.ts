@@ -1,9 +1,12 @@
 import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
-import {Router, RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd} from '@angular/router';
+import { Router, RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { UserService, UserProfile } from '../../service/userlayout-service';
+import { UserService } from '../../service/userlayout-service';
+import { Usuario } from '../../models/usuario.model';
+import { Paciente } from '../../models/paciente.model';
+import { Nutricionista } from '../../models/nutricionista.model';
 import { Subscription } from 'rxjs';
-import {filter} from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-private-layout',
@@ -11,7 +14,6 @@ import {filter} from 'rxjs/operators';
   imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
   templateUrl: './private-layout.html',
   styleUrls: ['./private-layout.css'],
-
 })
 export class PrivateLayout implements OnInit, OnDestroy {
   userAvatar: string = '/Images/iconos/iconoSistemas/image 18.png';
@@ -56,24 +58,21 @@ export class PrivateLayout implements OnInit, OnDestroy {
     this.userSubscription = this.userService.getCurrentUser().subscribe({
       next: (user) => {
         if (user) {
-          this.userName = `${user.nombre} ${user.apellido}`;
-          this.userAvatar = user.fotoPerfil ?? '/Images/iconos/iconoSistemas/image 18.png';
+          // ✅ Type guard para Paciente o Nutricionista
+          if ('idusuario' in user) {
+            const userWithUsuario = user as Paciente | Nutricionista;
+            this.userName = `${userWithUsuario.idusuario.nombre} ${userWithUsuario.idusuario.apellido}`;
+            this.userAvatar = userWithUsuario.idusuario.fotoPerfil ?? '/Images/iconos/iconoSistemas/image 18.png';
+          }
+          // ✅ Usuario normal
+          else {
+            const usuario = user as Usuario;
+            this.userName = `${usuario.nombre} ${usuario.apellido}`;
+            this.userAvatar = usuario.fotoPerfil ?? '/Images/iconos/iconoSistemas/image 18.png';
+          }
           this.isPremium = this.userService.isPremium();
         } else {
-          this.userService.getCurrentUserProfile().subscribe({
-            next: (fetchedUser: UserProfile) => {
-              if (fetchedUser) {
-                this.userName = `${fetchedUser.nombre} ${fetchedUser.apellido}`.trim() || 'Nombre de Usuario';
-                this.userAvatar = fetchedUser.fotoPerfil ?? '/Images/iconos/iconoSistemas/image 18.png';
-                this.isPremium = this.userService.isPremium();
-              } else {
-                this.loadFromLocalStorage();
-              }
-            },
-            error: () => {
-              this.loadFromLocalStorage();
-            }
-          });
+          this.loadFromLocalStorage();
         }
       },
       error: () => {
@@ -95,19 +94,29 @@ export class PrivateLayout implements OnInit, OnDestroy {
   }
 
   logout() {
-    console.log('🚪 Cerrando sesión...'); // 👈 para probar
+    console.log('🚪 Cerrando sesión...');
     if (isPlatformBrowser(this.platformId)) {
       this.userService.clearUser();
       localStorage.removeItem('token');
     }
     this.router.navigate(['/inicio']);
-
   }
 
   updateUserAvatar(newAvatarUrl: string) {
-    this.userService.updateAvatar(newAvatarUrl).subscribe({
-      next: (user: UserProfile) => {
-        this.userAvatar = user.fotoPerfil || '/Images/iconos/iconoSistemas/image 18.png';
+    this.userService.getCurrentUser().subscribe({
+      next: (currentUser) => {
+        if (currentUser) {
+          // ✅ Actualizar según el tipo de usuario
+          if ('idusuario' in currentUser) {
+            const userWithUsuario = currentUser as Paciente | Nutricionista;
+            userWithUsuario.idusuario.fotoPerfil = newAvatarUrl;
+            this.userAvatar = newAvatarUrl;
+          } else {
+            const usuario = currentUser as Usuario;
+            usuario.fotoPerfil = newAvatarUrl;
+            this.userAvatar = newAvatarUrl;
+          }
+        }
       },
       error: (error: any) => {
         console.error('Error al actualizar avatar:', error);

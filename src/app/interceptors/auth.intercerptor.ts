@@ -20,6 +20,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           Authorization: `Bearer ${token}`
         }
       });
+      console.log('🔐 Token enviado:', token.substring(0, 20) + '...');
       return next(clonedRequest);
     }
   }

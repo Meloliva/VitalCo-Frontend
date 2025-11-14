@@ -7,9 +7,13 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
-import { UserProfile, UserService } from '../service/userlayout-service';
-
-// Para mostrar notificaciones
+import { UserService } from '../service/userlayout-service';
+import { Usuario } from '../models/usuario.model';
+import { Paciente } from '../models/paciente.model';
+import { Nutricionista } from '../models/nutricionista.model';
+import { PerfilPacienteService } from '../service/perfil-paciente.service';
+import { EditarPaciente } from '../models/editar-paciente.model';
+import {Router} from '@angular/router';
 
 @Component({
   standalone: true,
@@ -28,46 +32,68 @@ import { UserProfile, UserService } from '../service/userlayout-service';
   styleUrls: ['./perfil-paciente.css'],
 })
 export class PerfilPacienteComponent implements OnInit {
-  perfilForm: FormGroup;
-  planActual: string = 'Gratuito'; // Ejemplo, puedes obtener este valor desde tu backend
+  perfilForm!: FormGroup;
+  planActual: string = 'Gratuito';
+  pacienteId!: number;
+  datosOriginales: any = {}; // ✅ Guardar valores originales
 
   constructor(
     private fb: FormBuilder,
-    private snackBar: MatSnackBar, // Para mostrar notificaciones
-    private userService: UserService
+    private snackBar: MatSnackBar,
+    private userService: UserService,
+    private perfilPacienteService: PerfilPacienteService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.iniciarFormulario();
-    this.cargarDatosUsuario();
     this.cargarPerfilPaciente();
   }
 
-  // Inicializamos el formulario
   iniciarFormulario() {
     this.perfilForm = this.fb.group({
       edad: ['', [Validators.required, Validators.min(1), Validators.max(120)]],
-      altura: ['', [Validators.required, Validators.min(50), Validators.max(250)]],
-      sexo: ['', Validators.required],
+      altura: ['', [Validators.required, Validators.min(0.5), Validators.max(2.5)]],
+      sexo: [{value: '', disabled: true}],
       cntTrigliceridos: ['', [Validators.required, Validators.min(1)]],
       correo: ['', [Validators.required, Validators.email]],
       contrasena: ['', [Validators.minLength(6)]],
+      peso: ['', [Validators.required, Validators.min(1)]],
     });
   }
-  cargarDatosUsuario(): void {
-    this.userService.getCurrentUserProfile().subscribe({
-      next: (user: UserProfile) => {
-        console.log('Usuario cargado:', user);
+
+  private cargarPerfilPaciente(): void {
+    this.userService.getUsuarioPaciente().subscribe({
+      next: (paciente: Paciente) => {
+        console.log('✅ Perfil paciente cargado:', paciente);
+
+        this.pacienteId = paciente.id;
+        console.log('🆔 Paciente ID:', this.pacienteId);
+
+        // ✅ Guardar valores originales
+        this.datosOriginales = {
+          correo: paciente.idusuario.correo || '',
+          edad: paciente.edad || null,
+          altura: paciente.altura || null,
+          cntTrigliceridos: paciente.trigliceridos || null,
+          peso: paciente.peso || null,
+        };
+
         this.perfilForm.patchValue({
-          sexo: user.genero || '',
+          correo: this.datosOriginales.correo,
+          sexo: this.normalizarGenero(paciente.idusuario.genero),
+          edad: this.datosOriginales.edad,
+          altura: this.datosOriginales.altura,
+          cntTrigliceridos: this.datosOriginales.cntTrigliceridos,
+          peso: this.datosOriginales.peso,
         });
-        // Plan actual
-        const tipoPlan = user.paciente?.idPlan?.tipo;
+
+        const tipoPlan = paciente.idplan.tipo;
         this.planActual = tipoPlan ? tipoPlan.replace('Plan ', '') : 'Free';
       },
       error: (err) => {
-        console.error('Error al cargar el perfil del usuario:', err);
-        this.mostrarNotificacion('Error al cargar los datos del usuario', true);
+        console.error('❌ Error al cargar el perfil del paciente:', err);
+        this.mostrarNotificacion('Error al cargar los datos del paciente', true);
       },
     });
   }
@@ -81,52 +107,108 @@ export class PerfilPacienteComponent implements OnInit {
     return '';
   }
 
-  private cargarPerfilPaciente(): void {
-    this.userService.getUsuarioPaciente().subscribe({
-      next: (paciente: any) => {
-        console.log('✅ Perfil paciente cargado:', paciente);
-
-        // Rellenar el formulario con los datos del paciente
-        this.perfilForm.patchValue({
-          correo: paciente.idusuario?.correo || '',
-          sexo: this.normalizarGenero(paciente.idusuario?.genero),
-          edad: paciente.edad || '',
-          altura: paciente.altura || '',
-          cntTrigliceridos: paciente.trigliceridos || '',
-
-        });
-
-        // Plan actual (ejemplo: "Free" o "Premium")
-        const tipoPlan = paciente.idplan?.tipo;
-        this.planActual = tipoPlan ? tipoPlan.replace('Plan ', '') : 'Free';
-      },
-      error: (err) => {
-        console.error('❌ Error al cargar el perfil del paciente:', err);
-        this.mostrarNotificacion('Error al cargar los datos del paciente', true);
-      },
-    });
-  }
-
-  // Acciones
   cambiarFoto() {
     console.log('Cambiando foto...');
-    // Lógica para cambiar foto
   }
 
   guardarCambios() {
-    if (this.perfilForm.valid) {
-      console.log('Formulario guardado', this.perfilForm.value);
-      this.mostrarNotificacion('Cambios guardados exitosamente!');
-    } else {
+    if (this.perfilForm.invalid) {
       this.mostrarNotificacion('Por favor, corrige los errores del formulario', true);
+      return;
     }
+
+    const formValues = this.perfilForm.value;
+
+    // ✅ Construir DTO solo con campos que cambiaron
+    const dto: EditarPaciente = {
+      id: this.pacienteId,
+    };
+
+    // ✅ Solo agregar campos que cambiaron
+    if (formValues.edad != null && formValues.edad !== this.datosOriginales.edad) {
+      dto.edad = Number(formValues.edad);
+    }
+
+    if (formValues.altura != null && formValues.altura !== this.datosOriginales.altura) {
+      dto.altura = Number(formValues.altura);
+    }
+
+    if (formValues.cntTrigliceridos != null && formValues.cntTrigliceridos !== this.datosOriginales.cntTrigliceridos) {
+      dto.trigliceridos = Number(formValues.cntTrigliceridos);
+    }
+
+    if (formValues.peso != null && formValues.peso !== this.datosOriginales.peso) {
+      dto.peso = Number(formValues.peso);
+    }
+
+    if (formValues.correo && formValues.correo.trim() !== this.datosOriginales.correo) {
+      dto.correo = formValues.correo.trim();
+    }
+
+    // ✅ Contraseña solo si se escribió algo
+    if (formValues.contrasena && formValues.contrasena.trim() !== '') {
+      dto.contraseña = formValues.contrasena.trim();
+    }
+
+    console.log('📦 DTO enviado (solo campos modificados):', dto);
+
+    // ✅ Si no hay cambios, no hacer la petición
+    if (Object.keys(dto).length === 1) { // Solo tiene 'id'
+      this.mostrarNotificacion('No hay cambios para guardar');
+      return;
+    }
+
+    this.perfilPacienteService.editarPaciente(dto).subscribe({
+      next: (paciente) => {
+        console.log('✅ Paciente actualizado:', paciente);
+        this.mostrarNotificacion('Cambios guardados exitosamente!');
+
+        // ✅ Actualizar datos originales con los nuevos valores
+        this.datosOriginales = {
+          correo: paciente.idusuario?.correo || this.datosOriginales.correo,
+          edad: paciente.edad || this.datosOriginales.edad,
+          altura: paciente.altura || this.datosOriginales.altura,
+          cntTrigliceridos: paciente.trigliceridos || this.datosOriginales.cntTrigliceridos,
+          peso: paciente.peso || this.datosOriginales.peso,
+        };
+
+        // ✅ Limpiar campo de contraseña
+        this.perfilForm.patchValue({ contrasena: '' });
+      },
+      error: (err) => {
+        console.error('❌ Error al guardar cambios:', err);
+        console.error('❌ Detalle del error:', err.error);
+
+        let mensajeError = 'Error al guardar los cambios';
+        if (err.error?.message) {
+          mensajeError += ': ' + err.error.message;
+        }
+
+        this.mostrarNotificacion(mensajeError, true);
+      }
+    });
   }
 
   eliminarCuenta() {
     const confirmacion = confirm('¿Estás seguro de que quieres eliminar tu cuenta?');
     if (confirmacion) {
-      console.log('Cuenta eliminada');
-      this.mostrarNotificacion('Cuenta eliminada');
+      this.perfilPacienteService.eliminarUsuario().subscribe({
+        next: () => {
+          console.log('✅ Cuenta eliminada');
+          this.mostrarNotificacion('Cuenta eliminada exitosamente');
+          // ✅ Limpiar localStorage
+          localStorage.removeItem('token');
+          localStorage.removeItem('roles');
+          localStorage.removeItem('userRole');
+          setTimeout(() => {
+            this.router.navigate(['/inicio']);
+          }, 1500);
+        },
+        error: (err) => {
+          console.error('❌ Error al eliminar cuenta:', err);
+          this.mostrarNotificacion('Error al eliminar la cuenta', true);
+        }
+      });
     }
   }
 
@@ -138,7 +220,6 @@ export class PerfilPacienteComponent implements OnInit {
     }
   }
 
-  // Mostrar notificaciones
   mostrarNotificacion(mensaje: string, error: boolean = false) {
     this.snackBar.open(mensaje, 'Cerrar', {
       duration: 3000,
@@ -146,7 +227,6 @@ export class PerfilPacienteComponent implements OnInit {
     });
   }
 
-  // Getters para manejar los errores en el HTML
   get edad() {
     return this.perfilForm.get('edad');
   }
@@ -170,4 +250,9 @@ export class PerfilPacienteComponent implements OnInit {
   get contrasena() {
     return this.perfilForm.get('contrasena');
   }
+
+  get peso() {
+    return this.perfilForm.get('peso');
+  }
 }
+
