@@ -128,6 +128,6 @@ export class MacronutrientesComponent implements OnInit, AfterViewInit {
   finalizarRegistro(): void {
     this.registroShared.limpiarDatos();
     alert('¡Registro completado exitosamente!');
-    this.router.navigate(['/sistema/progreso-paciente']);
+    this.router.navigate(['/sistema/perfil-paciente']);
   }
 }

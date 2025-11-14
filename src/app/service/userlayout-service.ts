@@ -2,35 +2,16 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators';
-
-export interface UserProfile {
-  id: number;
-  dni: string;
-  nombre: string;
-  apellido: string;
-  correo: string;
-  genero: string;
-  estado: string;
-  fotoPerfil?: string;
-  rol: {
-    id: number;
-    tipo: string; // ← Cambio: era "nombre", ahora es "tipo"
-  };
-  paciente?: {
-    idPlan?: {
-      tipo?: string;
-      [key: string]: any;
-    };
-    [key: string]: any;
-  };
-}
+import { Usuario } from '../models/usuario.model';
+import { Paciente } from '../models/paciente.model';
+import { Nutricionista } from '../models/nutricionista.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
   private apiUrl = 'http://localhost:8080/api';
-  private currentUserSubject = new BehaviorSubject<UserProfile | null>(null);
+  private currentUserSubject = new BehaviorSubject<Usuario | Paciente | Nutricionista | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient) {}
@@ -40,11 +21,11 @@ export class UserService {
     this.loadUserFromStorage();
   }
 
-  getCurrentUser(): Observable<UserProfile | null> {
+  getCurrentUser(): Observable<Usuario | Paciente | Nutricionista | null> {
     return this.currentUser$;
   }
 
-  setCurrentUser(user: UserProfile | null): void {
+  setCurrentUser(user: Usuario | Paciente | Nutricionista | null): void {
     this.currentUserSubject.next(user);
     if (typeof window === 'undefined') return;
     if (user) {
@@ -68,9 +49,9 @@ export class UserService {
     return `${url}${url.includes('?') ? '&' : '?'}hash=${encodeURIComponent(hash)}`;
   }
 
-  listarUsuariosPorRol(rol: string, hash?: string): Observable<UserProfile[]> {
+  listarUsuariosPorRol(rol: string, hash?: string): Observable<Usuario[]> {
     const url = this.buildUrlWithHash(`${this.apiUrl}/usuarios?rol=${encodeURIComponent(rol)}`, hash);
-    return this.http.get<UserProfile[]>(url, { headers: this.getHeaders() }).pipe(
+    return this.http.get<Usuario[]>(url, { headers: this.getHeaders() }).pipe(
       catchError(error => {
         console.error('Error al listar usuarios por rol:', error);
         return throwError(() => error);
@@ -78,9 +59,9 @@ export class UserService {
     );
   }
 
-  getUserById(id: number, hash?: string): Observable<UserProfile> {
+  getUserById(id: number, hash?: string): Observable<Usuario> {
     const url = this.buildUrlWithHash(`${this.apiUrl}/usuarios/${id}`, hash);
-    return this.http.get<UserProfile>(url, { headers: this.getHeaders() }).pipe(
+    return this.http.get<Usuario>(url, { headers: this.getHeaders() }).pipe(
       tap(user => {
         this.currentUserSubject.next(user);
         if (typeof window !== 'undefined') this.saveUserToStorage(user);
@@ -92,100 +73,78 @@ export class UserService {
     );
   }
 
-  getUsuario(): Observable<UserProfile> {
-    console.log('🏥 Llamando a /usuarioPaciente');
-    return this.http.get<UserProfile>(`${this.apiUrl}/usuarioNormal`, {
+  getUsuario(): Observable<Usuario> {
+    console.log('👤 Llamando a /usuarioNormal');
+    return this.http.get<Usuario>(`${this.apiUrl}/usuarioNormal`, {
       headers: this.getHeaders()
     }).pipe(
       tap(user => {
-        console.log('✅ Usuario paciente recibido del backend:', user);
+        console.log('✅ Usuario recibido del backend:', user);
         console.log('📋 Rol recibido:', user.rol);
-        console.log('📋 Tipo del rol:', user.rol?.tipo);
-        console.log('📋 Paciente recibido:', user.paciente);
-        console.log('📋 Plan recibido:', user.paciente?.idPlan);
-        console.log('📋 Tipo de plan recibido:', user.paciente?.idPlan?.tipo);
-
         this.currentUserSubject.next(user);
         if (typeof window !== 'undefined') this.saveUserToStorage(user);
       }),
       catchError(error => {
-        console.error('❌ Error al obtener usuario paciente:', error);
-        return throwError(() => error);
-      })
-    );
-  }
-  getUsuarioPaciente(): Observable<UserProfile> {
-    return this.http.get<any>(`${this.apiUrl}/usuarioPaciente`, {
-      headers: this.getHeaders()
-    }).pipe(
-      tap((paciente) => {
-        console.log('🩺 Usuario paciente recibido del backend:', paciente);
-        console.log('🎯 Rol completo:', JSON.stringify(paciente.idusuario?.rol, null, 2));
-
-        // Adaptar estructura del backend (PacienteDTO) al UserProfile esperado
-        const userAdaptado: UserProfile = {
-          id: paciente.idusuario?.id || paciente.id,
-          dni: paciente.idusuario?.dni || '',
-          nombre: paciente.idusuario?.nombre || '',
-          apellido: paciente.idusuario?.apellido || '',
-          correo: paciente.idusuario?.correo || '',
-          genero: paciente.idusuario?.genero || '',
-          estado: paciente.idusuario?.estado || '',
-          fotoPerfil: paciente.idusuario?.fotoPerfil || null,
-          rol: {
-            id: Number(paciente.idusuario?.rol?.id) || 0,
-            tipo: paciente.idusuario?.rol?.tipo || 'PACIENTE'
-          },
-          paciente: {
-            edad: paciente.edad,
-            altura: paciente.altura,
-            peso: paciente.peso,
-            cntTrigliceridos: paciente.trigliceridos,
-            actividadFisica: paciente.actividadFisica,
-            idPlan: paciente.idplan
-              ? {
-                tipo: paciente.idplan.tipo,
-                premium: paciente.idplan.tipo?.toLowerCase().includes('premium')
-              }
-              : undefined,
-            idPlanNutricional: paciente.idPlanNutricional
-          }
-        };
-        console.log('✅ Rol adaptado con id:', userAdaptado.rol.id);
-        console.log('💾 Guardando en localStorage - Rol ID:', userAdaptado.rol.id);
-
-        // Guardar y emitir el usuario adaptado
-        this.currentUserSubject.next(userAdaptado);
-        if (typeof window !== 'undefined') this.saveUserToStorage(userAdaptado);
-      }),
-      catchError((error) => {
-        console.error('❌ Error al obtener usuario paciente:', error);
+        console.error('❌ Error al obtener usuario:', error);
         return throwError(() => error);
       })
     );
   }
 
-  getUsuarioNutricionista(): Observable<UserProfile> {
-    return this.http.get<UserProfile>(`${this.apiUrl}/usuarioNutricionista`, {
+  getUsuarioPaciente(): Observable<Paciente> {
+    console.log('🩺 Llamando a /usuarioPaciente');
+    return this.http.get<Paciente>(`${this.apiUrl}/usuarioPaciente`, {
       headers: this.getHeaders()
     }).pipe(
-      tap(user => {
-        this.currentUserSubject.next(user);
-        if (typeof window !== 'undefined') this.saveUserToStorage(user);
+      tap(paciente => {
+        console.log('✅ Paciente recibido del backend:', paciente);
+        console.log('👤 Datos del usuario:', paciente.idusuario);
+        console.log('🎯 Rol:', paciente.idusuario.rol);
+        console.log('📋 Plan:', paciente.idplan);
+
+        this.currentUserSubject.next(paciente);
+        if (typeof window !== 'undefined') this.saveUserToStorage(paciente);
       }),
       catchError(error => {
-        console.error('Error al obtener usuario nutricionista:', error);
+        console.error('❌ Error al obtener paciente:', error);
         return throwError(() => error);
       })
     );
   }
 
-  fetchPerfilAutenticado(): Observable<UserProfile> {
+  getUsuarioNutricionista(): Observable<Nutricionista> {
+    console.log('👨‍⚕️ Llamando a /usuarioNutricionista');
+    return this.http.get<Nutricionista>(`${this.apiUrl}/usuarioNutricionista`, {
+      headers: this.getHeaders()
+    }).pipe(
+      tap(nutricionista => {
+        console.log('✅ Nutricionista recibido del backend:', nutricionista);
+        console.log('👤 Datos del usuario:', nutricionista.idusuario);
+        console.log('🎯 Rol:', nutricionista.idusuario.rol);
+
+        this.currentUserSubject.next(nutricionista);
+        if (typeof window !== 'undefined') this.saveUserToStorage(nutricionista);
+      }),
+      catchError(error => {
+        console.error('❌ Error al obtener nutricionista:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  fetchPerfilAutenticado(): Observable<Usuario | Paciente | Nutricionista> {
     const current = this.currentUserSubject.value;
     console.log('🎯 fetchPerfilAutenticado - Usuario actual:', current);
 
-    const role = current?.rol?.tipo?.toUpperCase()
-      || (typeof window !== 'undefined' ? (localStorage.getItem('userRole') || '').toUpperCase() : '');
+    let role = '';
+
+    if (current && 'idusuario' in current) {
+      role = (current as Paciente | Nutricionista).idusuario.rol.tipo.toUpperCase();
+    } else if (current) {
+      role = (current as Usuario).rol.tipo.toUpperCase();
+    } else if (typeof window !== 'undefined') {
+      role = (localStorage.getItem('userRole') || '').toUpperCase();
+    }
 
     console.log('🎯 fetchPerfilAutenticado - Rol detectado:', role);
 
@@ -202,7 +161,7 @@ export class UserService {
     );
   }
 
-  getCurrentUserProfile(identifier?: number | string, hash?: string): Observable<UserProfile> {
+  getCurrentUserProfile(identifier?: number | string, hash?: string): Observable<Usuario | Paciente | Nutricionista> {
     if (typeof identifier === 'number') {
       return this.getUserById(identifier, hash);
     }
@@ -251,15 +210,15 @@ export class UserService {
     );
   }
 
-  updateAvatar(avatarUrl: string): Observable<UserProfile> {
-    return this.http.patch<UserProfile>(
+  updateAvatar(avatarUrl: string): Observable<Paciente> {
+    return this.http.patch<Paciente>(
       `${this.apiUrl}/editarPaciente`,
       { fotoPerfil: avatarUrl },
       { headers: this.getHeaders() }
     ).pipe(
-      tap(user => {
-        this.currentUserSubject.next(user);
-        if (typeof window !== 'undefined') this.saveUserToStorage(user);
+      tap(paciente => {
+        this.currentUserSubject.next(paciente);
+        if (typeof window !== 'undefined') this.saveUserToStorage(paciente);
       }),
       catchError(error => {
         console.error('Error al actualizar avatar:', error);
@@ -277,51 +236,124 @@ export class UserService {
       return false;
     }
 
-    const roleTipo = user.rol?.tipo?.toUpperCase() || '';
-    console.log('👤 isPremium - Rol:', roleTipo);
+    // Verificar si es un Paciente
+    if ('idusuario' in user && 'idplan' in user) {
+      const paciente = user as Paciente;
+      const roleTipo = paciente.idusuario.rol.tipo.toUpperCase();
+      console.log('👤 isPremium - Rol:', roleTipo);
 
-    if (roleTipo !== 'PACIENTE') {
-      console.log('❌ isPremium - No es paciente');
-      return false;
+      if (roleTipo !== 'PACIENTE') {
+        console.log('❌ isPremium - No es paciente');
+        return false;
+      }
+
+      const planTipo = paciente.idplan.tipo;
+      console.log('📋 isPremium - Tipo de plan:', planTipo);
+      const esPremium = planTipo === 'Plan premium';
+      console.log('✅ isPremium - Es premium:', esPremium);
+
+      return esPremium;
     }
 
-    const planTipo = user.paciente?.idPlan?.tipo;
-    console.log('📋 isPremium - Tipo de plan:', planTipo);
-    console.log('✅ isPremium - Es premium:', planTipo === 'Plan premium');
-
-    return planTipo === 'Plan premium';
+    console.log('❌ isPremium - Usuario no es paciente');
+    return false;
   }
 
   getUserFullName(): string {
     const user = this.currentUserSubject.value;
-    return user ? `${user.nombre} ${user.apellido}` : 'Nombre de Usuario';
+    if (!user) return 'Nombre de Usuario';
+
+    if ('idusuario' in user) {
+      const userWithUsuario = user as Paciente | Nutricionista;
+      return `${userWithUsuario.idusuario.nombre} ${userWithUsuario.idusuario.apellido}`;
+    }
+
+    const usuario = user as Usuario;
+    return `${usuario.nombre} ${usuario.apellido}`;
   }
 
   getUserAvatar(): string {
     const user = this.currentUserSubject.value;
-    return user?.fotoPerfil || '/Images/iconos/iconoSistemas/image 18';
+    if (!user) return '/Images/iconos/iconoSistemas/image 18';
+
+    if ('idusuario' in user) {
+      const userWithUsuario = user as Paciente | Nutricionista;
+      return userWithUsuario.idusuario.fotoPerfil || '/Images/iconos/iconoSistemas/image 18';
+    }
+
+    const usuario = user as Usuario;
+    return usuario.fotoPerfil || '/Images/iconos/iconoSistemas/image 18';
   }
 
   getUserId(): number | null {
-    return this.currentUserSubject.value?.id || null;
+    const user = this.currentUserSubject.value;
+    if (!user) return null;
+
+    if ('idusuario' in user) {
+      const userWithUsuario = user as Paciente | Nutricionista;
+      return userWithUsuario.idusuario.id;
+    }
+
+    const usuario = user as Usuario;
+    return usuario.id;
   }
 
-  private saveUserToStorage(user: UserProfile): void {
-    if (typeof window === 'undefined') return;
+  private saveUserToStorage(user: Usuario | Paciente | Nutricionista): void {
+    if (typeof window === 'undefined' || !user) return;
 
-    localStorage.setItem('userId', user.id.toString());
-    localStorage.setItem('userName', `${user.nombre} ${user.apellido}`);
-    localStorage.setItem('userRole', user.rol.tipo);
-    localStorage.setItem('userRoleId', user.rol.id.toString());
+    let id: number;
+    let nombre: string;
+    let apellido: string;
+    let rol: { id: number; tipo: string };
+    let fotoPerfil: string | null | undefined;
+    let planTipo = 'Plan free';
 
-    const planTipo = user.paciente?.idPlan?.tipo || 'Plan free';
-    console.log('💾 Guardando plan en localStorage:', planTipo);
-    console.log('💾 Guardando rol en localStorage:', user.rol.tipo);
-    console.log('💾 Guardando rol ID en localStorage:', user.rol.id);
+    // Type guard para Paciente
+    if ('idusuario' in user && 'idplan' in user) {
+      const paciente = user as Paciente;
+      id = paciente.idusuario.id;
+      nombre = paciente.idusuario.nombre;
+      apellido = paciente.idusuario.apellido;
+      rol = paciente.idusuario.rol;
+      fotoPerfil = paciente.idusuario.fotoPerfil;
+      planTipo = paciente.idplan.tipo;
+    }
+    // Type guard para Nutricionista
+    else if ('idusuario' in user && 'especialidad' in user) {
+      const nutricionista = user as Nutricionista;
+      id = nutricionista.idusuario.id;
+      nombre = nutricionista.idusuario.nombre;
+      apellido = nutricionista.idusuario.apellido;
+      rol = nutricionista.idusuario.rol;
+      fotoPerfil = nutricionista.idusuario.fotoPerfil;
+    }
+    // Usuario normal
+    else {
+      const usuario = user as Usuario;
+      id = usuario.id;
+      nombre = usuario.nombre;
+      apellido = usuario.apellido;
+      rol = usuario.rol;
+      fotoPerfil = usuario.fotoPerfil;
+    }
+
+    console.log('💾 Guardando usuario en localStorage:', {
+      id,
+      nombre,
+      apellido,
+      rol: rol.tipo,
+      rolId: rol.id,
+      plan: planTipo
+    });
+
+    localStorage.setItem('userId', id.toString());
+    localStorage.setItem('userName', `${nombre} ${apellido}`);
+    localStorage.setItem('userRole', rol.tipo);
+    localStorage.setItem('userRoleId', rol.id.toString());
     localStorage.setItem('userPlan', planTipo);
 
-    if (user.fotoPerfil) {
-      localStorage.setItem('userAvatar', user.fotoPerfil);
+    if (fotoPerfil) {
+      localStorage.setItem('userAvatar', fotoPerfil);
     }
   }
 
@@ -335,45 +367,46 @@ export class UserService {
     const userAvatar = localStorage.getItem('userAvatar');
     const userPlan = localStorage.getItem('userPlan');
 
-    console.log('📥 localStorage completo:', {
+    console.log('📥 Cargando desde localStorage:', {
       userId,
       userName,
       userRole,
-      userAvatar,
       userRoleId,
-      userPlan
+      userPlan,
+      userAvatar
     });
 
-    if (userId && userName && userRole) {
+    if (userId && userName && userRole && userRoleId) {
       const parts = userName.split(' ');
-      const nombre = parts.shift() || '';
-      const apellido = parts.join(' ') || '';
+      const nombre = parts[0] || '';
+      const apellido = parts.slice(1).join(' ') || '';
 
-      this.currentUserSubject.next({
+      // Crear un Usuario básico desde localStorage
+      const usuario: Usuario = {
         id: parseInt(userId),
         dni: '',
         nombre: nombre,
         apellido: apellido,
         correo: '',
         genero: '',
-        estado: '',
-        fotoPerfil: userAvatar || undefined,
+        estado: 'Activo',
+        fotoPerfil: userAvatar || null,
         rol: {
-          id: userRoleId ? parseInt(userRoleId) : 0,
+          id: parseInt(userRoleId),
           tipo: userRole
-        },
-        paciente: {
-          idPlan: {
-            tipo: userPlan || 'Plan free'
-          }
         }
-      });
+      };
+
+      this.currentUserSubject.next(usuario);
+      console.log('✅ Usuario cargado desde localStorage:', usuario);
     }
   }
 
   clearUser(): void {
     this.currentUserSubject.next(null);
     if (typeof window === 'undefined') return;
+
+    console.log('🧹 Limpiando localStorage');
     localStorage.removeItem('userId');
     localStorage.removeItem('userName');
     localStorage.removeItem('userRole');
