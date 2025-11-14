@@ -67,8 +67,8 @@ export const routes: Routes = [
     children: [
       {
         path: 'perfil',
-        loadComponent: () => import('./perfilnutricionista/perfil').then(m => m.Perfil)
-      },
+        loadComponent: () =>
+          import('./perfilnutricionista/perfil').then(m => m.PerfilNutricionistaComponent)},
       {
         path: 'recetas',
         loadComponent: () => import('./recetas/recetas').then(m => m.RecetasComponent)

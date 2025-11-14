@@ -1,175 +1,142 @@
-/* --- Página de Perfil --- */
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100vh;
-  overflow: hidden;
-  background-color: #ffffff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-:host {
-  width: 100%;
-  height: 100%;
-}
-
-/* --- Contenedor general --- */
+/* --- Contenedor del formulario --- */
+/* --- Contenedor del formulario --- */
 .perfil-container {
   display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px 0;
+  background-color: #f5f5f5;
+  overflow-y: auto;
+}
+
+/* --- Formulario principal --- */
+.perfil-form {
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  max-width: 800px;
+  padding: 30px 40px;
+  display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  width: 80%;
-  max-width: 700px;
-  height: 90vh;
-  box-sizing: border-box;
-  overflow: hidden;
+  gap: 18px;
+  margin-top: 10px; /* más pegado arriba */
 }
+
 
 /* --- Foto de perfil --- */
-.foto-section {
+.avatar-section {
   text-align: center;
-  margin-bottom: 15px;
 }
 
-.foto-icono img {
-  width: 80px;
-  height: 80px;
+.avatar-wrapper img {
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   object-fit: cover;
-  margin-bottom: 8px;
+  background-color: #f0f0f0;
 }
 
-.foto-botones {
-  display: flex;
-  justify-content: center;
-  gap: 7px;
-}
-
-.btn-cambiar-foto,
-.btn-eliminar-foto {
-  border: none;
-  border-radius: 25px;
-  padding: 6px 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s;
-  color: white;
-  font-size: 0.80rem;
-}
-
-.btn-cambiar-foto {
+.avatar-section button {
   background-color: #00BF61;
-}
-
-.btn-cambiar-foto:hover {
-  background-color: #009e4f;
-}
-
-.btn-eliminar-foto {
-  background-color: #f44336;
-}
-
-.btn-eliminar-foto:hover {
-  background-color: #d32f2f;
-}
-
-/* --- Formulario --- */
-.perfil-form {
-  width: 100%;
-  flex: 1;
-  padding: 7px;
-  box-sizing: border-box;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.seccion {
-  border: 1.5px solid #00BF61;
-  border-radius: 10px;
-  padding: 15px;
-  margin-bottom: 10px;
-}
-
-.seccion legend {
-  color: #00BF61;
+  color: white;
+  border-radius: 6px;
+  padding: 6px 18px;
+  margin-top: 8px;
   font-weight: 600;
-  padding: 0 10px;
   font-size: 0.9rem;
 }
 
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr;
+.avatar-section button:hover {
+  background-color: #00a652;
+}
+
+/* --- Títulos de secciones --- */
+.section-title {
+  width: 100%;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+/* --- Cuadros con borde verde --- */
+.section-bordered {
+  width: 100%;
+  border: 1.5px solid #00BF61;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 
-@media (min-width: 640px) {
-  .form-row {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  font-size: 0.8rem;
-  margin-bottom: 4px;
-  color: #333;
-}
-
-.form-group input,
-.form-group select {
-  padding: 8px 12px;
-  border: 2px solid #00BF61;
-  border-radius: 25px;
-  font-size: 0.85rem;
-  outline: none;
+/* --- Campos del formulario --- */
+.mat-form-field {
   width: 100%;
-  box-sizing: border-box;
 }
 
 /* --- Botones de acción --- */
-.button-row {
+.botones-accion {
   display: flex;
   justify-content: center;
-  gap: 15px;
+  align-items: center;
+  gap: 40px;
   margin-top: 10px;
 }
 
-.btn-guardar {
-  padding: 10px 30px;
-  background: #00BF61;
-  color: white;
-  border: none;
-  border-radius: 25px;
+/* Botón Guardar */
+button[color="primary"] {
+  background-color: #00BF61;
+  color: #fff;
   font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s;
+  padding: 8px 40px;
+  border-radius: 8px;
+  font-size: 0.9rem;
 }
 
-.btn-guardar:hover {
-  background: #009e4f;
+button[color="primary"]:hover {
+  background-color: #00a652;
 }
 
-.btn-eliminar {
-  padding: 10px 30px;
-  background: #f44336;
-  color: white;
-  border: none;
-  border-radius: 25px;
+/* Botón Eliminar */
+button[color="warn"] {
+  background-color: #f44336;
+  color: #fff;
   font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s;
+  padding: 8px 40px;
+  border-radius: 8px;
+  font-size: 0.9rem;
 }
 
-.btn-eliminar:hover {
-  background: #d32f2f;
+button[color="warn"]:hover {
+  background-color: #d32f2f;
+}
+
+/* --- Snackbars --- */
+.snack-success {
+  background-color: #00BF61 !important;
+  color: #fff !important;
+}
+
+.snack-error {
+  background-color: #f44336 !important;
+  color: #fff !important;
+}
+/* --- Etiquetas encima de cada campo --- */
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-group label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #333;
+  margin-left: 2px;
 }

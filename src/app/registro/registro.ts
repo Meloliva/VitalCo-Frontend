@@ -182,7 +182,7 @@ export class Registro implements OnInit {
   }
 
   iniciar() {
-    this.router.navigate(['/nutricionista/perfil']);
+    this.router.navigate(['/iniciarsesion']);
   }
 
   cancelar() {

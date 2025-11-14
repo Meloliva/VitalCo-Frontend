@@ -1,76 +1,76 @@
-<!--
-  Página de Perfil (sin sidebar ni layout, se renderiza dentro del layout principal)
--->
+<div class="perfil-container">
+  <form [formGroup]="perfilForm" class="perfil-form">
 
-<div class="foto-section">
-  <div class="foto-icono">
-    <img [src]="imagenPerfil" alt="Foto de perfil">
-  </div>
+    <!-- Foto -->
+    <div class="avatar-section">
+      <div class="avatar-wrapper">
+        <img [src]="imagenPerfil" alt="Foto de perfil" class="avatar-img">
+      </div>
+      <input #fileInput type="file" accept="image/*" hidden (change)="cambiarFoto($event)">
+      <button mat-raised-button color="primary" type="button" (click)="abrirSelectorArchivo()">Cambiar foto</button>
 
-  <!-- Input oculto para seleccionar archivo -->
-  <input type="file" id="fileInput" accept="image/*" (change)="cambiarFoto($event)" hidden>
+    </div>
 
-  <div class="foto-botones">
-    <button type="button" class="btn-cambiar-foto" (click)="abrirSelectorFoto()">
-      Cambiar foto
-    </button>
-    <button type="button" class="btn-eliminar-foto" (click)="eliminarFoto()">
-      Eliminar foto
-    </button>
-  </div>
-</div>
+    <!-- Datos Profesionales -->
+    <h3 class="section-title">Datos Profesionales</h3>
+    <div class="section-bordered">
 
-<form [formGroup]="perfilForm" class="perfil-form">
-  <fieldset class="seccion">
-    <legend>Datos Personales</legend>
-
-    <div class="form-row">
-      <div class="form-group">
+      <div class="field-group">
         <label>Asociaciones</label>
-        <input formControlName="asociacion" type="text">
+        <mat-form-field appearance="outline" class="form-field">
+          <input matInput formControlName="asociacion">
+        </mat-form-field>
       </div>
 
-      <div class="form-group">
+      <div class="field-group">
         <label>Grado Académico</label>
-        <input formControlName="grado" type="text">
+        <mat-form-field appearance="outline" class="form-field">
+          <input matInput formControlName="grado">
+        </mat-form-field>
       </div>
-    </div>
 
-    <div class="form-row">
-      <div class="form-group">
+      <div class="field-group">
         <label>Universidad</label>
-        <input formControlName="universidad" type="text">
+        <mat-form-field appearance="outline" class="form-field">
+          <input matInput formControlName="universidad">
+        </mat-form-field>
       </div>
 
-      <div class="form-group">
+      <div class="field-group">
         <label>Turno</label>
-        <select formControlName="turno">
-          <option value="">Seleccionar</option>
-          <option value="8:00 am-12:00 pm">8:00 am-12:00 pm</option>
-          <option value="2:00 pm-6:00 pm">2:00 pm-6:00 pm</option>
-        </select>
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-select formControlName="turno">
+            <mat-option *ngFor="let t of turnos" [value]="t.id">
+              {{ t.inicioTurno }} - {{ t.finTurno }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
     </div>
-  </fieldset>
 
-  <fieldset class="seccion">
-    <legend>Cuenta</legend>
+    <!-- Cuenta -->
+    <h3 class="section-title">Cuenta</h3>
+    <div class="section-bordered">
 
-    <div class="form-row">
-      <div class="form-group">
+      <div class="field-group">
         <label>Correo</label>
-        <input formControlName="correo" type="email">
+        <mat-form-field appearance="outline" class="form-field">
+          <input matInput type="email" formControlName="correo">
+        </mat-form-field>
       </div>
 
-      <div class="form-group">
+      <div class="field-group">
         <label>Contraseña</label>
-        <input formControlName="password" type="password">
+        <mat-form-field appearance="outline" class="form-field">
+          <input matInput type="password" formControlName="password">
+        </mat-form-field>
       </div>
     </div>
-  </fieldset>
 
-  <div class="button-row">
-    <button type="button" class="btn-guardar" (click)="guardar()">Guardar</button>
-    <button type="button" class="btn-eliminar" (click)="eliminarCuenta()">Eliminar cuenta</button>
-  </div>
-</form>
+    <!-- Botones -->
+    <div class="botones-accion">
+      <button mat-raised-button color="warn" type="button" (click)="eliminarCuenta()">Eliminar cuenta</button>
+      <button mat-raised-button color="primary" type="button" (click)="guardarCambios()">Guardar</button>
+    </div>
+  </form>
+</div>
