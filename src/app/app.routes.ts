@@ -79,7 +79,14 @@ export const routes: Routes = [
           {
             path: 'listar',
             loadComponent: () => import('./recetas-nutricionista/listar/listar').then(m => m.ListarRecetasNutricionista)
+          },
+          {
+            path: 'editar/:id',
+            loadComponent: () =>
+              import('./recetas-nutricionista/registrar/registrar')
+                .then(m => m.RegistrarRecetaNutricionista)
           }
+
         ]
       },
       {

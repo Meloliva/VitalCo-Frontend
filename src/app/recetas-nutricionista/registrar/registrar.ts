@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatOptionModule } from '@angular/material/core';
 import { firstValueFrom } from 'rxjs';
+import {ActivatedRoute, Router} from '@angular/router';
 
 import { NutricionistaService, HorarioDTO, RecetaDTO } from '../../service/nutricionista.service';
 
@@ -37,14 +38,47 @@ export class RegistrarRecetaNutricionista implements OnInit {
 
   horarios: HorarioDTO[] = [];
 
+  modoEditar = false;
+  idEditar: number | null = null;
+
   constructor(
     private fb: FormBuilder,
-    private nutricionistaService: NutricionistaService
+    private nutricionistaService: NutricionistaService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   async ngOnInit() {
     this.inicializarFormulario();
     await this.cargarHorarios();
+
+    // 🔍 Detectar si venimos de editar
+    this.idEditar = Number(this.route.snapshot.paramMap.get("id"));
+
+    if (this.idEditar) {
+      this.modoEditar = true;
+      this.cargarReceta(this.idEditar);
+    }
+  }
+  async cargarReceta(id: number) {
+    const recetas = await firstValueFrom(this.nutricionistaService.getRecetas());
+    const receta = recetas.find(r => r.idReceta === id);
+
+    if (!receta) return;
+
+    this.recetaForm.patchValue({
+      nombre: receta.nombre,
+      tiempo: receta.tiempo,
+      horario: receta.idhorario?.id,
+      pesoPorcion: receta.cantidadPorcion,
+      calorias: receta.calorias,
+      grasaSaturada: receta.grasas,
+      proteina: receta.proteinas,
+      azucares: receta.carbohidratos,
+      descripcion: receta.descripcion,
+      ingredientes: receta.ingredientes,
+      preparacion: receta.preparacion
+    });
   }
 
   inicializarFormulario() {
@@ -55,7 +89,6 @@ export class RegistrarRecetaNutricionista implements OnInit {
       pesoPorcion: ['', [Validators.required, Validators.min(1)]],
       calorias: ['', [Validators.required, Validators.min(1)]],
       grasaSaturada: ['', [Validators.required, Validators.min(0)]],
-      grasaTrans: ['', [Validators.required, Validators.min(0)]],
       proteina: ['', [Validators.required, Validators.min(0)]],
       azucares: ['', [Validators.required, Validators.min(0)]],
       descripcion: ['', Validators.required],
@@ -100,6 +133,11 @@ export class RegistrarRecetaNutricionista implements OnInit {
   }
 
   async guardar(): Promise<void> {
+    if (this.modoEditar) {
+      this.actualizar();
+      return;
+    }
+
     if (this.recetaForm.invalid) {
       alert("⚠️ Completa los campos obligatorios.");
       return;
@@ -112,7 +150,7 @@ export class RegistrarRecetaNutricionista implements OnInit {
       descripcion: valores.descripcion,
       tiempo: valores.tiempo,
       carbohidratos: valores.azucares,
-      grasas: valores.grasaSaturada + valores.grasaTrans,
+      grasas: valores.grasaSaturada,
       proteinas: valores.proteina,
       calorias: valores.calorias,
       cantidadPorcion: valores.pesoPorcion,
@@ -136,6 +174,33 @@ export class RegistrarRecetaNutricionista implements OnInit {
       alert("❌ Error al guardar la receta");
     }
   }
+  async actualizar() {
+    const valores = this.recetaForm.value;
+
+    const recetaEditada: RecetaDTO = {
+      idReceta: this.idEditar!,
+      nombre: valores.nombre,
+      descripcion: valores.descripcion,
+      tiempo: valores.tiempo,
+      carbohidratos: valores.azucares,
+      grasas: valores.grasaSaturada + valores.grasaTrans,
+      proteinas: valores.proteina,
+      calorias: valores.calorias,
+      cantidadPorcion: valores.pesoPorcion,
+      ingredientes: valores.ingredientes,
+      preparacion: valores.preparacion,
+      foto: null,
+      idhorario: { id: valores.horario, nombre: "" }
+    };
+
+    await firstValueFrom(this.nutricionistaService.actualizarReceta(recetaEditada));
+
+    alert("Receta actualizada correctamente");
+
+    // ✅ Redirigir al listar
+    this.router.navigate(['/nutricionista/recetas-nutricionista/listar']);
+  }
+
 
   limpiarFormulario() {
     this.recetaForm.reset();

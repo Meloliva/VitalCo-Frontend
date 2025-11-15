@@ -182,4 +182,15 @@ export class NutricionistaService {
     return this.http.post<RecetaDTO>(`${this.apiUrl}/registrarReceta`, receta);
   }
 
+  getRecetas(): Observable<RecetaDTO[]> {
+    return this.http.get<RecetaDTO[]>(`${this.apiUrl}/listarRecetas`, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  actualizarReceta(receta: RecetaDTO): Observable<RecetaDTO> {
+    return this.http.put<RecetaDTO>(`${this.apiUrl}/editarReceta`, receta);
+  }
+
+
 }

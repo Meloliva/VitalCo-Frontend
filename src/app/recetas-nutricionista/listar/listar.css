@@ -1,0 +1,15 @@
+/* Redondear la imagen y darle espacio */
+.foto-receta {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+/* Aumentar espacio vertical de TODAS las celdas de foto */
+.foto-cell {
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
