@@ -1,50 +1,108 @@
 <div class="cambiar-plan-root">
   <div class="plans-container">
-    <div class="plans-grid">
-      <!-- Plan Gratuito -->
+
+    <!-- ... (El resto de tu HTML de planes no cambia) ... -->
+    <!-- Grid de planes -->
+    <div class="plans-grid" *ngIf="planes && planes.length > 0">
       <div class="plan-card"
-           *ngFor="let plan of planes"
+           *ngFor="let plan of planes; let i = index"
            [class.current]="isPlanActual(plan)"
            [class.premium]="plan.precio && plan.precio > 0">
 
-        <div class="plan-badge" *ngIf="isPlanActual(plan)">Gratis</div>
-
+        <!-- ... (Contenido de la card no cambia) ... -->
+        <div class="plan-badge" *ngIf="isPlanActual(plan)">Plan Actual</div>
         <div class="plan-header">
-          <h2 class="plan-title">{{ plan.tipo }}</h2>
-          <p class="plan-subtitle">{{ plan.beneficiosPlan || 'Disfruta de todo lo básico' }}</p>
+          <h2 class="plan-title">{{ plan.tipo || 'Plan' }}</h2>
+          <p class="plan-subtitle">{{ obtenerSubtitulo(plan) }}</p>
         </div>
-
-        <div class="plan-price">{{ plan.precio ? 'S/. ' + plan.precio : 'Gratuito' }}</div>
-
+        <div class="plan-price">{{ formatearPrecio(plan.precio) }}</div>
         <ul class="plan-features">
-          <li *ngFor="let f of obtenerFeatures(plan)">
-            <span class="check-icon">{{ plan.precio ? '⊕' : '●' }}</span>
+          <li *ngFor="let f of obtenerFeatures(plan); let j = index">
+            <span class="check-icon">{{ plan.precio && plan.precio > 0 ? '✓' : '•' }}</span>
             {{ f }}
           </li>
         </ul>
-
         <div class="plan-actions">
           <button class="btn-plan"
                   [class.btn-current]="isPlanActual(plan)"
-                  (click)="!isPlanActual(plan) && seleccionarPlan(plan)"
-                  [disabled]="isProcessing">
-            {{ isPlanActual(plan) ? 'Plan actual' : 'Cambiar Plan' }}
+                  (click)="seleccionarPlan(plan)"
+                  [disabled]="isProcessing || isPlanActual(plan)">
+            {{ isPlanActual(plan) ? 'Plan actual' : (isProcessing ? 'Procesando...' : 'Cambiar Plan') }}
           </button>
-          <a class="terms-link">Términos y condiciones</a>
+          <a class="terms-link" *ngIf="plan.terminosCondiciones">Términos y condiciones</a>
         </div>
       </div>
     </div>
 
+    <!-- ... (Sección de Métodos de Pago no cambia) ... -->
     <section class="payment-methods">
       <h3>Métodos de Pago</h3>
       <div class="payment-logos">
+        <!-- Tus imágenes SVG de métodos de pago -->
         <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='40' viewBox='0 0 60 40'%3E%3Crect width='60' height='40' rx='4' fill='%231434CB'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='Arial' font-size='16' font-weight='bold'%3EVISA%3C/text%3E%3C/svg%3E" alt="Visa">
         <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='40' viewBox='0 0 60 40'%3E%3Crect width='60' height='40' rx='4' fill='%23EB001B'/%3E%3Crect x='20' width='40' height='40' rx='4' fill='%23FF5F00'/%3E%3Crect x='32' width='28' height='40' rx='4' fill='%23F79E1B'/%3E%3C/svg%3E" alt="Mastercard">
         <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='40' viewBox='0 0 60 40'%3E%3Crect width='60' height='40' rx='4' fill='%23016FD0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='Arial' font-size='12' font-weight='bold'%3EAE%3C/text%3E%3C/svg%3E" alt="American Express">
         <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='40' viewBox='0 0 60 40'%3E%3Crect width='60' height='40' rx='4' fill='%23003087'/%3E%3Ctext x='50%25' y='35%25' dominant-baseline='middle' text-anchor='middle' fill='%23009CDE' font-family='Arial' font-size='10' font-weight='bold'%3EPay%3C/text%3E%3Ctext x='50%25' y='65%25' dominant-baseline='middle' text-anchor='middle' fill='%23009CDE' font-family='Arial' font-size='10' font-weight='bold'%3EPal%3C/text%3E%3C/svg%3E" alt="PayPal">
         <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='40' viewBox='0 0 60 40'%3E%3Crect width='60' height='40' rx='4' fill='%235469D4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='Arial' font-size='11' font-weight='bold'%3ED%3C/text%3E%3C/svg%3E" alt="Diners">
+
       </div>
       <p class="payment-text">Aceptamos Visa, American Express, Mastercard y Paypal</p>
     </section>
+  </div> <!-- Fin de .plans-container -->
+
+  <!--
+    *** INICIO DE CORRECCIONES ***
+    Ahora usamos las clases de 'cambiar-plan.css'
+  -->
+
+  <!-- Fondo Oscuro (Backdrop) para el modal de confirmación -->
+  <div *ngIf="showConfirmationModal"
+       class="modal-backdrop"
+       aria-hidden="true">
   </div>
-</div>
+
+  <!-- Modal de Confirmación ("¿Estás seguro?") -->
+  <div *ngIf="showConfirmationModal"
+       class="modal-content"
+       role="dialog" aria-modal="true" aria-labelledby="modal-confirm-title">
+
+    <h3 id="modal-confirm-title">Confirmar Cambio</h3>
+    <!-- El mensaje se toma de la variable 'modalMessage' -->
+    <p>{{ modalMessage }}</p>
+
+    <!-- Botones con el estilo de tu imagen (Vino y Gris) -->
+    <div class="modal-actions">
+      <button (click)="cancelarCambio()"
+              type="button"
+              class="modal-button secondary">
+        Cancelar
+      </button>
+      <button (click)="confirmarCambio()"
+              type="button"
+              class="modal-button primary">
+        Confirmar
+      </button>
+    </div>
+  </div>
+
+  <!--
+    NUEVO BANNER DE NOTIFICACIÓN SUPERIOR (para Éxito o Error)
+    Esta es la "advertencia arriba" que querías.
+  -->
+  <div *ngIf="showInfoModal"
+       class="toast-banner"
+       [class.success]="modalInfoType === 'success'"
+       [class.error]="modalInfoType === 'error'"
+       role="alert">
+
+    <p>{{ modalMessage }}</p>
+
+    <button (click)="cerrarModalInfo()"
+            type="button"
+            class="toast-button">
+      Aceptar
+    </button>
+  </div>
+  <!-- *** FIN DE CORRECCIONES *** -->
+
+</div> <!-- Fin de .cambiar-plan-root -->
