@@ -1,5 +1,6 @@
 <div class="main-content">
 
+  <!--  BUSCAR -->
   <div *ngIf="vistaActual === 'buscar'" class="container">
     <h1>Progreso de Pacientes</h1>
 
@@ -66,9 +67,10 @@
 
       </div>
 
+      <!-- Tarjetas de pacientes paginadas -->
       <mat-card
         class="paciente-card"
-        *ngFor="let p of pacientes"
+        *ngFor="let p of pacientesPaginados"
       >
         <div class="paciente-info">
           <div class="foto"></div>
@@ -83,11 +85,22 @@
           <button class="btn-save" (click)="editarPaciente(p)">Editar</button>
         </div>
       </mat-card>
+
+      <!--  PAGINADOR -->
+      <mat-paginator
+        [length]="pacientes.length"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[3, 5, 10]"
+        (page)="onPageChange($event)"
+        class="paginator"
+      >
+      </mat-paginator>
+
     </div>
   </div>
 
 
-  <!-- 3️⃣ Ver paciente -->
+  <!-- 👁️‍🗨️ 3️⃣ VER PACIENTE -->
   <div *ngIf="vistaActual === 'ver'" class="container">
     <button mat-icon-button class="btn-back" (click)="volver()">
       <mat-icon>arrow_back</mat-icon>
@@ -136,12 +149,15 @@
     </div>
   </div>
 
-  <!-- 4️⃣ Editar paciente -->
+
+  <!-- ✏EDITAR PACIENTE -->
   <div *ngIf="vistaActual === 'editar'" class="container">
     <button mat-icon-button class="btn-back" (click)="volver()">
       <mat-icon>arrow_back</mat-icon>
     </button>
+
     <h1>Modificar Macronutrientes</h1>
+
     <mat-card class="form-card edit-form">
       <mat-card-content>
         <div class="edit-group" *ngFor="let campo of ['calorias','proteinas','grasas','carbohidratos','tiempo']">
@@ -150,16 +166,21 @@
             <input matInput [(ngModel)]="metasEditadas[campo]" [type]="campo==='tiempo'?'text':'number'">
           </mat-form-field>
         </div>
-        <button mat-raised-button class="btn-save btn-save-large" (click)="guardarCambios()">Guardar</button>
+
+        <button mat-raised-button class="btn-save btn-save-large" (click)="guardarCambios()">
+          Guardar
+        </button>
       </mat-card-content>
     </mat-card>
   </div>
 
-  <!-- 5️⃣ Confirmación -->
+
+  <!-- ✅  CONFIRMACIÓN -->
   <div *ngIf="vistaActual === 'confirmacion'" class="container confirm-box">
     <button mat-icon-button class="btn-back" (click)="volver()">
       <mat-icon>arrow_back</mat-icon>
     </button>
     <div class="success-msg">{{ mensajeConfirmacion }}</div>
   </div>
+
 </div>
