@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -8,6 +9,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
+
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-nutri-progreso-pacientes',
@@ -21,16 +24,19 @@ import { MatIconModule } from '@angular/material/icon';
     MatButtonModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatIconModule
+    MatIconModule,
+    MatPaginatorModule
   ],
   templateUrl: './nutri-progreso-pacientes.html',
   styleUrls: ['./nutri-progreso-pacientes.css']
 })
 export class NutriProgresoPacientesComponent {
+
   vistaActual: 'buscar' | 'resultados' | 'ver' | 'editar' | 'confirmacion' = 'buscar';
 
   fechaSeguimiento = '';
   dniFiltro = '';
+
   pacientes = [
     {
       id: 1,
@@ -52,6 +58,25 @@ export class NutriProgresoPacientesComponent {
   pacienteSeleccionado: any = null;
   metasEditadas: any = {};
   mensajeConfirmacion = '';
+
+
+  // 🔹 PAGINADOR
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  pageSize = 3;
+  pageIndex = 0;
+
+  get pacientesPaginados() {
+    const start = this.pageIndex * this.pageSize;
+    const end = start + this.pageSize;
+    return this.pacientes.slice(start, end);
+  }
+
+  onPageChange(event: any) {
+    this.pageSize = event.pageSize;
+    this.pageIndex = event.pageIndex;
+  }
+
 
   buscar() {
     this.vistaActual = 'resultados';
@@ -75,7 +100,7 @@ export class NutriProgresoPacientesComponent {
   }
 
   volver() {
-    if (this.vistaActual === 'ver' || this.vistaActual === 'editar' || this.vistaActual === 'confirmacion') {
+    if (['ver', 'editar', 'confirmacion'].includes(this.vistaActual)) {
       this.vistaActual = 'resultados';
     } else {
       this.vistaActual = 'buscar';
@@ -86,3 +111,4 @@ export class NutriProgresoPacientesComponent {
     return (actual / meta) * 100;
   }
 }
+
