@@ -70,8 +70,17 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./perfilnutricionista/perfil').then(m => m.PerfilNutricionistaComponent)},
       {
-        path: 'recetas',
-        loadComponent: () => import('./recetas/recetas').then(m => m.RecetasComponent)
+        path: 'recetas-nutricionista',
+        children: [
+          {
+            path: 'registrar',
+            loadComponent: () => import('./recetas-nutricionista/registrar/registrar').then(m => m.RegistrarRecetaNutricionista)
+          },
+          {
+            path: 'listar',
+            loadComponent: () => import('./recetas-nutricionista/listar/listar').then(m => m.ListarRecetasNutricionista)
+          }
+        ]
       },
       {
         path: 'consultar',

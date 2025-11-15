@@ -22,6 +22,7 @@ export class PrivateLayoutNutricionista implements OnInit {
   userAvatar: string = '/Images/iconos/iconoSistemas/image 18.png';
   userName: string = 'Nutricionista';
   citasMenuOpen = signal(false);
+  recetasMenuOpen = signal(false);
 
   private router = inject(Router);
   private nutricionistaService = inject(NutricionistaService);
@@ -57,6 +58,9 @@ export class PrivateLayoutNutricionista implements OnInit {
   toggleCitasMenu(): void {
     this.citasMenuOpen.update(value => !value);
   }
+  toggleRecetasMenu(): void {
+    this.recetasMenuOpen.update(value => !value);
+  }
 
   salir(): void {
     console.log('Cerrando sesión...');
@@ -67,4 +71,6 @@ export class PrivateLayoutNutricionista implements OnInit {
     }
     this.router.navigate(['/inicio']);
   }
+
+  protected readonly removeEventListener = removeEventListener;
 }

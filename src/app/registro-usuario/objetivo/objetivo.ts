@@ -41,6 +41,7 @@ export class ObjetivoComponent implements OnInit {
 
   onSelectChange(): void {
     console.log('Objetivo seleccionado:', this.objetivoSeleccionado);
+
   }
 
   onSubmit(): void {

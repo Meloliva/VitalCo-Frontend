@@ -29,6 +29,7 @@ export class RegistroUsuarioComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+
     this.initForm();
     this.cargarRoles();
     this.registroShared.progress$.subscribe(progress => this.progressValue = progress);
