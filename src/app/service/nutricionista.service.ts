@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { getLocalStorageItem } from '../utils/browser-utils';
+import { Paciente } from '../models/paciente.model';
 
 /* ================================
    📦 INTERFACES (DTOs)
@@ -204,12 +205,17 @@ export class NutricionistaService {
   }
 
   registrarCita(cita: CitaDTO): Observable<CitaDTO> {
-    return this.http.post<CitaDTO>(`${this.apiUrl}/registrarCita`, cita);
+    return this.http.post<CitaDTO>(
+      `${this.apiUrl}/registrarCita`,
+      cita,
+      { headers: this.getHeaders() }
+    );
   }
-  /** 🔍 Buscar paciente por DNI */
-  buscarPacientePorDni(dni: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/buscarPorDni/${dni}`, {
-      headers: this.getHeaders()
-    });
+
+  buscarPacientePorDni(dni: string): Observable<Paciente> {
+    return this.http.get<Paciente>(
+      `${this.apiUrl}/buscarPorDni/${dni}`,
+      { headers: this.getHeaders() }
+    );
   }
 }

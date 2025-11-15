@@ -14,8 +14,6 @@ import { firstValueFrom } from 'rxjs';
 export class Programar implements OnInit {
 
   appointmentForm!: FormGroup;
-
-  // Igual que en PerfilNutricionistaComponent
   idNutricionista: number | null = null;
 
   constructor(
@@ -24,8 +22,7 @@ export class Programar implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
-
-    // Inicializar el formulario inmediatamente
+    // Inicializar formulario
     this.appointmentForm = this.fb.group({
       dni: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
       appointmentDate: ['', Validators.required],
@@ -34,25 +31,23 @@ export class Programar implements OnInit {
       subject: ['', Validators.required]
     });
 
-    // Luego haces tus llamados async
-    const usuario = await firstValueFrom(
-      this.nutricionistaService.obtenerDatosNutricionista()
-    );
+    try {
+      // Obtener ID del nutricionista
+      const usuario = await firstValueFrom(this.nutricionistaService.obtenerDatosNutricionista());
+      if (!usuario.id) throw new Error('No se encontró ID de usuario');
 
-    if (!usuario.id) {
-      console.error("❌ No se encontró ID de usuario autenticado");
-      return;
+      const nutricionista = await firstValueFrom(
+        this.nutricionistaService.obtenerNutricionistaPorUsuario(usuario.id)
+      );
+
+      this.idNutricionista = nutricionista.id ?? null;
+      console.log("🧑‍⚕️ Nutricionista cargado:", nutricionista);
+
+    } catch (error) {
+      console.error('Error al obtener datos del nutricionista', error);
+      alert('❌ No se pudieron cargar los datos del nutricionista');
     }
-
-    const nutricionista = await firstValueFrom(
-      this.nutricionistaService.obtenerNutricionistaPorUsuario(usuario.id)
-    );
-
-    console.log("🧑‍⚕️ Datos del nutricionista cargados:", nutricionista);
-
-    this.idNutricionista = nutricionista.id ?? null;
   }
-
 
   async onSubmit(): Promise<void> {
     if (this.appointmentForm.invalid) {
@@ -66,22 +61,23 @@ export class Programar implements OnInit {
       return;
     }
 
+    const form = this.appointmentForm.value;
+
     try {
-      const form = this.appointmentForm.value;
+      // Formatear fecha a YYYY-MM-DD
+      const fecha = new Date(form.appointmentDate);
+      const fechaStr = fecha.toISOString().split('T')[0];
 
-      // 1️⃣ Buscar paciente por DNI
-      const paciente = await firstValueFrom(
-        this.nutricionistaService.buscarPacientePorDni(form.dni)
-      );
-
-      if (!paciente) {
+      // Buscar paciente por DNI
+      const paciente = await firstValueFrom(this.nutricionistaService.buscarPacientePorDni(form.dni));
+      if (!paciente || !paciente.id) {
         alert('❌ No existe un paciente con ese DNI');
         return;
       }
 
-      // 2️⃣ Construcción segura de la cita
+      // Construir CitaDTO
       const cita: CitaDTO = {
-        dia: form.appointmentDate,
+        dia: fechaStr,
         hora: form.appointmentTime.length === 5 ? form.appointmentTime + ':00' : form.appointmentTime,
         descripcion: form.subject,
         estado: 'Reservado',
@@ -90,17 +86,16 @@ export class Programar implements OnInit {
         idNutricionista: this.idNutricionista
       };
 
-      console.log("📤 Enviando cita:", cita);
+      console.log('📤 Registrando cita:', cita);
 
-      // 3️⃣ Registrar cita
+      // Registrar cita en backend
       await firstValueFrom(this.nutricionistaService.registrarCita(cita));
-
       alert('✅ ¡Cita registrada correctamente!');
       this.appointmentForm.reset();
 
-    } catch (error) {
-      console.error(error);
-      alert('❌ Error al registrar la cita');
+    } catch (error: any) {
+      console.error('Error al registrar la cita', error);
+      alert('❌ Error al registrar la cita: ' + (error?.error?.message || error.message));
     }
   }
 }
