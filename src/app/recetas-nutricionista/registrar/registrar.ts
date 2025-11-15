@@ -183,7 +183,7 @@ export class RegistrarRecetaNutricionista implements OnInit {
       descripcion: valores.descripcion,
       tiempo: valores.tiempo,
       carbohidratos: valores.azucares,
-      grasas: valores.grasaSaturada + valores.grasaTrans,
+      grasas: valores.grasaSaturada,
       proteinas: valores.proteina,
       calorias: valores.calorias,
       cantidadPorcion: valores.pesoPorcion,
