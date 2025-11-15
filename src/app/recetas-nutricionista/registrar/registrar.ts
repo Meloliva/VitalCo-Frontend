@@ -10,7 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatOptionModule } from '@angular/material/core';
 import { firstValueFrom } from 'rxjs';
 
-import { NutricionistaService, HorarioDTO, RecetaDTO } from '../service/nutricionista.service';
+import { NutricionistaService, HorarioDTO, RecetaDTO } from '../../service/nutricionista.service';
 
 @Component({
   selector: 'app-recetas',
@@ -26,10 +26,10 @@ import { NutricionistaService, HorarioDTO, RecetaDTO } from '../service/nutricio
     MatOptionModule,
     MatIconModule
   ],
-  templateUrl: './recetas.html',
-  styleUrls: ['./recetas.css']
+  templateUrl: './registrar.html',
+  styleUrls: ['./registrar.css']
 })
-export class RecetasComponent implements OnInit {
+export class RegistrarRecetaNutricionista implements OnInit {
 
   recetaForm!: FormGroup;
   imagenPreview: string | null = null;
@@ -146,9 +146,5 @@ export class RecetasComponent implements OnInit {
     if (this.horarios.length > 0) {
       this.recetaForm.patchValue({ horario: this.horarios[0].id });
     }
-  }
-
-  modificar() {
-    alert("✏️ Función de modificar receta próximamente.");
   }
 }
