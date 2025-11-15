@@ -90,6 +90,17 @@ export interface HorarioDTO {
   nombre: string;
 }
 
+export interface CitaDTO {
+  id?: number;            // viene del backend
+  dia: string;            // 'YYYY-MM-DD'
+  hora: string;           // 'HH:mm:ss'
+  descripcion: string;
+  estado?: string;        // opcional porque backend NO lo retorna
+  link: string;
+  idPaciente: number;
+  idNutricionista: number;
+}
+
 
 /* ================================
    💼 SERVICIO NUTRICIONISTA
@@ -192,5 +203,13 @@ export class NutricionistaService {
     return this.http.put<RecetaDTO>(`${this.apiUrl}/editarReceta`, receta);
   }
 
-
+  registrarCita(cita: CitaDTO): Observable<CitaDTO> {
+    return this.http.post<CitaDTO>(`${this.apiUrl}/registrarCita`, cita);
+  }
+  /** 🔍 Buscar paciente por DNI */
+  buscarPacientePorDni(dni: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/buscarPorDni/${dni}`, {
+      headers: this.getHeaders()
+    });
+  }
 }
