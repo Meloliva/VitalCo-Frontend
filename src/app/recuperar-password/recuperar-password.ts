@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { RecuperarPasswordService } from '../service/recuperar-password.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-recuperar-password',
@@ -19,7 +20,8 @@ import { RecuperarPasswordService } from '../service/recuperar-password.service'
     MatInputModule,
     MatButtonModule,
     MatCardModule,
-    RouterModule
+    RouterModule,
+    MatIconModule
   ],
   templateUrl: './recuperar-password.html',
   styleUrls: ['./recuperar-password.css']
@@ -27,6 +29,7 @@ import { RecuperarPasswordService } from '../service/recuperar-password.service'
 export class RecuperarPasswordComponent {
   recoveryForm: FormGroup;
   error = '';
+  successMessage = '';
 
   constructor(
     private fb: FormBuilder,
@@ -37,9 +40,14 @@ export class RecuperarPasswordComponent {
       email: ['', [Validators.required, Validators.email]]
     });
   }
+  ngOnInit(): void {
+    // FIX CASILLA: Marca el control como 'tocado' para mostrar errores de validación inmediatamente al cargar.
+    this.recoveryForm.get('email')?.markAsTouched();
+  }
 
   onSubmit(): void {
     this.error = '';
+    this.successMessage = '';
     if (this.recoveryForm.invalid) {
       this.recoveryForm.markAllAsTouched();
       return;
@@ -48,13 +56,21 @@ export class RecuperarPasswordComponent {
     console.log('Solicitando recuperación para', email);
     this.recuperarService.solicitarRecuperacion(email).subscribe({
       next: (res) => {
+        // La solicitud al backend fue exitosa.
         console.log('solicitarRecuperacion next:', res);
+
+        // 1. Mostrar mensaje de éxito
+        this.successMessage = '¡Se ha enviado un código de verificación a su correo!'; // <-- Mensaje de éxito
         sessionStorage.setItem('recuperarCorreo', email);
-        this.router.navigate(['/recuperar-password/verificar-codigo'], { queryParams: { email } });
+
+        // 2. Esperar 1.5 segundos antes de redirigir
+        setTimeout(() => {
+          this.router.navigate(['/recuperar-password/verificar-codigo'], { queryParams: { email } });
+        }, 1500); // Redirige después de 1.5 segundos
       },
       error: (err) => {
         console.error('solicitarRecuperacion error:', err);
-        this.error = err?.error?.mensaje || err?.error || 'Error al enviar código';
+        this.error = 'Este correo no está registrado en la aplicación.';
       }
     });
   }

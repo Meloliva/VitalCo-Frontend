@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { RecuperarPasswordService } from '../../service/recuperar-password.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-verificar-codigo',
@@ -20,7 +21,8 @@ import { RecuperarPasswordService } from '../../service/recuperar-password.servi
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    RouterModule
+    RouterModule,
+    MatIconModule
   ],
   templateUrl: './verificar-codigo.html',
   styleUrls: ['./verificar-codigo.css']
