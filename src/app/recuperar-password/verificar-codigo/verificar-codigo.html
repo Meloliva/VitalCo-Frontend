@@ -102,6 +102,11 @@
         </mat-form-field>
       </div>
 
+      <div *ngIf="error" style="color: #e53935; margin-bottom: 20px; font-size: 0.95rem; font-weight: 500;">
+        <mat-icon style="vertical-align: middle; margin-right: 5px;">error</mat-icon>
+        {{ error }}
+      </div>
+
       <button
         mat-raised-button
         type="submit"

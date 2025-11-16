@@ -20,7 +20,7 @@ export class PasswordSuccessComponent {
   constructor(private router: Router) {}
 
   goToLogin(): void {
-    this.router.navigate(['/iniciosesion']);
+    this.router.navigate(['/iniciarsesion']);
   }
 
   exit(): void {
