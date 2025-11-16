@@ -90,3 +90,130 @@
   transform: none;
   box-shadow: none;
 }
+/* ========================================
+   ALERTAS
+   ======================================== */
+.alert {
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  animation: slideDown 0.3s ease;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   CAMPOS OBLIGATORIOS
+   ======================================== */
+.required {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+/* ========================================
+   INPUTS CON ERROR
+   ======================================== */
+.input-error {
+  border-color: #e74c3c !important;
+  background-color: #fff5f5;
+}
+
+.input-error:focus {
+  border-color: #c0392b !important;
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}
+
+/* ========================================
+   MENSAJES DE ERROR
+   ======================================== */
+.error-text {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+/* ========================================
+   MENSAJES DE INFO
+   ======================================== */
+.info-text {
+  color: #27ae60;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+  font-weight: 500;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ========================================
+   CONTADOR DE CARACTERES
+   ======================================== */
+.char-count {
+  font-size: 12px;
+  color: #7f8c8d;
+  text-align: right;
+  margin-top: 5px;
+}
+
+/* ========================================
+   FECHA Y HORA
+   ======================================== */
+.date-time-group .date-time-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========================================
+   BOTÓN DESHABILITADO
+   ======================================== */
+.btn-programar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #95a5a6;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+  .date-time-group .date-time-inputs {
+    grid-template-columns: 1fr;
+  }
+}

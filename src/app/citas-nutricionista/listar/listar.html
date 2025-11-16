@@ -10,7 +10,8 @@
           matInput
           [matDatepicker]="picker"
           [(ngModel)]="selectedDate"
-          (dateChange)="onDateChange($event)"
+          (dateChange)="onDateChange($event.value)"
+          readonly
         />
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
@@ -37,7 +38,7 @@
 
   <div class="appointment-list">
     <div
-      *ngFor="let app of paginatedAppointments"
+      *ngFor="let app of paginatedAppointments; trackBy: trackByAppointmentId"
       class="appointment-card"
       (click)="selectAppointment(app)"
       [class.selected]="app.id === selectedAppointment?.id">
@@ -64,7 +65,8 @@
       <div class="actions">
         <button
           class="btn-join"
-          (click)="joinMeeting($event, app.meetingLink)">
+          (click)="joinMeeting($event, app.meetingLink)"
+          [disabled]="!app.meetingLink">
           Unirse
         </button>
       </div>

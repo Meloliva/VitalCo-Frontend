@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { getLocalStorageItem } from '../utils/browser-utils';
 import { Paciente } from '../models/paciente.model';
@@ -96,7 +96,6 @@ export interface CitaDTO {
   dia: string;            // 'YYYY-MM-DD'
   hora: string;           // 'HH:mm:ss'
   descripcion: string;
-  estado?: string;        // opcional porque backend NO lo retorna
   link: string;
   idPaciente: number;
   idNutricionista: number;
@@ -218,4 +217,36 @@ export class NutricionistaService {
       { headers: this.getHeaders() }
     );
   }
+  obtenerPacientePorId(id: number): Observable<Paciente> {
+    return this.http.get<Paciente>(
+      `${this.apiUrl}/buscarPorId/${id}`,
+      { headers: this.getHeaders() }
+    );
+  }
+  verificarDisponibilidad(
+    nutricionistaId: number,
+    dia: string,
+    hora: string
+  ): Observable<boolean> {
+    const params = new HttpParams()
+      .set('nutricionistaId', nutricionistaId.toString())
+      .set('dia', dia)
+      .set('hora', hora);
+
+    return this.http.get<boolean>(
+      `${this.apiUrl}/verificarDisponibilidad`,
+      { params }
+    );
+  }
+
+  // 🔹 1. Listar citas por fecha (nutricionista autenticado)
+  listarCitasPorFecha(fecha: string): Observable<CitaDTO[]> {
+    return this.http.get<CitaDTO[]>(`${this.apiUrl}/listarCitasPorNutricionista/${fecha}`);
+  }
+
+  eliminarCita(id: number) {
+    return this.http.delete(`${this.apiUrl}/eliminarCita/${id}`);
+  }
+
+
 }

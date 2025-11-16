@@ -2,61 +2,105 @@
   <div class="schedule-appointment-container wide-card">
     <h1 class="form-title">Programar Cita</h1>
 
+    <!-- Mensajes de éxito/error -->
+    <div *ngIf="successMessage" class="alert alert-success">
+      ✅ {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-error">
+      ❌ {{ errorMessage }}
+    </div>
+
     <form class="appointment-form" [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
 
       <!-- DNI -->
       <div class="form-group">
-        <label for="dni">DNI</label>
+        <label for="dni">DNI <span class="required">*</span></label>
         <input
           type="text"
           id="dni"
-          name="dni"
+          maxlength="8"
           placeholder="Ingrese DNI del paciente"
           formControlName="dni"
+          [class.input-error]="dni?.invalid && dni?.touched"
         />
+        <div class="error-text" *ngIf="dni?.invalid && dni?.touched">
+          <span *ngIf="dni?.errors?.['required']">El DNI es obligatorio</span>
+          <span *ngIf="dni?.errors?.['pattern'] || dni?.errors?.['minlength'] || dni?.errors?.['maxlength']">
+            Debe tener exactamente 8 dígitos
+          </span>
+        </div>
       </div>
 
       <!-- Fecha y Hora -->
       <div class="form-group date-time-group">
-        <label>Fecha y Hora</label>
+        <label>Fecha y Hora <span class="required">*</span></label>
         <div class="date-time-inputs">
-          <input
-            type="date"
-            id="appointmentDate"
-            name="appointmentDate"
-            formControlName="appointmentDate"
-          />
-          <input
-            type="time"
-            id="appointmentTime"
-            name="appointmentTime"
-            formControlName="appointmentTime"
-          />
+          <div class="input-wrapper">
+            <input
+              type="date"
+              id="appointmentDate"
+              formControlName="appointmentDate"
+              [class.input-error]="appointmentDate?.invalid && appointmentDate?.touched"
+            />
+            <div class="error-text" *ngIf="appointmentDate?.invalid && appointmentDate?.touched">
+              <span *ngIf="appointmentDate?.errors?.['required']">La fecha es obligatoria</span>
+              <span *ngIf="appointmentDate?.errors?.['pastDate']">La fecha debe ser futura</span>
+            </div>
+          </div>
+
+          <div class="input-wrapper">
+            <input
+              type="time"
+              id="appointmentTime"
+              formControlName="appointmentTime"
+              [class.input-error]="appointmentTime?.invalid && appointmentTime?.touched"
+            />
+            <div class="error-text" *ngIf="appointmentTime?.invalid && appointmentTime?.touched">
+              <span *ngIf="appointmentTime?.errors?.['required']">La hora es obligatoria</span>
+              <span *ngIf="appointmentTime?.errors?.['pattern']">Formato inválido (HH:MM)</span>
+              <span *ngIf="appointmentTime?.errors?.['outsideTurno']">
+                ⏰ {{ appointmentTime?.errors?.['turnoInfo'] }}
+              </span>
+            </div>
+            <div class="info-text" *ngIf="nutricionistaTurno && appointmentTime?.valid">
+              ✅ Horario: {{ nutricionistaTurno.inicioTurno.substring(0,5) }} - {{ nutricionistaTurno.finTurno.substring(0,5) }}
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Link de la reunión -->
       <div class="form-group">
-        <label for="meetingLink">Link de la reunión</label>
+        <label for="meetingLink">Link de la reunión <span class="required">*</span></label>
         <input
           type="url"
           id="meetingLink"
-          name="meetingLink"
           placeholder="https://meet.google.com/..."
           formControlName="meetingLink"
+          [class.input-error]="meetingLink?.invalid && meetingLink?.touched"
         />
+        <div class="error-text" *ngIf="meetingLink?.invalid && meetingLink?.touched">
+          <span *ngIf="meetingLink?.errors?.['required']">El link es obligatorio</span>
+          <span *ngIf="meetingLink?.errors?.['pattern']">Debe ser una URL válida (http/https)</span>
+        </div>
       </div>
 
-      <!-- Asunto a tratar -->
+      <!-- Asunto -->
       <div class="form-group">
-        <label for="subject">Asunto a tratar</label>
+        <label for="subject">Asunto a tratar <span class="required">*</span></label>
         <textarea
           id="subject"
-          name="subject"
           rows="5"
-          placeholder="Describe brevemente el tema de la cita"
+          placeholder="Describe brevemente el tema de la cita (mínimo 10 caracteres)"
           formControlName="subject"
+          [class.input-error]="subject?.invalid && subject?.touched"
         ></textarea>
+        <div class="char-count">{{ subject?.value?.length || 0 }} / 500</div>
+        <div class="error-text" *ngIf="subject?.invalid && subject?.touched">
+          <span *ngIf="subject?.errors?.['required']">El asunto es obligatorio</span>
+          <span *ngIf="subject?.errors?.['minlength']">Mínimo 10 caracteres</span>
+          <span *ngIf="subject?.errors?.['maxlength']">Máximo 500 caracteres</span>
+        </div>
       </div>
 
       <!-- Botón -->
@@ -64,9 +108,10 @@
         <button
           type="submit"
           class="btn-programar"
-          [disabled]="appointmentForm.invalid"
+          [disabled]="appointmentForm.invalid || isLoading"
         >
-          Programar
+          <span *ngIf="!isLoading">Programar</span>
+          <span *ngIf="isLoading">Procesando...</span>
         </button>
       </div>
     </form>

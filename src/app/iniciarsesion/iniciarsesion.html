@@ -36,6 +36,7 @@
           matInput
           formControlName="usuario"
           placeholder="Ingrese su usuario"
+          maxlength="8"
           autocomplete="username">
         <mat-icon matPrefix>person</mat-icon>
         <mat-error *ngIf="loginForm.get('usuario')?.hasError('required')">
