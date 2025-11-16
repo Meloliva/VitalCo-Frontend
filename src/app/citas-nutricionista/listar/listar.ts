@@ -44,7 +44,7 @@ export class ListarCitasNutricionista implements OnInit {
 
   constructor(
     private nutricionistaService: NutricionistaService,
-    private cdr: ChangeDetectorRef  // ✅ Inyectar ChangeDetectorRef
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -90,7 +90,6 @@ export class ListarCitasNutricionista implements OnInit {
     this.loadAppointmentsForDate(this.selectedDate);
   }
 
-  // ✅ SOLUCIÓN: Cargar todos los datos antes de asignar al array
   private loadAppointmentsForDate(date: Date): void {
     const selectedStr = this.formatDateForBackend(date);
 
@@ -99,6 +98,21 @@ export class ListarCitasNutricionista implements OnInit {
     this.nutricionistaService.listarCitasPorFecha(selectedStr).subscribe({
       next: (data) => {
         console.log('Datos recibidos del backend:', data);
+
+        // ✅ SOLUCIÓN: Verificar si el array está vacío ANTES de procesar
+        if (!data || data.length === 0) {
+          console.log('No hay citas para esta fecha');
+          this.appointments = [];
+          this.paginatedAppointments = [];
+          this.totalAppointments = 0;
+          this.selectedAppointment = null;
+          this.currentPage = 0;
+          if (this.paginator) {
+            this.paginator.pageIndex = 0;
+          }
+          this.cdr.detectChanges();
+          return;
+        }
 
         // ✅ Crear un array de observables para cargar todos los pacientes
         const citasConPaciente$ = data.map((c: any) => {
@@ -140,7 +154,7 @@ export class ListarCitasNutricionista implements OnInit {
         // ✅ Esperar a que todas las citas se carguen con sus pacientes
         forkJoin(citasConPaciente$).subscribe({
           next: (citasCompletas) => {
-            // ✅ Asignar todas las citas de una vez (trigger de change detection)
+            // ✅ Asignar todas las citas de una vez
             this.appointments = citasCompletas;
             this.totalAppointments = this.appointments.length;
 
@@ -155,7 +169,6 @@ export class ListarCitasNutricionista implements OnInit {
             this.paginateAppointments({ pageIndex: 0, pageSize: this.pageSize });
             this.selectedAppointment = null;
 
-            // ✅ Forzar detección de cambios
             this.cdr.detectChanges();
           },
           error: (err) => {
@@ -271,7 +284,6 @@ export class ListarCitasNutricionista implements OnInit {
 
         this.selectedAppointment = null;
 
-        // ✅ Forzar detección de cambios
         this.cdr.detectChanges();
       },
       error: (err) => {
