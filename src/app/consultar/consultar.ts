@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -16,6 +16,7 @@ export class Consultar implements AfterViewInit, OnDestroy {
   fechaConsulta: string = '';
   dni: string = '';
   private chart: any;
+  private chartInitialized: boolean = false;
 
   resumenCargado: boolean = false;
   errorMensaje: string = '';
@@ -26,175 +27,188 @@ export class Consultar implements AfterViewInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private seguimientoService: SeguimientoService
+    private seguimientoService: SeguimientoService,
+    private cdr: ChangeDetectorRef  // ✅ AGREGAR ESTO
   ) {}
 
   ngAfterViewInit(): void {
-    this.inicializarGraficoVacio();
+    setTimeout(() => {
+      this.inicializarGraficoVacio();
+    }, 100);
   }
 
   ngOnDestroy(): void {
     if (this.chart) {
       this.chart.destroy();
+      this.chart = null;
     }
   }
 
   inicializarGraficoVacio(): void {
-    requestAnimationFrame(() => {
-      const canvas = document.getElementById('grafico-consulta') as HTMLCanvasElement;
-      const ctx = canvas?.getContext('2d');
-      if (!ctx) return;
+    const canvas = document.getElementById('grafico-consulta') as HTMLCanvasElement;
+    if (!canvas) {
+      console.error('Canvas no encontrado');
+      return;
+    }
 
-      if (this.chart) this.chart.destroy();
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      console.error('Contexto del canvas no disponible');
+      return;
+    }
 
-      this.chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['Proteínas', 'Grasas', 'Carbohidratos'],
-          datasets: [
-            {
-              label: 'Consumido (g)',
-              data: [0, 0, 0],
-              backgroundColor: '#4CAF50',
-              borderRadius: 6
-            },
-            {
-              label: 'Requerido (g)',
-              data: [0, 0, 0],
-              backgroundColor: '#FF9800',
-              borderRadius: 6
+    if (this.chart) {
+      this.chart.destroy();
+    }
+
+    this.chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Proteínas', 'Grasas', 'Carbohidratos'],
+        datasets: [
+          {
+            label: 'Consumido (g)',
+            data: [0, 0, 0],
+            backgroundColor: '#4CAF50',
+            borderRadius: 6
+          },
+          {
+            label: 'Requerido (g)',
+            data: [0, 0, 0],
+            backgroundColor: '#FF9800',
+            borderRadius: 6
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Esperando búsqueda...',
+            font: {
+              size: 16
             }
-          ]
+          },
+          legend: {
+            display: true,
+            position: 'top'
+          }
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
+        scales: {
+          y: {
+            beginAtZero: true,
             title: {
               display: true,
-              text: 'Esperando búsqueda...'
+              text: 'Gramos (g)'
             }
           }
         }
-      });
+      }
     });
+
+    this.chartInitialized = true;
   }
 
   actualizarGrafico(datos: SeguimientoResumenDTO): void {
-    requestAnimationFrame(() => {
-      const canvas = document.getElementById('grafico-consulta') as HTMLCanvasElement;
-      const ctx = canvas?.getContext('2d');
-      if (!ctx) return;
+    if (!this.chartInitialized) {
+      console.warn('Gráfico no inicializado, inicializando...');
+      this.inicializarGraficoVacio();
+    }
 
-      if (this.chart) this.chart.destroy();
+    if (!this.chart) {
+      console.error('Chart no está disponible');
+      return;
+    }
 
-      const totales = datos.totalesNutricionales;
+    const totales = datos.totalesNutricionales;
 
-      this.chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['Proteínas', 'Grasas', 'Carbohidratos'],
-          datasets: [
-            {
-              label: 'Consumido (g)',
-              data: [
-                totales.proteinas,
-                totales.grasas,
-                totales.carbohidratos
-              ],
-              backgroundColor: '#4CAF50',
-              borderRadius: 6
-            },
-            {
-              label: 'Requerido (g)',
-              data: [
-                totales.requerido_proteinas,
-                totales.requerido_grasas,
-                totales.requerido_carbohidratos
-              ],
-              backgroundColor: '#FF9800',
-              borderRadius: 6
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            title: {
-              display: true,
-              text: `Reporte de ${datos.nombrePaciente}`
-            }
-          }
-        }
-      });
-    });
+    this.chart.data.datasets[0].data = [
+      totales.proteinas,
+      totales.grasas,
+      totales.carbohidratos
+    ];
+
+    this.chart.data.datasets[1].data = [
+      totales.requerido_proteinas,
+      totales.requerido_grasas,
+      totales.requerido_carbohidratos
+    ];
+
+    this.chart.options.plugins.title.text = `Reporte de ${datos.nombrePaciente}`;
+
+    this.chart.update();
   }
 
   buscar(event: Event): void {
     event.preventDefault();
 
+    // Validación
     if (!this.dni || !this.fechaConsulta) {
       this.errorMensaje = 'Ingrese DNI y fecha válidos';
+      this.resumenCargado = false;
+      this.cdr.detectChanges();  // ✅ Forzar actualización
       return;
     }
 
+    // Resetear estados
     this.errorMensaje = '';
     this.cargando = true;
+    this.resumenCargado = false;
+    this.datosNutricionales = null;
+    this.cdr.detectChanges();  // ✅ Mostrar estado de carga inmediatamente
 
-    // 🔴 Simulación temporal de datos (en lugar de llamar al backend)
-    setTimeout(() => {
-      const datosSimulados: SeguimientoResumenDTO = {
-        nombrePaciente: 'Mariana García',
-        totalesNutricionales: {
-          calorias: 1800,
-          carbohidratos: 220,
-          proteinas: 90,
-          grasas: 60,
-          requerido_calorias: 2000,
-          requerido_carbohidratos: 250,
-          requerido_proteinas: 100,
-          requerido_grasas: 70
-        },
-        caloriasPorHorario: {
-          desayuno: 500,
-          snack: 200,
-          almuerzo: 700,
-          cena: 400
-        }
-      };
-
-      this.datosNutricionales = datosSimulados;
-      this.nombrePaciente = datosSimulados.nombrePaciente;
-      this.resumenCargado = true;
-      this.cargando = false;
-
-      this.actualizarGrafico(datosSimulados);
-    }, 800);
-
-    // 🟠 Conexión real (descomentar cuando funcione login/backend)
-    /*
+    // Llamada real al backend
     this.seguimientoService.obtenerResumenPorDniYFecha(this.dni, this.fechaConsulta)
       .subscribe({
         next: (resumen) => {
+          console.log('Datos recibidos:', resumen);
+
+          // ✅ Verificar si hay datos vacíos
+          if (!resumen || !resumen.totalesNutricionales) {
+            this.errorMensaje = 'No se encontraron datos para este DNI y fecha.';
+            this.cargando = false;
+            this.resumenCargado = false;
+            this.datosNutricionales = null;
+            this.inicializarGraficoVacio();
+            this.cdr.detectChanges();
+            return;
+          }
+
+          // ✅ Asignar datos
           this.datosNutricionales = resumen;
           this.nombrePaciente = resumen.nombrePaciente;
           this.resumenCargado = true;
           this.cargando = false;
+
+          // ✅ Actualizar gráfico
           this.actualizarGrafico(resumen);
+
+          // ✅ FORZAR detección de cambios
+          this.cdr.detectChanges();
         },
         error: (error) => {
-          this.errorMensaje = 'Error al obtener los datos';
+          console.error('Error al obtener datos:', error);
+
+          this.errorMensaje = error.error?.message || 'Error al obtener los datos. Verifique DNI y fecha.';
           this.cargando = false;
+          this.resumenCargado = false;
+          this.datosNutricionales = null;
+
           this.inicializarGraficoVacio();
+
+          // ✅ FORZAR detección de cambios
+          this.cdr.detectChanges();
         }
       });
-    */
   }
 
   calcularPorcentaje(consumido: number, requerido: number): number {
-    if (!requerido) return 0;
+    if (!requerido || requerido === 0) return 0;
     return Math.round((consumido / requerido) * 100);
   }
+
   limpiarBusqueda(): void {
     this.dni = '';
     this.fechaConsulta = '';
@@ -202,7 +216,11 @@ export class Consultar implements AfterViewInit, OnDestroy {
     this.nombrePaciente = '';
     this.resumenCargado = false;
     this.errorMensaje = '';
+    this.cargando = false;
 
     this.inicializarGraficoVacio();
+
+    // ✅ FORZAR detección de cambios
+    this.cdr.detectChanges();
   }
 }
