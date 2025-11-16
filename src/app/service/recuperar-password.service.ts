@@ -24,6 +24,6 @@ export class RecuperarPasswordService {
 
   // Llama a POST /restablecerCuenta con body { correo, nuevaContrasena }
   restablecerCuenta(dto: RestablecerCuenta): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/restablecerCuenta`, dto);
+    return this.http.post(`${this.baseUrl}/restablecerCuenta`, dto, { responseType: 'text' });
   }
 }

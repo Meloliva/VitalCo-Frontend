@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID, NgZone } from '@angular/core'; // <-- IMPORTS ADICIONALES
+import { CommonModule, isPlatformBrowser } from '@angular/common'; // <-- IMPORTS ADICIONALES
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -32,7 +32,9 @@ export class NuevaPasswordComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private recuperarService: RecuperarPasswordService
+    private recuperarService: RecuperarPasswordService,
+    @Inject(PLATFORM_ID) private platformId: Object, // Para SSR
+    private zone: NgZone // Para forzar la ejecución en el ciclo de Angular
   ) {
     this.passwordForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -41,9 +43,14 @@ export class NuevaPasswordComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const correoGuardado = sessionStorage.getItem('recuperarCorreo');
-    if (correoGuardado) {
-      this.passwordForm.get('email')?.setValue(correoGuardado);
+    console.log('LOG-1: Ejecutando ngOnInit.'); // LOG
+    // FIX SSR: Encapsular el acceso a sessionStorage
+    if (isPlatformBrowser(this.platformId)) {
+      const correoGuardado = sessionStorage.getItem('recuperarCorreo');
+      console.log('LOG-2: Correo en sessionStorage:', correoGuardado); // LOG
+      if (correoGuardado) {
+        this.passwordForm.get('email')?.setValue(correoGuardado);
+      }
     }
   }
 
@@ -52,9 +59,11 @@ export class NuevaPasswordComponent implements OnInit {
   }
 
   onSubmit(): void {
+    console.log('LOG-3: Iniciando onSubmit.'); // LOG
     this.error = '';
     if (this.passwordForm.invalid) {
       this.passwordForm.markAllAsTouched();
+      console.log('LOG-4: Formulario inválido. Deteniendo.'); // LOG
       return;
     }
 
@@ -63,13 +72,29 @@ export class NuevaPasswordComponent implements OnInit {
       nuevaContrasena: this.passwordForm.value.password
     };
 
+    console.log('LOG-5: Enviando petición de restablecimiento.'); // LOG
+
     this.recuperarService.restablecerCuenta(dto).subscribe({
       next: () => {
-        sessionStorage.removeItem('recuperarCorreo');
-        this.router.navigate(['/iniciosesion']);
+        console.log('LOG-6: Petición exitosa (Backend OK).'); // LOG
+
+        // FIX SSR: Limpiar sessionStorage solo en el navegador
+        if (isPlatformBrowser(this.platformId)) {
+          sessionStorage.removeItem('recuperarCorreo');
+          console.log('LOG-7: sessionStorage limpiado.'); // LOG
+        }
+
+        // FIX DE REDIRECCIÓN FINAL: Usar NgZone.run() para forzar la navegación al siguiente ciclo
+        this.zone.run(() => {
+          const targetUrl = '/password-success';
+          console.log('LOG-8: Ejecutando redirección forzada a:', targetUrl); // LOG
+          this.router.navigateByUrl(targetUrl, { replaceUrl: true });
+          console.log('LOG-9: router.navigateByUrl llamada.'); // LOG
+        });
       },
       error: err => {
         this.error = err?.error?.mensaje || err?.error || 'Error al restablecer cuenta';
+        console.error('LOG-10: Falló el restablecimiento (Error de Backend). Mensaje:', this.error); // LOG
       }
     });
   }
