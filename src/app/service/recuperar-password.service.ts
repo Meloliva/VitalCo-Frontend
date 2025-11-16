@@ -18,7 +18,7 @@ export class RecuperarPasswordService {
   }
 
   // Llama a POST /verificarCodigoRecuperacion con body { codigo }
-  verificarCodigo(dto: VerificarCodigo): Observable<string> {
+  verificarCodigo(dto: VerificarCodigo): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/verificarCodigoRecuperacion`, dto);
   }
 
