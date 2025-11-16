@@ -1,39 +1,40 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+// typescript
+// File: `src/app/recuperar-password/verificar-codigo/verificar-codigo.ts`
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-// Angular Material Imports
-import { MatCardModule } from '@angular/material/card';
-import { MatInputModule } from '@angular/material/input';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { RecuperarPasswordService } from '../../service/recuperar-password.service';
 
 @Component({
   selector: 'app-verificar-codigo',
-  templateUrl: './verificar-codigo.html',
   standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    RouterLink,
-    MatCardModule,
-    MatInputModule,
+    FormsModule,
     MatFormFieldModule,
+    MatInputModule,
     MatButtonModule,
-    MatIconModule
+    RouterModule
   ],
+  templateUrl: './verificar-codigo.html',
   styleUrls: ['./verificar-codigo.css']
 })
-export class VerificarCodigoComponent implements OnInit, OnDestroy {
+export class VerificarCodigoComponent {
+  email = '';
+  error = '';
   codeForm: FormGroup;
-  email: string = '';
 
   constructor(
     private fb: FormBuilder,
+    private route: ActivatedRoute,
     private router: Router,
-    private route: ActivatedRoute
+    private service: RecuperarPasswordService
   ) {
     this.codeForm = this.fb.group({
       digit1: ['', [Validators.required, Validators.pattern(/^\d$/)]],
@@ -41,100 +42,90 @@ export class VerificarCodigoComponent implements OnInit, OnDestroy {
       digit3: ['', [Validators.required, Validators.pattern(/^\d$/)]],
       digit4: ['', [Validators.required, Validators.pattern(/^\d$/)]],
       digit5: ['', [Validators.required, Validators.pattern(/^\d$/)]],
-      digit6: ['', [Validators.required, Validators.pattern(/^\d$/)]],
+      digit6: ['', [Validators.required, Validators.pattern(/^\d$/)]]
     });
+
+    const qpEmail = this.route.snapshot.queryParamMap.get('email');
+    this.email = qpEmail || sessionStorage.getItem('recuperarCorreo') || '';
   }
 
-  ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      this.email = params['email'] || '';
-      if (!this.email) {
-        this.router.navigate(['/recuperar-password']);
+  private focusInput(index: number): void {
+    const el = document.getElementById(`digit${index}`) as HTMLInputElement | null;
+    if (el) el.focus();
+  }
+
+  onDigitInput(event: Event, index: number): void {
+    const input = event.target as HTMLInputElement;
+    let val = input.value || '';
+    val = val.replace(/\D/g, '').slice(-1);
+    this.codeForm.get(`digit${index}`)?.setValue(val);
+    if (val && index < 6) this.focusInput(index + 1);
+  }
+
+  onKeyDown(event: KeyboardEvent, index: number): void {
+    const target = event.target as HTMLInputElement;
+    if (event.key === 'Backspace') {
+      if (!target.value && index > 1) {
+        this.codeForm.get(`digit${index - 1}`)?.setValue('');
+        this.focusInput(index - 1);
+        event.preventDefault();
       }
+    } else if (/^[0-9]$/.test(event.key)) {
+      // permitir dígitos
+    } else if (event.key === 'ArrowLeft' && index > 1) {
+      this.focusInput(index - 1);
+      event.preventDefault();
+    } else if (event.key === 'ArrowRight' && index < 6) {
+      this.focusInput(index + 1);
+      event.preventDefault();
+    } else {
+      if (event.key.length === 1) event.preventDefault();
+    }
+  }
+
+  onPaste(event: ClipboardEvent): void {
+    event.preventDefault();
+    const paste = event.clipboardData?.getData('text') || '';
+    const digits = paste.replace(/\D/g, '').slice(0, 6).split('');
+    digits.forEach((d, i) => {
+      this.codeForm.get(`digit${i + 1}`)?.setValue(d);
+      const el = document.getElementById(`digit${i + 1}`) as HTMLInputElement | null;
+      if (el) el.value = d;
     });
-
-    this.hideNavbar();
-  }
-
-  ngOnDestroy() {
-    this.showNavbar();
-  }
-
-  hideNavbar() {
-    const navbar = document.querySelector('app-navbar') ||
-      document.querySelector('nav') ||
-      document.querySelector('.navbar');
-    if (navbar) {
-      (navbar as HTMLElement).style.display = 'none';
+    if (digits.length === 6) {
+      this.codeForm.markAllAsTouched();
+      setTimeout(() => this.onSubmit(), 0);
+    } else if (digits.length > 0) {
+      const nextIndex = digits.length + 1;
+      if (nextIndex <= 6) this.focusInput(nextIndex);
     }
   }
 
-  showNavbar() {
-    const navbar = document.querySelector('app-navbar') ||
-      document.querySelector('nav') ||
-      document.querySelector('.navbar');
-    if (navbar) {
-      (navbar as HTMLElement).style.display = 'block';
-    }
-  }
-
-  onDigitInput(event: any, currentIndex: number) {
-    const input = event.target;
-    const value = input.value;
-
-    if (!/^\d$/.test(value)) {
-      input.value = '';
-      this.codeForm.get(`digit${currentIndex}`)?.setValue('');
+  onSubmit(): void {
+    this.error = '';
+    if (this.codeForm.invalid) {
+      this.codeForm.markAllAsTouched();
+      this.error = 'Complete los 6 dígitos del código';
       return;
     }
+    const code = [
+      this.codeForm.value.digit1,
+      this.codeForm.value.digit2,
+      this.codeForm.value.digit3,
+      this.codeForm.value.digit4,
+      this.codeForm.value.digit5,
+      this.codeForm.value.digit6
+    ].join('');
 
-    if (value.length === 1 && currentIndex < 6) {
-      const nextInput = document.getElementById(`digit${currentIndex + 1}`);
-      if (nextInput) {
-        (nextInput as HTMLInputElement).focus();
+    const dto = { codigo: code };
+    this.service.verificarCodigo(dto).subscribe({
+      next: () => {
+        if (this.email) sessionStorage.setItem('recuperarCorreo', this.email);
+        this.router.navigate(['/recuperar-password/nueva-password']);
+      },
+      error: err => {
+        this.error = err?.error?.mensaje || err?.error || 'Código inválido o expirado';
       }
-    }
-  }
-
-  onKeyDown(event: KeyboardEvent, currentIndex: number) {
-    const input = event.target as HTMLInputElement;
-
-    if (event.key === 'Backspace' && input.value === '' && currentIndex > 1) {
-      const prevInput = document.getElementById(`digit${currentIndex - 1}`);
-      if (prevInput) {
-        (prevInput as HTMLInputElement).focus();
-      }
-    }
-  }
-
-  onPaste(event: ClipboardEvent) {
-    event.preventDefault();
-    const pastedData = event.clipboardData?.getData('text');
-
-    if (pastedData && /^\d{6}$/.test(pastedData)) {
-      const digits = pastedData.split('');
-      digits.forEach((digit, index) => {
-        this.codeForm.get(`digit${index + 1}`)?.setValue(digit);
-      });
-
-      const lastInput = document.getElementById('digit6');
-      if (lastInput) {
-        (lastInput as HTMLInputElement).focus();
-      }
-    }
-  }
-
-  onSubmit() {
-    if (this.codeForm.valid) {
-      const code = Object.values(this.codeForm.value).join('');
-
-      console.log('Código ingresado:', code);
-      console.log('Email:', this.email);
-
-      // TODO: Implementar servicio
-      this.router.navigate(['/recuperar-password/nueva-password'], {
-        queryParams: { email: this.email, code: code }
-      });
-    }
+    });
   }
 }

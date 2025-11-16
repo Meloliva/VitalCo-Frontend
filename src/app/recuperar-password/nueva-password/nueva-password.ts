@@ -1,39 +1,38 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import {NgClass, NgIf} from '@angular/common';
-
-// Imports de Angular Material
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { RecuperarPasswordService } from '../../service/recuperar-password.service';
 
 @Component({
   selector: 'app-nueva-password',
-  templateUrl: './nueva-password.html',
   standalone: true,
   imports: [
+    CommonModule,
     ReactiveFormsModule,
-
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule,
     MatIconModule,
-    NgIf
-
-
+    MatButtonModule,
+    MatCardModule
   ],
+  templateUrl: './nueva-password.html',
   styleUrls: ['./nueva-password.css']
 })
 export class NuevaPasswordComponent implements OnInit {
   passwordForm: FormGroup;
-  showPassword: boolean = false;
+  showPassword = false;
+  error = '';
 
   constructor(
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private recuperarService: RecuperarPasswordService
   ) {
     this.passwordForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -42,46 +41,50 @@ export class NuevaPasswordComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Inicialización del componente
+    const correoGuardado = sessionStorage.getItem('recuperarCorreo');
+    if (correoGuardado) {
+      this.passwordForm.get('email')?.setValue(correoGuardado);
+    }
   }
 
-  togglePasswordVisibility() {
+  togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
 
-  onSubmit() {
-    if (this.passwordForm.valid) {
-      const email = this.passwordForm.get('email')?.value;
-      const newPassword = this.passwordForm.value.password;
-
-      console.log('Email:', email);
-      console.log('Nueva contraseña:', newPassword);
-
-      // Redirige a la página de éxito
-      this.router.navigate(['/password-success']);
+  onSubmit(): void {
+    this.error = '';
+    if (this.passwordForm.invalid) {
+      this.passwordForm.markAllAsTouched();
+      return;
     }
+
+    const dto = {
+      correo: this.passwordForm.value.email,
+      nuevaContrasena: this.passwordForm.value.password
+    };
+
+    this.recuperarService.restablecerCuenta(dto).subscribe({
+      next: () => {
+        sessionStorage.removeItem('recuperarCorreo');
+        this.router.navigate(['/iniciosesion']);
+      },
+      error: err => {
+        this.error = err?.error?.mensaje || err?.error || 'Error al restablecer cuenta';
+      }
+    });
   }
 
-  // Métodos para obtener errores de los campos
-  getEmailErrorMessage() {
-    const emailControl = this.passwordForm.get('email');
-    if (emailControl?.hasError('required')) {
-      return 'El correo electrónico es requerido';
-    }
-    if (emailControl?.hasError('email')) {
-      return 'Ingrese un correo electrónico válido';
-    }
+  getEmailErrorMessage(): string {
+    const control = this.passwordForm.get('email');
+    if (control?.hasError('required')) return 'El correo electrónico es requerido';
+    if (control?.hasError('email')) return 'Ingrese un correo electrónico válido';
     return '';
   }
 
-  getPasswordErrorMessage() {
-    const passwordControl = this.passwordForm.get('password');
-    if (passwordControl?.hasError('required')) {
-      return 'La contraseña es requerida';
-    }
-    if (passwordControl?.hasError('minlength')) {
-      return 'La contraseña debe tener al menos 6 caracteres';
-    }
+  getPasswordErrorMessage(): string {
+    const control = this.passwordForm.get('password');
+    if (control?.hasError('required')) return 'La contraseña es requerida';
+    if (control?.hasError('minlength')) return 'La contraseña debe tener al menos 6 caracteres';
     return '';
   }
 }
