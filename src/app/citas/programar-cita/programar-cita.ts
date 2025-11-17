@@ -143,9 +143,9 @@ export class ProgramarCita implements OnInit {
           this.errorMessage = backendMessage;
         }
       } else if (error.status === 401 || error.status === 403) {
-        this.errorMessage = 'Error al registrar la cita. Intenta nuevamente más tarde.';
+        this.errorMessage = 'Error al registrar la cita. La hora de la cita está fuera del turno del nutricionista. 😞 Por favor, elige otra hora .';
       } else {
-        this.errorMessage = 'Error al registrar la cita. Intenta nuevamente más tarde.';
+        this.errorMessage = 'Error al registrar la cita. La hora de la cita está fuera del turno del nutricionista. 😞 Por favor, elige otra hora.';
       }
 
     } finally {
