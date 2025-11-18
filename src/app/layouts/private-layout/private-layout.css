@@ -2,6 +2,7 @@ html, body {
   height: 100%;
   margin: 0;
 }
+
 .layout-container {
   display: flex;
   height: 100vh;
@@ -22,6 +23,7 @@ html, body {
   padding: 20px;
   border-bottom: 1px solid #e5e7eb;
 }
+
 .page-card {
   width: 980px;
   max-width: calc(100% - 40px);
@@ -37,7 +39,6 @@ html, body {
   box-sizing: border-box;
 }
 
-
 .page-card > * > h1,
 .page-card > * > h2,
 .page-card > * > h3,
@@ -45,6 +46,7 @@ html, body {
 .page-card > * > .container {
   margin-top: 0;
 }
+
 .page-card > * {
   width: 100%;
   margin: 0;
@@ -123,6 +125,7 @@ html, body {
   font-size: 14px;
   transition: background-color 0.2s;
   border-radius: 8px;
+  cursor: pointer;
 }
 
 .nav-item:hover {
@@ -139,6 +142,71 @@ html, body {
   width: 20px;
   height: 20px;
   flex-shrink: 0;
+}
+
+.citas-container {
+  display: flex;
+  flex-direction: column;
+  margin: 0 8px;
+}
+
+.citas-parent {
+  position: relative;
+  justify-content: space-between;
+  user-select: none;
+}
+
+.citas-parent.expanded {
+  background-color: #f3f4f6;
+}
+
+.chevron-icon {
+  width: 16px;
+  height: 16px;
+  margin-left: auto;
+  transition: transform 0.3s ease;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.chevron-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.citas-submenu {
+  display: flex;
+  flex-direction: column;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.citas-submenu.show {
+  max-height: 150px;
+}
+
+.sub-link {
+  padding: 10px 20px 10px 52px !important;
+  margin: 0 !important;
+  font-size: 13px !important;
+  color: #6b7280 !important;
+  border-radius: 0 !important;
+}
+
+.sub-link:hover {
+  background-color: #f9fafb !important;
+  color: #374151 !important;
+}
+
+.sub-link.active {
+  background-color: rgba(128, 205, 41, 0.15) !important;
+  color: #065f46 !important;
+  font-weight: 500 !important;
+  border-left: 3px solid #80CD29;
+}
+
+.citas-container + .nav-item {
+  margin-top: 4px;
 }
 
 .sidebar-logout {
@@ -160,11 +228,9 @@ html, body {
 }
 
 .sidebar-logout:hover {
-  background-color: #ffffff;
+  background-color: #f3f4f6;
 }
 
-
-/* CSS */
 :host(.no-page-card) .page-card {
   background: transparent !important;
   box-shadow: none !important;
@@ -177,19 +243,16 @@ html, body {
   overflow: visible !important;
 }
 
-/* ajustar el contenedor principal para que el contenido de la vista use todo el ancho */
+
 :host(.no-page-card) .main-content {
   align-items: stretch !important;
   justify-content: flex-start !important;
   padding: 22px !important;
 }
 
-/* neutralizar hijos si es necesario */
 :host(.no-page-card) .page-card > * {
   background: transparent !important;
   box-shadow: none !important;
   padding: 0 !important;
   margin: 0 !important;
 }
-
-

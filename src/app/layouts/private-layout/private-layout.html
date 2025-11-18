@@ -26,17 +26,23 @@
         <span>Recetas</span>
       </a>
 
-     <a *ngIf="isPremium" class="nav-item citas-parent">
-        <img src="/Images/iconos/iconoSistemas/image%2054.png" alt="Citas" class="nav-icon">
-        <span>Citas</span>
-      </a>
-      <div *ngIf="isPremium" class="citas-submenu">
-        <a routerLink="/sistema/citas/programar" routerLinkActive="active" class="nav-item sub-link">
-          Programar Cita
+      <div *ngIf="isPremium" class="citas-container">
+        <a (click)="toggleCitas()" class="nav-item citas-parent" [class.expanded]="citasExpanded">
+          <img src="/Images/iconos/iconoSistemas/image%2054.png" alt="Citas" class="nav-icon">
+          <span>Citas</span>
+          <svg class="chevron-icon" [class.rotated]="citasExpanded" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </a>
-        <a routerLink="/sistema/citas/listar" routerLinkActive="active" class="nav-item sub-link">
-          Listar
-        </a>
+
+        <div class="citas-submenu" [class.show]="citasExpanded">
+          <a routerLink="/sistema/citas/programar" routerLinkActive="active" class="nav-item sub-link">
+            <span>Programar Cita</span>
+          </a>
+          <a routerLink="/sistema/citas/listar" routerLinkActive="active" class="nav-item sub-link">
+            <span>Listar</span>
+          </a>
+        </div>
       </div>
 
       <a routerLink="/sistema/cambiar-plan" routerLinkActive="active" class="nav-item">
@@ -58,4 +64,3 @@
     <router-outlet *ngIf="hidePageCard"></router-outlet>
   </main>
 </div>
-

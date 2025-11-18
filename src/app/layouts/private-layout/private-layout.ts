@@ -20,6 +20,7 @@ export class PrivateLayout implements OnInit, OnDestroy {
   userName: string = 'Nombre de Usuario';
   isPremium: boolean = false;
   hidePageCard: boolean = false;
+  citasExpanded: boolean = false;
   private userSubscription?: Subscription;
   private routerSubscription?: Subscription;
 
@@ -38,6 +39,7 @@ export class PrivateLayout implements OnInit, OnDestroy {
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
         this.checkRoute();
+        this.checkCitasRoute();
       });
   }
 
@@ -54,18 +56,27 @@ export class PrivateLayout implements OnInit, OnDestroy {
     this.hidePageCard = this.router.url.includes('/cambiar-plan');
   }
 
+  // 👇 NUEVO MÉTODO: Mantener abierto si estamos en una ruta de citas
+  private checkCitasRoute() {
+    if (this.router.url.includes('/sistema/citas/')) {
+      this.citasExpanded = true;
+    }
+  }
+
+  // 👇 NUEVO MÉTODO: Toggle del menú
+  toggleCitas() {
+    this.citasExpanded = !this.citasExpanded;
+  }
+
   loadUserData() {
     this.userSubscription = this.userService.getCurrentUser().subscribe({
       next: (user) => {
         if (user) {
-          // ✅ Type guard para Paciente o Nutricionista
           if ('idusuario' in user) {
             const userWithUsuario = user as Paciente | Nutricionista;
             this.userName = `${userWithUsuario.idusuario.nombre} ${userWithUsuario.idusuario.apellido}`;
             this.userAvatar = userWithUsuario.idusuario.fotoPerfil ?? '/Images/iconos/iconoSistemas/image 18.png';
-          }
-          // ✅ Usuario normal
-          else {
+          } else {
             const usuario = user as Usuario;
             this.userName = `${usuario.nombre} ${usuario.apellido}`;
             this.userAvatar = usuario.fotoPerfil ?? '/Images/iconos/iconoSistemas/image 18.png';
@@ -106,7 +117,6 @@ export class PrivateLayout implements OnInit, OnDestroy {
     this.userService.getCurrentUser().subscribe({
       next: (currentUser) => {
         if (currentUser) {
-          // ✅ Actualizar según el tipo de usuario
           if ('idusuario' in currentUser) {
             const userWithUsuario = currentUser as Paciente | Nutricionista;
             userWithUsuario.idusuario.fotoPerfil = newAvatarUrl;
