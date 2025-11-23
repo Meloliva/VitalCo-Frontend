@@ -25,12 +25,14 @@
 }
 
 .premium-text-container h2 {
+  display: block;
   font-family: 'Poppins', sans-serif;
-  font-size: 2.8rem;
-  font-weight: 700;
+  font-size: 2.8rem !important;
+  font-weight: 700 !important;
   line-height: 1.2;
   color: #333;
   margin-bottom: 10px;
+  margin-top: 100px;
 }
 
 .premium-text-container .destacado-verde {
@@ -39,7 +41,7 @@
 
 .premium-text-container p {
   font-family: 'Poppins', sans-serif;
-  font-size: 1.1rem;
+  font-size: 1.1rem !important;
   color: #666;
   font-weight: 500;
 }
@@ -53,12 +55,12 @@
 }
 
 .premium-img {
-  max-width: 450px;
+  max-width: 500px;
   width: 100%;
   height: auto;
 }
 
-/* --- SECCIÓN DE PLANES Y PRECIOS (Las 3 tarjetas) --- */
+/* --- SECCIÓN DE PLANES Y PRECIOS INFORMACIÓN (sin botones) --- */
 
 #PlanesPrecios {
   max-width: 1200px;
@@ -69,7 +71,7 @@
 
 .planes-title {
   font-family: 'Open Sans', sans-serif;
-  font-size: 2.2rem;
+  font-size: 2.2rem !important;
   font-weight: 700;
   margin-bottom: 40px;
   color: #333;
@@ -110,6 +112,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  cursor: default; /* Sensación de “solo lectura” */
 }
 
 .pricing-card:hover {
@@ -123,7 +126,7 @@
 
 .pricing-card h3 {
   font-family: 'Poppins', sans-serif;
-  font-size: 1.8rem;
+  font-size: 1.8rem !important;
   font-weight: 600;
   color: #333;
   margin-bottom: 10px;
@@ -131,7 +134,7 @@
 
 .plan-subtitle {
   font-family: 'Open Sans', sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.95rem !important;
   color: #888;
   min-height: 40px;
   margin-bottom: 25px;
@@ -148,7 +151,7 @@
 
 .pricing-card ul li {
   font-family: 'Open Sans', sans-serif;
-  font-size: 1rem;
+  font-size: 1rem !important;
   color: #666;
   margin-bottom: 12px;
   position: relative;
@@ -159,52 +162,33 @@
   content: "✓";
   color: #00BF61;
   font-weight: bold;
-  font-size: 1.2rem;
+  font-size: 1.2rem !important;
   position: absolute;
   left: 0;
   top: 0;
 }
 
-.pricing-card ul li .highlight {
-  font-weight: 700;
-  color: #00BF61;
-}
-
-.plan-btn {
-  display: block;
-  padding: 12px 25px;
-  border-radius: 8px;
-  text-decoration: none;
+/* Etiquetas informativas (en lugar de botones) */
+.plan-info-label {
   font-family: 'Poppins', sans-serif;
-  font-size: 1.1rem;
+  font-size: 1rem !important;
+  margin-top: 20px;
+  padding: 10px 12px;
+  border-radius: 10px;
   font-weight: 600;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  margin-top: auto;
 }
 
-.btn-gratis {
-  background-color: #E6E6E6;
-  color: #666;
-  border: 1px solid #ccc;
+.gratis-label {
+  background: #f2f2f2;
+  color: #555;
+  border: 1px solid #dcdcdc;
 }
 
-.btn-gratis:hover {
-  background-color: #dcdcdc;
-  transform: scale(1.02);
+.premium-label {
+  background: #E8F9F0;
+  color: #00A85A;
+  border: 1px solid #00BF61;
 }
-
-.btn-monthly, .btn-annual {
-  background-color: #00BF61;
-  color: white;
-  box-shadow: 0 4px 10px rgba(0, 191, 97, 0.3);
-}
-
-.btn-monthly:hover, .btn-annual:hover {
-  background-color: #00BF61;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0, 191, 97, 0.4);
-}
-
 
 /* --- SECCIÓN ¿QUÉ INCLUYE EL PREMIUM? (Características) --- */
 
@@ -220,7 +204,7 @@
 
 .que-incluye-premium h2 {
   font-family: 'Open Sans', sans-serif;
-  font-size: 2.2rem;
+  font-size: 2.2rem !important;
   font-weight: 700;
   text-align: center;
   margin-bottom: 50px;
@@ -257,7 +241,7 @@
 
 .feature-content h3 {
   font-family: 'Poppins', sans-serif;
-  font-size: 1.5rem;
+  font-size: 1.5rem !important;
   font-weight: 600;
   color: #333;
   margin-bottom: 5px;
@@ -265,11 +249,12 @@
 
 .feature-content p {
   font-family: 'Open Sans', sans-serif;
-  font-size: 1rem;
+  font-size: 1rem !important;
   color: #666;
   line-height: 1.5;
 }
 
+/* --- Responsive --- */
 
 @media (max-width: 1150px) {
   .pricing-card {
@@ -278,9 +263,6 @@
 }
 
 @media (max-width: 768px) {
-  #PlanesPrecios {
-  }
-
   .pricing-container {
     gap: 20px;
   }
