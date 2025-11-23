@@ -1,4 +1,4 @@
-import { Component, LOCALE_ID } from '@angular/core';
+import { Component, LOCALE_ID, OnInit } from '@angular/core';
 import { CommonModule, DatePipe, registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +6,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatNativeDateModule, provideNativeDateAdapter } from '@angular/material/core';
+import {SeguimientoService} from '../service/seguimiento.service';
+import {SeguimientoDTO} from '../models/seguimiendo-paciente.model';
+import { ChangeDetectorRef } from '@angular/core';
 
 registerLocaleData(localeEs);
 
@@ -29,90 +32,101 @@ registerLocaleData(localeEs);
     provideNativeDateAdapter()
   ]
 })
-export class ProgresoPaciente {
+export class ProgresoPaciente implements OnInit {
 
   public selectedDate: Date = new Date();
 
-  // --- 🔹 Datos por fecha (ejemplo de mini “base de datos”) ---
-  private dailyData: Record<string, any> = {
-    '2025-11-01': {
-      calories: { current: 900, total: 1200 },
-      macros: [
-        { name: 'Proteína', current: 45, total: 70 },
-        { name: 'Carbohidratos', current: 95, total: 180 },
-        { name: 'Grasas', current: 46, total: 50 }
-      ],
-      meals: [
-        { name: 'Desayuno', kcal: 200 },
-        { name: 'Almuerzo', kcal: 500 },
-        { name: 'Snacks', kcal: 25 },
-        { name: 'Cena', kcal: 175 }
-      ]
-    },
-    '2025-11-02': {
-      calories: { current: 1100, total: 1200 },
-      macros: [
-        { name: 'Proteína', current: 60, total: 70 },
-        { name: 'Carbohidratos', current: 150, total: 180 },
-        { name: 'Grasas', current: 48, total: 50 }
-      ],
-      meals: [
-        { name: 'Desayuno', kcal: 300 },
-        { name: 'Almuerzo', kcal: 600 },
-        { name: 'Snacks', kcal: 0 },
-        { name: 'Cena', kcal: 200 }
-      ]
-    },
-    '2025-11-03': {
-      calories: { current: 500, total: 1200 },
-      macros: [
-        { name: 'Proteína', current: 25, total: 70 },
-        { name: 'Carbohidratos', current: 50, total: 180 },
-        { name: 'Grasas', current: 20, total: 50 }
-      ],
-      meals: [
-        { name: 'Desayuno', kcal: 200 },
-        { name: 'Almuerzo', kcal: 0 },
-        { name: 'Snacks', kcal: 100 },
-        { name: 'Cena', kcal: 200 }
-      ]
-    }
-  };
-
-  // --- 🔹 Variables dinámicas que se mostrarán ---
   calories = { current: 0, total: 1200 };
   macros: any[] = [];
   meals: any[] = [];
+  loading = false;
+  error: string | null = null;
 
-  constructor(private datePipe: DatePipe) {
+  constructor(
+    private datePipe: DatePipe,
+    private seguimientoService: SeguimientoService,
+    private cdr: ChangeDetectorRef
+  ) {
+    this.macros = [
+      { name: 'Proteína', current: 0, total: 70 },
+      { name: 'Carbohidratos', current: 0, total: 180 },
+      { name: 'Grasas', current: 0, total: 50 }
+    ];
+  }
+
+  ngOnInit(): void {
     this.loadDataForDate(this.selectedDate);
   }
 
-  // --- 🧠 Cargar datos según la fecha ---
   onDateChange(event: any): void {
     this.loadDataForDate(this.selectedDate);
   }
 
   private loadDataForDate(date: Date): void {
     const dateKey = this.datePipe.transform(date, 'yyyy-MM-dd')!;
-    const data = this.dailyData[dateKey];
+    this.loading = true;
+    this.error = null;
 
-    if (data) {
-      this.calories = data.calories;
-      this.macros = data.macros;
-      this.meals = data.meals;
-    } else {
-      // 🔸 Si no hay datos, se muestran vacíos o por defecto
-      this.calories = { current: 0, total: 1200 };
-      this.macros = [
-        { name: 'Proteína', current: 0, total: 70 },
-        { name: 'Carbohidratos', current: 0, total: 180 },
-        { name: 'Grasas', current: 0, total: 50 }
-      ];
-      this.meals = [];
-    }
+    this.seguimientoService.obtenerResumenPorFecha(dateKey).subscribe({
+      next: (data: SeguimientoDTO) => {
+        this.mapearDatos(data);
+        this.loading = false;
+        this.cdr.detectChanges(); // 👈 IMPORTANTE
+      },
+      error: (err) => {
+        console.error('Error al cargar resumen:', err);
+        this.error = 'No hay datos para esta fecha';
+        this.resetearDatos();
+        this.loading = false;
+        this.cdr.detectChanges(); // 👈 IMPORTANTE
+      }
+    });
+  }
 
-    console.log("📅 Datos cargados para:", dateKey, data || 'sin datos');
+
+  private mapearDatos(data: SeguimientoDTO): void {
+    const totales = data.totalesNutricionales;
+    const horarios = data.caloriasPorHorario;
+
+    this.calories = {
+      current: totales.calorias,
+      total: totales.requerido_calorias
+    };
+
+    this.macros = [
+      {
+        name: 'Proteína',
+        current: totales.proteinas,
+        total: totales.requerido_proteinas
+      },
+      {
+        name: 'Carbohidratos',
+        current: totales.carbohidratos,
+        total: totales.requerido_carbohidratos
+      },
+      {
+        name: 'Grasas',
+        current: totales.grasas,
+        total: totales.requerido_grasas
+      }
+    ];
+
+    this.meals = [
+      { name: 'Desayuno', kcal: horarios.desayuno },
+      { name: 'Almuerzo', kcal: horarios.almuerzo },
+      { name: 'Snacks', kcal: horarios.snack },
+      { name: 'Cena', kcal: horarios.cena }
+    ];
+  }
+
+  private resetearDatos(): void {
+    this.calories = { current: 0, total: 1200 };
+    this.macros = [
+      { name: 'Proteína', current: 0, total: 70 },
+      { name: 'Carbohidratos', current: 0, total: 180 },
+      { name: 'Grasas', current: 0, total: 50 }
+    ];
+    this.meals = [];
   }
 
   getCalorieGradient(): string {

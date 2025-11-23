@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+import {SeguimientoDTO} from '../models/seguimiendo-paciente.model';
 
 export interface SeguimientoResumenDTO {
   nombrePaciente: string;
@@ -49,4 +50,12 @@ export class SeguimientoService {
       { headers: this.getHeaders() }
     );
   }
+
+  obtenerResumenPorFecha(fecha: string): Observable<SeguimientoDTO> {
+    return this.http.get<SeguimientoResumenDTO>(
+      `${this.apiUrl}/listarSeguimientos/${fecha}`,
+      { headers: this.getHeaders() }
+    );
+  }
+
 }
