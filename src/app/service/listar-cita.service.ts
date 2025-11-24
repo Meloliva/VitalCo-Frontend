@@ -30,21 +30,10 @@ export class ListarCitaService {
     return local.toISOString().slice(0, 10); // YYYY-MM-DD
   }
 
-  listarCitasPorPaciente(fecha: Date | string): Observable<any[]> {
-    const fechaStr = fecha instanceof Date ? this.formatDateToApi(fecha) : fecha;
-    const url = `${this.apiUrl}/listarCitasPorPaciente/${encodeURIComponent(fechaStr)}`;
-    console.debug('[ListarCitaService] GET', url);
-    return this.http.get<any[]>(url, { headers: this.getHeaders() })
-      .pipe(catchError(error => {
-        if (error.status === 404) {
-          console.warn('[ListarCitaService] 404. URL/mapping no encontrado o sin datos para fecha:', url, 'statusText:', error.statusText);
-        } else {
-          console.error('[ListarCitaService] error:', error.status, error.message);
-        }
-        return throwError(() => error)
-      }));
+  listarPorFecha(fecha: string): Observable<any[]> {
+    // El backend espera la fecha en formato YYYY-MM-DD en la URL
+    return this.http.get<any[]>(`${this.apiUrl}/listarCitasPorPaciente/${fecha}`, { headers: this.getHeaders() });
   }
-
   /**
    * 2. Actualiza una cita (para reprogramar)
    */
@@ -76,7 +65,7 @@ export class ListarCitaService {
    * 5. Filtra citas para HOY
    * (Nota: El backend en CitaController.java usa "/paciente/hoy/{idPaciente}")
    */
-  getCitasHoy(): Observable<any[]> {
+  listarMisCitasHoy(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/paciente/hoy`, {
       headers: this.getHeaders()
     }).pipe(catchError(this.handleError));
@@ -86,7 +75,7 @@ export class ListarCitaService {
    * 6. Filtra citas para MAÑANA
    * (Nota: El backend en CitaController.java usa "/paciente/mañana/{idPaciente}")
    */
-  getCitasManana(): Observable<any[]> {
+  listarMisCitasManana(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/paciente/manana`, {
       headers: this.getHeaders()
     }).pipe(catchError(this.handleError));

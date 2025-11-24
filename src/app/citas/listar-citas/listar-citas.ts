@@ -1,6 +1,5 @@
-// typescript
-// Archivo: `src/app/citas/listar-citas/listar-citas.ts`
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { ListarCitaService } from '../../service/listar-cita.service';
 import {CommonModule, DatePipe} from '@angular/common';
 
@@ -14,133 +13,96 @@ import {CommonModule, DatePipe} from '@angular/common';
   styleUrls: ['./listar-citas.css']
 })
 export class ListarCitas implements OnInit {
-  citas: any[] = [];
-  paginatedAppointments: any[] = [];
-  isLoading = false;
-  selectedAppointment: any | null = null;
-  selectedDate: Date = new Date();
-  tab: 'none' | 'hoy' | 'manana' = 'none'; // por defecto ninguno
-  pageSize = 8;
-  currentPage = 1;
 
-  constructor(private listarCitaService: ListarCitaService) {}
+  citas: any[] = [];
+  filtroActivo: 'hoy' | 'manana' | 'calendario' = 'hoy';
+  loading: boolean = false;
+
+  constructor(
+    private listarCitaService: ListarCitaService,
+    private router: Router,
+    private cd: ChangeDetectorRef // IMPORTANTE: Para arreglar el "doble click"
+  ) {}
 
   ngOnInit(): void {
-    // No cargar automáticamente; esperar acción del usuario (tab Hoy/Manana o selección de Fecha)
+    this.cargarHoy();
   }
 
-  private mapCitas(raw: any[]): any[] {
-    return raw.map(c => ({
-      id: c.id,
-      patientName: c.pacienteNombre || c.nombrePaciente || (c.paciente?.nombre ?? 'Paciente'),
-      time: c.hora ?? c.fechaHora ?? '',
-      meetingLink: c.enlaceReunion ?? c.link ?? '',
-      meetingType: c.tipo ?? 'Presencial',
-      description: c.descripcion ?? c.notes ?? '',
-      avatarInitials: this.getInitials(c.pacienteNombre || c.nombrePaciente || c.paciente?.nombre)
-    }));
-  }
+  cargarHoy() {
+    this.loading = true;
+    this.filtroActivo = 'hoy';
+    this.citas = []; // Limpiamos la lista visualmente antes de cargar
 
-  private getInitials(name: string | undefined): string {
-    if (!name) return 'U';
-    return name.split(' ').slice(0,2).map(s => s.charAt(0)).join('').toUpperCase();
-  }
-
-  // carga para Hoy / Mañana (muestra spinner)
-  loadCitas(showLoading = true): void {
-    if (showLoading) this.isLoading = true;
-    this.selectedAppointment = null;
-
-    const obs = this.tab === 'hoy'
-      ? this.listarCitaService.getCitasHoy()
-      : this.tab === 'manana'
-        ? this.listarCitaService.getCitasManana()
-        : null;
-
-    if (!obs) {
-      this.citas = [];
-      this.updatePagination();
-      this.isLoading = false;
-      return;
-    }
-
-    obs.subscribe({
-      next: res => {
-        this.citas = this.mapCitas(res || []);
-        this.currentPage = 1;
-        this.updatePagination();
-        this.isLoading = false;
+    this.listarCitaService.listarMisCitasHoy().subscribe({
+      next: (data) => {
+        console.log('Datos recibidos del backend (HOY):', data); // MIRA LA CONSOLA DEL NAVEGADOR
+        this.citas = data;
+        this.loading = false;
+        this.cd.detectChanges(); // FUERZA LA ACTUALIZACIÓN VISUAL
       },
-      error: err => {
-        console.error('listar-citas error:', err);
-        this.citas = [];
-        this.updatePagination();
-        this.isLoading = false;
+      error: (e) => {
+        console.error('Error:', e);
+        this.loading = false;
+        this.cd.detectChanges();
       }
     });
   }
 
-  // búsqueda por fecha: no mostrar spinner grande para que no demore la UX
-  loadCitasPorFecha(showLoading = false): void {
-    if (showLoading) this.isLoading = true;
-    this.selectedAppointment = null;
+  cargarManana() {
+    this.loading = true;
+    this.filtroActivo = 'manana';
+    this.citas = [];
 
-    this.listarCitaService.listarCitasPorPaciente(this.selectedDate).subscribe({
-      next: res => {
-        this.citas = this.mapCitas(res || []);
-        this.currentPage = 1;
-        this.updatePagination();
-        if (showLoading) this.isLoading = false;
+    this.listarCitaService.listarMisCitasManana().subscribe({
+      next: (data) => {
+        console.log('Datos recibidos (MAÑANA):', data);
+        this.citas = data;
+        this.loading = false;
+        this.cd.detectChanges();
       },
-      error: err => {
-        console.error('listar-citas por fecha error:', err);
-        this.citas = [];
-        this.updatePagination();
-        if (showLoading) this.isLoading = false;
+      error: (e) => {
+        console.error(e);
+        this.loading = false;
+        this.cd.detectChanges();
       }
     });
   }
 
-  updatePagination(): void {
-    const start = (this.currentPage - 1) * this.pageSize;
-    this.paginatedAppointments = this.citas.slice(start, start + this.pageSize);
+  cargarPorFecha(event: any) {
+    const fecha = event.target.value;
+    if (!fecha) return;
+
+    this.loading = true;
+    this.filtroActivo = 'calendario';
+    this.citas = [];
+
+    this.listarCitaService.listarPorFecha(fecha).subscribe({
+      next: (data) => {
+        console.log('Datos recibidos (FECHA):', data);
+        this.citas = data;
+        this.loading = false;
+        this.cd.detectChanges();
+      },
+      error: (e) => {
+        console.error(e);
+        this.loading = false;
+        this.cd.detectChanges();
+      }
+    });
   }
 
-  changePage(delta: number): void {
-    const maxPage = Math.max(1, Math.ceil(this.citas.length / this.pageSize));
-    this.currentPage = Math.min(maxPage, Math.max(1, this.currentPage + delta));
-    this.updatePagination();
+  reprogramar(cita: any) {
+    this.router.navigate(['/citas/programar-cita'], { state: { datosCita: cita } });
   }
 
-  selectAppointment(app: any): void {
-    this.selectedAppointment = app;
-  }
-
-  joinMeeting(event: Event, link: string, app: any): void {
-    event.stopPropagation();
-    if (link) window.open(link, '_blank');
-    if (app?.id) {
-      this.listarCitaService.unirseACita(app.id).subscribe({ next: () => {}, error: () => {} });
+  eliminar(cita: any) {
+    if (confirm('¿Seguro que deseas cancelar esta cita?')) {
+      this.listarCitaService.eliminarCita(cita.id).subscribe(() => {
+        alert('Cita eliminada');
+        // Recargar la vista actual
+        if (this.filtroActivo === 'hoy') this.cargarHoy();
+        else if (this.filtroActivo === 'manana') this.cargarManana();
+      });
     }
   }
-
-  onDateChange(ev: Event): void {
-    const input = ev.target as HTMLInputElement;
-    if (!input.value) return;
-    this.selectedDate = new Date(input.value);
-    // Ejecutar búsqueda por fecha (sin spinner grande)
-    this.loadCitasPorFecha(false);
-  }
-
-  setTab(t: 'none'|'hoy'|'manana'): void {
-    this.tab = t;
-    if (t === 'hoy' || t === 'manana') {
-      this.loadCitas(true); // muestra spinner
-    } else {
-      this.citas = [];
-      this.updatePagination();
-    }
-  }
-
-  protected readonly Math = Math;
 }
