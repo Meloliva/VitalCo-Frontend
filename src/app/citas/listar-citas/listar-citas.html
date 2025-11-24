@@ -12,11 +12,11 @@
 
   <div *ngIf="loading" class="mensaje-estado">
     <div class="spinner"></div>
-    <p>Cargando tus citas...</p>
+    <p>Cargando información...</p>
   </div>
 
   <div *ngIf="!loading && citas.length === 0" class="mensaje-estado">
-    <p>No se encontraron citas para esta fecha.</p>
+    <p>No tienes citas programadas para esta fecha.</p>
   </div>
 
   <div class="grid-citas" *ngIf="!loading && citas.length > 0">
@@ -25,22 +25,22 @@
       <div class="tarjeta-header">
         <div class="info-nutri">
           <span class="etiqueta">Nutricionista</span>
-          <h3>{{ cita.nutricionistaNombre || cita.nombreNutricionista || 'Sin Nombre' }} {{ cita.nutricionistaApellido || '' }}</h3>
+          <h3>{{ getNombreNutricionista(cita.idNutricionista) }}</h3>
         </div>
         <div class="fecha-badge">
-          {{ cita.fecha | date:'dd/MM/yyyy' }}
+          {{ cita.dia }}
         </div>
       </div>
 
       <div class="tarjeta-body">
         <p class="hora">
           <i class="icono-reloj">⏰</i>
-          {{ cita.horaInicio }} - {{ cita.horaFin }}
+          {{ cita.hora }}
         </p>
 
         <p class="motivo">
           <strong>Motivo:</strong>
-          {{ cita.motivo || cita.descripcion || 'Sin descripción' }}
+          {{ cita.descripcion || 'Sin descripción' }}
         </p>
 
         <div class="link-zoom" *ngIf="cita.link">
