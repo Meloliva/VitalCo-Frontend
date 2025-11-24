@@ -248,5 +248,11 @@ export class NutricionistaService {
     return this.http.delete(`${this.apiUrl}/eliminarCita/${id}`);
   }
 
+  unirseACita(idCita: number): Observable<string> {
+    return this.http.get(`${this.apiUrl}/unirseACita/${idCita}`, {
+      headers: this.getHeaders(),
+      responseType: 'text' // Importante: el backend devuelve un String plano
+    });
+  }
 
 }
