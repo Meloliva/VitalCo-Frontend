@@ -1,180 +1,436 @@
-/* Contenedor General */
-.contenedor-principal {
-  padding: 20px;
-  max-width: 1000px;
-  margin: 0 auto;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 
-.encabezado {
+/* --- Contenedor Principal --- */
+.list-container {
+  padding: 0;
+  max-width: 100%;
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9fafb;
+  border-radius: 0;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin-bottom: 30px;
+  height: 100%;
 }
 
-h2 {
-  color: #333;
-  font-size: 24px;
+.form-title {
+  font-size: 28px;
+  color: #1f2937;
+  margin: 0;
+  font-weight: 700;
 }
 
-/* Botones de Filtro */
-.filtros {
+/* --- Header Principal --- */
+.header {
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
   align-items: center;
-}
-
-.filtros button {
-  padding: 8px 20px;
-  border: 1px solid #ccc;
-  background: white;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.filtros button.activo {
-  background-color: #4CAF50; /* Verde VitalCo */
-  color: white;
-  border-color: #4CAF50;
-  font-weight: bold;
-}
-
-.filtros input[type="date"] {
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-}
-
-/* Grid de Tarjetas */
-.grid-citas {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Tarjetas responsive */
+  padding: 24px 28px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
   gap: 20px;
 }
 
-/* Diseño de la Tarjeta (El Cuadrado) */
-.tarjeta-cita {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  border-left: 6px solid #4CAF50; /* El borde verde a la izquierda */
+.date-header {
+  background: linear-gradient(135deg, #27d079 0%, #20b870 100%);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 4px 12px rgba(39, 208, 121, 0.25);
+  transition: all 0.3s ease;
+}
+
+.date-header:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(39, 208, 121, 0.35);
+}
+
+.datepicker-hidden-input {
+  position: absolute;
   overflow: hidden;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+/* --- Pestañas (Tabs) --- */
+.tabs {
+  padding: 0 28px;
+  background-color: #ffffff;
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tab-button {
+  padding: 14px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  background-color: transparent;
+  color: #9ca3af;
+  border-radius: 0;
+  border-bottom: 3px solid transparent;
+  margin: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+  color: #6b7280;
+}
+
+.tab-button.active {
+  color: #27d079;
+  border-bottom-color: #27d079;
+  background-color: transparent;
+}
+
+/* --- Contenido Principal --- */
+.main-content {
+  flex: 1;
+  padding: 24px 28px;
+  background-color: #f9fafb;
+  overflow-y: auto;
+}
+
+/* --- Lista de Citas --- */
+.appointment-list {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  transition: transform 0.2s;
+  gap: 16px;
+  min-height: 200px;
 }
 
-.tarjeta-cita:hover {
-  transform: translateY(-5px);
-}
-
-.tarjeta-header {
-  padding: 15px;
-  background-color: #f9f9f9;
-  border-bottom: 1px solid #eee;
+.appointment-card {
   display: flex;
-  justify-content: space-between;
-  align-items: start;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.info-nutri .etiqueta {
-  font-size: 0.8rem;
-  color: #888;
-  text-transform: uppercase;
-  font-weight: bold;
+.appointment-card:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
 }
 
-.info-nutri h3 {
-  margin: 5px 0 0 0;
-  color: #2c3e50;
-  font-size: 1.1rem;
+.appointment-card.selected {
+  border-color: #27d079;
+  background-color: #f0fdf4;
+  box-shadow: 0 0 0 3px rgba(39, 208, 121, 0.1);
 }
 
-.fecha-badge {
-  background: #e8f5e9;
-  color: #2e7d32;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  font-weight: bold;
+/* --- Avatar --- */
+.avatar {
+  min-width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c7f0d8 0%, #a6f3d0 100%);
+  color: #059669;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  flex-shrink: 0;
 }
 
-.tarjeta-body {
-  padding: 15px;
+/* --- Detalles --- */
+.details {
   flex-grow: 1;
 }
 
-.hora {
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #444;
+.row-1 {
+  display: flex;
+  align-items: center;
+  gap: 16px;
   margin-bottom: 10px;
 }
 
-.motivo {
-  color: #666;
-  margin-bottom: 15px;
-  line-height: 1.4;
+.row-1 h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2937;
 }
 
-.link-zoom a {
-  display: inline-block;
-  text-decoration: none;
-  color: #0d47a1;
-  background: #e3f2fd;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-weight: bold;
-}
-
-/* Footer con botones */
-.tarjeta-footer {
-  padding: 15px;
-  border-top: 1px solid #eee;
+.appointment-time {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
 }
 
-.tarjeta-footer button {
-  flex: 1;
-  padding: 8px;
+.appointment-time::before {
+  content: '🕐';
+  font-size: 14px;
+}
+
+.meeting-type {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.meeting-type::before {
+  content: '📹';
+  font-size: 14px;
+}
+
+.row-2 .description-box {
+  background-color: #f3f4f6;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #4b5563;
+  display: inline-block;
+  border-left: 3px solid #27d079;
+}
+
+/* --- Botones de Acción --- */
+.actions {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.btn-join {
+  background: linear-gradient(135deg, #27d079 0%, #20b870 100%);
+  color: white;
+  padding: 10px 24px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  font-weight: bold;
-  transition: opacity 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(39, 208, 121, 0.2);
+}
+
+.btn-join:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(39, 208, 121, 0.3);
+}
+
+.btn-join:active {
+  transform: translateY(0);
+}
+
+/* --- Mensaje sin citas --- */
+.no-appointments {
+  padding: 40px 20px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 15px;
+  background-color: #ffffff;
+  border: 1px dashed #e5e7eb;
+  border-radius: 8px;
+}
+
+/* --- Footer Actions --- */
+.footer-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 28px;
+  background-color: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .btn-reprogramar {
-  background-color: #ff9800;
+  background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%);
   color: white;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(132, 204, 22, 0.2);
 }
 
-.btn-eliminar {
-  background-color: #f44336;
+.btn-reprogramar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(132, 204, 22, 0.3);
+}
+
+.btn-cancel {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
 }
 
-.tarjeta-footer button:hover {
-  opacity: 0.9;
+.btn-cancel:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
-/* Spinner básico */
-.mensaje-estado {
-  text-align: center;
-  padding: 40px;
-  color: #666;
+.btn-cancel:disabled {
+  background: #fecaca;
+  color: #991b1b;
+  opacity: 0.6;
+  cursor: not-allowed;
 }
-.spinner {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #4CAF50;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 10px auto;
+
+/* --- Paginador --- */
+.custom-paginator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 28px;
+  background-color: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  gap: 8px;
 }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+.mat-mdc-paginator {
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.mat-mdc-paginator-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #6b7280;
+  min-height: auto;
+  padding: 0 !important;
+}
+
+.mat-mdc-paginator-page-size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mat-mdc-paginator-page-size-label {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.mat-mdc-paginator-page-size-select {
+  height: 32px;
+  width: 50px !important;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0 8px !important;
+  font-size: 13px;
+  background-color: #ffffff;
+  cursor: pointer;
+}
+
+.mat-mdc-paginator-range-label {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0 16px;
+}
+
+.mat-mdc-paginator-navigation-button {
+  background: transparent !important;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  min-width: 0 !important;
+  margin: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mat-mdc-paginator-navigation-button:hover:not(:disabled) {
+  background-color: #f3f4f6 !important;
+  border-color: #9ca3af;
+  color: #1f2937;
+}
+
+.mat-mdc-paginator-navigation-button:disabled {
+  border-color: #e5e7eb;
+  color: #d1d5db;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mat-mdc-paginator-icon {
+  color: currentColor;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px 20px;
+  }
+
+  .date-header {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .appointment-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .actions {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .btn-join {
+    width: 100%;
+  }
+
+  .row-1 {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .footer-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn-reprogramar,
+  .btn-cancel {
+    width: 100%;
+  }
+}

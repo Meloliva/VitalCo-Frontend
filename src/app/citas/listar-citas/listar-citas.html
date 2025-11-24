@@ -1,58 +1,110 @@
-<div class="contenedor-principal">
+<div class="list-container">
 
-  <div class="encabezado">
-    <h2>Mis Citas Programadas</h2>
+  <!-- HEADER -->
+  <div class="header">
+    <h1 class="form-title">Citas</h1>
 
-    <div class="filtros">
-      <button [class.activo]="filtroActivo === 'hoy'" (click)="cargarHoy()">Hoy</button>
-      <button [class.activo]="filtroActivo === 'manana'" (click)="cargarManana()">Mañana</button>
-      <input type="date" (change)="cargarPorFecha($event)">
+    <div class="date-header" (click)="picker.open()">
+      <mat-form-field class="datepicker-hidden-input">
+        <input
+          matInput
+          [matDatepicker]="picker"
+          [(ngModel)]="selectedDate"
+          (dateChange)="onDateChange($event)"
+        />
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <i class="fas fa-calendar-alt"></i>
+      {{ selectedDate | date:'EEEE, d \'de\' MMMM \'de\' yyyy' | titlecase }}
     </div>
   </div>
 
-  <div *ngIf="loading" class="mensaje-estado">
-    <div class="spinner"></div>
-    <p>Cargando información...</p>
+  <!-- TABS -->
+  <div class="tabs">
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'hoy'"
+      (click)="changeTab('hoy')">
+      Hoy
+    </button>
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'mañana'"
+      (click)="changeTab('mañana')">
+      Mañana
+    </button>
   </div>
 
-  <div *ngIf="!loading && citas.length === 0" class="mensaje-estado">
-    <p>No tienes citas programadas para esta fecha.</p>
-  </div>
+  <!-- CONTENIDO PRINCIPAL -->
+  <div class="main-content">
+    <div class="appointment-list">
+      <div
+        *ngFor="let app of paginatedAppointments"
+        class="appointment-card"
+        (click)="selectAppointment(app)"
+        [class.selected]="app.id === selectedAppointment?.id">
 
-  <div class="grid-citas" *ngIf="!loading && citas.length > 0">
-
-    <div *ngFor="let cita of citas" class="tarjeta-cita">
-      <div class="tarjeta-header">
-        <div class="info-nutri">
-          <span class="etiqueta">Nutricionista</span>
-          <h3>{{ getNombreNutricionista(cita.idNutricionista) }}</h3>
+        <div class="avatar">
+          {{ app.avatarInitials }}
         </div>
-        <div class="fecha-badge">
-          {{ cita.dia }}
+
+        <div class="details">
+          <div class="row-1">
+            <h4>{{ app.patientName }}</h4>
+            <span class="appointment-time">{{ app.time }}</span>
+            <span class="meeting-type">{{ app.meetingType }}</span>
+          </div>
+          <div class="row-2">
+            <div class="description-box">
+              {{ app.description }}
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button
+            class="btn-join"
+            (click)="joinMeeting($event, app.meetingLink)">
+            Unirse
+          </button>
         </div>
       </div>
 
-      <div class="tarjeta-body">
-        <p class="hora">
-          <i class="icono-reloj">⏰</i>
-          {{ cita.hora }}
-        </p>
-
-        <p class="motivo">
-          <strong>Motivo:</strong>
-          {{ cita.descripcion || 'Sin descripción' }}
-        </p>
-
-        <div class="link-zoom" *ngIf="cita.link">
-          <a [href]="cita.link" target="_blank">📹 Unirse a Zoom</a>
-        </div>
-      </div>
-
-      <div class="tarjeta-footer">
-        <button class="btn-reprogramar" (click)="reprogramar(cita)">Reprogramar</button>
-        <button class="btn-eliminar" (click)="eliminar(cita)">Cancelar</button>
+      <div *ngIf="appointments.length === 0" class="no-appointments">
+        <i class="fas fa-calendar-times" style="font-size: 32px; color: #d1d5db; margin-bottom: 12px;"></i>
+        <p>No hay citas programadas para la fecha seleccionada.</p>
       </div>
     </div>
-
   </div>
+
+  <!-- FOOTER ACTIONS -->
+  <div class="footer-actions">
+    <button
+      class="btn-reprogramar"
+      [disabled]="!selectedAppointment">
+      <i class="fas fa-calendar-check" style="margin-right: 6px;"></i>
+      Reprogramar
+    </button>
+    <button
+      class="btn-cancel"
+      (click)="cancelAppointment()"
+      [disabled]="!selectedAppointment">
+      <i class="fas fa-trash-alt" style="margin-right: 6px;"></i>
+      Cancelar cita
+    </button>
+  </div>
+
+  <!-- PAGINADOR -->
+  <mat-paginator
+    [length]="totalAppointments"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="pageSizeOptions"
+    (page)="paginateAppointments($event)"
+    showFirstLastButtons
+    aria-label="Select page of appointments"
+    class="custom-paginator"
+  >
+  </mat-paginator>
+
 </div>
