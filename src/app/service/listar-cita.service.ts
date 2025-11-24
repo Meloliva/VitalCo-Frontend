@@ -34,14 +34,6 @@ export class ListarCitaService {
     // El backend espera la fecha en formato YYYY-MM-DD en la URL
     return this.http.get<any[]>(`${this.apiUrl}/listarCitasPorPaciente/${fecha}`, { headers: this.getHeaders() });
   }
-  /**
-   * 2. Actualiza una cita (para reprogramar)
-   */
-  actualizarCita(cita: CitaDTO): Observable<any> {
-    return this.http.put(`${this.apiUrl}/actualizarCita`, cita, {
-      headers: this.getHeaders()
-    }).pipe(catchError(this.handleError));
-  }
 
   /**
    * 3. Elimina una cita (cancelar)
