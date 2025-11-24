@@ -157,7 +157,7 @@ export class ListarCitas implements OnInit {
         avatarInitials: this.initialsFromName(nombre),
         date: c.dia, // Asegúrate que tu backend manda 'dia' o 'fecha'
         time: c.hora,
-        meetingType: c.link ? 'Zoom Meeting' : 'Presencial',
+        meetingType: c.link ? 'Reunión Virtual' : 'Presencial',
         meetingLink: c.link,
         description: c.descripcion || 'Sin descripción',
         raw: c
