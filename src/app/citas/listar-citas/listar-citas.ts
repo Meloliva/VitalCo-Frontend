@@ -192,9 +192,43 @@ export class ListarCitas implements OnInit {
     this.selectedAppointment = app;
   }
 
-  joinMeeting(event: Event, link?: string) {
-    event.stopPropagation(); // Para que no seleccione la tarjeta al dar click en Unirse
-    if (link) window.open(link, '_blank');
+  joinMeeting(event: Event, cita: CitaDTOView) {
+    event.stopPropagation(); // Evita que se seleccione la tarjeta al dar click al botón
+
+    // Si la cita no tiene ID o es presencial (sin link), no hacemos nada
+    if (!cita.raw?.id) {
+      alert('Error: No se puede identificar la cita.');
+      return;
+    }
+
+    // Opcional: Validación visual rápida antes de llamar al backend
+    // Si tuvieras el estado en el DTO, podrías validar aquí si ya pasó o fue cancelada.
+
+    // Llamamos al backend para registrar la asistencia (Cambiar estado a "Aceptada")
+    this.listarCitaService.unirseACita(cita.raw.id).subscribe({
+      next: (linkBackend) => {
+        console.log('Asistencia registrada. Abriendo sala:', linkBackend);
+
+        // Abrir el link que nos devolvió el backend
+        if (linkBackend && linkBackend.startsWith('http')) {
+          window.open(linkBackend, '_blank');
+        } else {
+          // Fallback por si el backend devolvió algo raro o vacío, intentamos usar el del frontend si existe
+          if (cita.meetingLink) {
+            window.open(cita.meetingLink, '_blank');
+          } else {
+            alert('El enlace de la reunión no es válido.');
+          }
+        }
+      },
+      error: (err) => {
+        console.error('Error al unirse:', err);
+        // Manejo de errores basado en tu backend (ej. "Solo puedes unirte a citas pendientes")
+        // Si el backend devuelve el mensaje en el body del error:
+        const mensaje = err.error || 'No se pudo unir a la cita. Verifica que esté programada para hoy.';
+        alert(mensaje);
+      }
+    });
   }
 
   paginateAppointments(event: PageEvent) {
@@ -217,6 +251,40 @@ export class ListarCitas implements OnInit {
         state: { datosCita: this.selectedAppointment.raw }
       });
     }
+  }
+
+  // Valida si estamos en el rango [Inicio - 10min] hasta [Inicio + 5min]
+  esHoraDeUnirse(cita: CitaDTOView): boolean {
+    if (!cita.date || !cita.time) return false;
+
+    const fechaCita = new Date(`${cita.date}T${cita.time}`);
+    const ahora = new Date();
+
+    // Diferencia en minutos
+    const diffMs = fechaCita.getTime() - ahora.getTime();
+    const minutosRestantes = diffMs / (1000 * 60);
+
+    // Lógica inversa para minutos pasados:
+    // minutosRestantes > 0: Faltan X minutos para la cita.
+    // minutosRestantes < 0: Han pasado X minutos desde el inicio.
+
+    // Permitir entrar si faltan 10 min o menos (<= 10)
+    // Y si no han pasado más de 5 minutos (>= -5)
+    return minutosRestantes <= 10 && minutosRestantes >= -5;
+  }
+
+  // Texto dinámico para el tooltip o mensaje
+  obtenerEstadoBoton(cita: CitaDTOView): string {
+    if (!cita.date || !cita.time) return 'Datos inválidos';
+
+    const fechaCita = new Date(`${cita.date}T${cita.time}`);
+    const ahora = new Date();
+    const diffMs = fechaCita.getTime() - ahora.getTime();
+    const minutosRestantes = diffMs / (1000 * 60);
+
+    if (minutosRestantes > 10) return `Habilitado 10 min antes`; // Aún falta mucho
+    if (minutosRestantes < -5) return `Tiempo expirado`;         // Ya pasó la tolerancia
+    return 'Unirse a la sala';                                   // En rango
   }
 
   cancelAppointment() {

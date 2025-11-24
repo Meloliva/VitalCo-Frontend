@@ -58,8 +58,13 @@
           </div>
         </div>
 
-        <button class="btn-join" (click)="joinMeeting($event, app.meetingLink)">
-          Unirse
+        <button class="btn-join"
+                [disabled]="!esHoraDeUnirse(app)"
+                (click)="joinMeeting($event, app)"
+                [title]="obtenerEstadoBoton(app)"> <span *ngIf="esHoraDeUnirse(app)">Unirse</span>
+          <span *ngIf="!esHoraDeUnirse(app) && obtenerEstadoBoton(app).includes('antes')">Espera...</span>
+          <span *ngIf="!esHoraDeUnirse(app) && obtenerEstadoBoton(app).includes('expirado')">Cerrado</span>
+
         </button>
       </div>
     </div>
