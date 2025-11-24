@@ -87,14 +87,17 @@ export class ProgramarCitasNutricionista implements OnInit {
   // Validador para fechas futuras
   futureDateValidator(control: AbstractControl): ValidationErrors | null {
     if (!control.value) return null;
-
-    const selectedDate = new Date(control.value);
-    selectedDate.setHours(0, 0, 0, 0);
-
+    const value = control.value;
+    let selected: Date;
+    if (value instanceof Date) {
+      selected = new Date(value.getFullYear(), value.getMonth(), value.getDate());
+    } else {
+      const parts = value.split("-");
+      selected = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+    }
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    return selectedDate < today ? { pastDate: true } : null;
+    const todayNormalized = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    return selected < todayNormalized ? { pastDate: true } : null;
   }
 
   // ✅ Validar que la hora esté dentro del turno del nutricionista
