@@ -133,7 +133,7 @@ export class ListarCitas implements OnInit {
   }
 
   reprogramar(cita: CitaDTO) {
-    this.router.navigate(['/citas/programar-cita'], { state: { datosCita: cita } });
+    this.router.navigate(['/sistema/citas/programar'], { state: { datosCita: cita } });
   }
 
   eliminar(cita: CitaDTO) {
