@@ -1,273 +1,225 @@
-/* Importamos los íconos (opcional, pero usado en el diseño) */
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+/* AGREGA ESTAS DOS LÍNEAS AL INICIO DE TU styles.css */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 
-/* Iconos de ejemplo */
-.icon-calendar::before {
-  font-family: 'Font Awesome 5 Free';
-  font-weight: 900;
-  content: '\f073';
-  margin-right: 8px;
-}
-.icon-zoom::before {
-  font-family: 'Font Awesome 5 Free';
-  font-weight: 900;
-  content: '\f03d';
-  margin-right: 4px;
-}
-
-/* --- Contenedor Principal --- */
+/* El resto de tu CSS global... */
+html, body { height: 100%; margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* --- LAYOUT PRINCIPAL --- */
 .list-container {
-  padding: 20px;
-  max-width: 900px;
-  margin: 20px auto;
-  font-family: 'Arial', sans-serif;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Ocupa toda la altura disponible */
+  background-color: #f9fafb; /* Gris muy suave de fondo */
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
 }
 
-.form-title {
-  font-size: 28px;
-  color: #333;
-  margin: 0;
-  font-weight: 600;
-}
-
-/* Estilos para el Selector de Fecha (Datepicker) */
+/* --- HEADER --- */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
+  padding: 20px 40px;
+  background-color: white;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.date-header {
-  background-color: #27d079;
-  color: white;
-  padding: 10px 18px;
-  border-radius: 50px;
-  font-size: 15px;
-  font-weight: 600;
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+/* --- ESTILO DE LA PÍLDORA VERDE (DATEPICKER) --- */
+.date-pill {
+  position: relative;
   display: flex;
   align-items: center;
+  gap: 10px;
+  padding: 10px 25px;
+  /* El degradado verde exacto */
+  background: linear-gradient(135deg, #27d079 0%, #20b870 100%);
+  color: white;
+  border-radius: 50px;
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(39, 208, 121, 0.3);
+  transition: transform 0.2s ease;
   user-select: none;
 }
 
-.datepicker-hidden-input {
+.date-pill:hover {
+  transform: translateY(-2px);
+}
+
+/* Ocultar el input real de material pero mantenerlo funcional */
+.hidden-input {
   position: absolute;
-  overflow: hidden;
-  width: 0;
-  height: 0;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   opacity: 0;
-}
-/* Fin Estilos Datepicker */
-
-/* Pestañas (Tabs) */
-.tabs {
-  margin-bottom: 20px;
-}
-
-.tab-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
-  background-color: #f0f0f0;
-  color: #888;
-  border-radius: 8px;
-  margin-right: 10px;
   cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
 }
 
-.tab-button.active {
-  background-color: #e0f8e9;
-  color: #27d079;
+.date-text {
+  font-weight: 600;
+  font-size: 15px;
+  text-transform: capitalize;
 }
 
-/* Lista de Citas */
-.appointment-list {
+.icon-left { font-size: 16px; }
+.icon-right { font-size: 12px; opacity: 0.8; }
+
+/* --- TABS (PESTAÑAS) --- */
+.tabs-container {
+  display: flex;
+  gap: 30px;
+  padding: 0 40px;
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tab-btn {
+  padding: 15px 5px;
+  font-size: 16px;
+  color: #9ca3af;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.tab-btn:hover { color: #6b7280; }
+
+/* Estado Activo */
+.tab-btn.active { color: #27d079; }
+.tab-btn.active .active-indicator {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%; height: 3px;
+  background-color: #27d079;
+  border-radius: 3px 3px 0 0;
+}
+
+/* --- CONTENIDO --- */
+.content-area {
+  flex: 1;
+  padding: 30px 40px;
+  overflow-y: auto; /* Scroll solo en el contenido */
+}
+
+/* Mensaje Vacio */
+.empty-state {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  min-height: 200px; /* Evita que el footer salte si la lista está vacía */
+  align-items: center;
+  margin-top: 50px;
+  color: #ccc;
 }
+.empty-state i { font-size: 48px; margin-bottom: 10px; }
 
+/* --- TARJETA DE CITA --- */
 .appointment-card {
   display: flex;
   align-items: center;
-  gap: 15px;
+  background: white;
+  border-radius: 12px;
   padding: 20px;
-  border: 2px solid #e0e0e0;
-  border-radius: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #e5e7eb;
   cursor: pointer;
+  transition: all 0.2s;
+  gap: 20px;
 }
 
+.appointment-card:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+/* Tarjeta Seleccionada (Borde Verde) */
 .appointment-card.selected {
-  border-color: #3cbe82;
-  box-shadow: 0 0 10px rgba(60, 190, 130, 0.3);
+  border: 1px solid #27d079;
+  background-color: #f0fdf4;
 }
 
-.avatar {
-  min-width: 50px;
-  height: 50px;
+.card-avatar {
+  width: 50px; height: 50px;
   border-radius: 50%;
-  background-color: #e0f8e9;
-  color: #27d079;
+  background: #d1fae5;
+  color: #059669;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   font-weight: bold;
   font-size: 18px;
+  flex-shrink: 0;
 }
 
-.details {
-  flex-grow: 1;
+.card-info { flex: 1; }
+
+.nutri-name {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  color: #111;
 }
 
-.row-1 {
+.meta-row {
   display: flex;
-  align-items: center;
   gap: 15px;
   font-size: 14px;
-  color: #555;
-  margin-bottom: 12px;
+  color: #666;
+  margin-bottom: 8px;
 }
 
-.row-1 h4 {
-  margin: 0;
-  font-size: 18px;
-  color: #333;
-  font-weight: 600;
-}
-
-.row-2 .description-box {
-  background-color: #f5f5f5;
-  padding: 10px 15px;
-  border-radius: 6px;
-  font-size: 14px;
-  color: #444;
+.description-box {
   display: inline-block;
-}
-
-/* Botones de Acción */
-.actions {
-  margin-left: auto;
+  background: #f3f4f6;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 13px;
+  color: #555;
+  border-left: 3px solid #27d079;
 }
 
 .btn-join {
-  background-color: #27d079;
+  background: #27d079;
   color: white;
-  padding: 10px 25px;
   border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
-.footer-actions {
+/* --- FOOTER --- */
+.footer {
+  background: white;
+  padding: 15px 40px;
+  border-top: 1px solid #e5e7eb;
   display: flex;
-  justify-content: flex-end;
-  margin-top: 15px;
-  padding-top: 15px;
-  border-top: 1px solid #f0f0f0;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.btn-cancel {
-  background-color: #e74c3c;
-  color: white;
-  padding: 12px 30px;
+.footer-buttons { display: flex; gap: 10px; }
+
+.btn-footer {
+  padding: 10px 20px;
   border-radius: 8px;
-  font-weight: bold;
-  transition: background-color 0.3s;
   border: none;
-}
-
-.btn-cancel:disabled {
-  background-color: #f8baba;
-  color: #e74c3c;
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-/* 🚨 ESTILOS MEJORADOS PARA MAT-PAGINATOR 🚨 */
-
-/* Contenedor principal del paginador: Alineación y fondo */
-.custom-paginator {
-  display: flex;
-  justify-content: flex-end;
-  padding: 10px 0; /* Espacio interno */
-  margin-top: 15px; /* Espacio de la lista superior */
-  background-color: white; /* Asegura un fondo blanco limpio */
-  border-radius: 0 0 12px 12px;
-}
-
-/* Ocultar el fondo y el borde por defecto de Material */
-.mat-mdc-paginator {
-  background-color: transparent !important;
-  border: none !important;
-  padding: 0;
-}
-
-/* Estilos para el texto y selectores (Items per page) */
-.mat-mdc-paginator-container {
-  /* Alinea el contenido (texto, select, botones) */
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 15px;
-  font-size: 14px;
-  color: #555;
-  min-height: 48px; /* Altura estándar de Material */
+  gap: 8px;
 }
 
-/* Estilos para el campo de selección de tamaño de página */
-.mat-mdc-paginator-page-size-select {
-  /* Hacemos el select más compacto */
-  height: 30px;
-  width: 50px !important;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 0 5px;
-}
+.btn-footer:disabled { background: #eee; color: #aaa; cursor: not-allowed; }
 
-/* Ocultar el underline del campo de Material */
-.mat-mdc-form-field-bottom-align::before,
-.mat-mdc-form-field-bottom-align::after {
-  display: none !important;
-}
-.mat-mdc-form-field-subscript-wrapper {
-  display: none !important;
-}
+.btn-reprogramar { background: #84cc16; } /* Verde Lima */
+.btn-cancelar { background: #ef4444; } /* Rojo */
 
-/* Botones de Navegación (< y >) */
-.mat-mdc-paginator-navigation-button {
-  /* Quitar el color de fondo por defecto */
-  background: none !important;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 30px;
-  height: 30px;
-  padding: 0;
-  min-width: 0;
-  margin: 0 4px;
-  transition: background-color 0.2s;
-}
-
-.mat-mdc-paginator-navigation-button:hover:not(:disabled) {
-  background-color: #f0f0f0 !important;
-}
-
-/* Estilo para los iconos internos (flechas) */
-.mat-mdc-paginator-icon {
-  color: #333; /* Color oscuro para las flechas */
-}
-
-/* Estilo para botones deshabilitados */
-.mat-mdc-paginator-navigation-button:disabled {
-  border-color: #eee;
-  opacity: 0.6;
-}
+/* Ajuste Paginador */
+.custom-paginator { background: transparent; }

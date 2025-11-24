@@ -1,194 +1,236 @@
-import { Component, OnInit, LOCALE_ID, ViewChild, AfterViewInit } from '@angular/core';
-import { CommonModule, DatePipe, registerLocaleData } from '@angular/common';
-import localeEs from '@angular/common/locales/es';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
+import { ListarCitaService } from '../../service/listar-cita.service';
+import { ProgramarCitaService } from '../../service/programar-cita.service';
+import { CitaDTO } from '../../service/nutricionista.service';
+
+// --- Imports de Material y Angular ---
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatNativeDateModule, provideNativeDateAdapter } from '@angular/material/core';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+// IMPORTANTE: Este es el arreglo para el error del DateAdapter
+import { provideNativeDateAdapter } from '@angular/material/core';
 
-registerLocaleData(localeEs);
+import { FormsModule } from '@angular/forms';
+import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 
-// Interfaz para la estructura de datos de una cita
-interface Appointment {
-  id: number;
+export interface CitaDTOView {
+  id?: number;
   patientName: string;
-  time: string;
-  meetingType: 'Zoom Meeting';
-  meetingLink: string;
-  description: string;
   avatarInitials: string;
-  appointmentDate: Date;
+  date: string;
+  time: string;
+  meetingType: string;
+  meetingLink?: string;
+  description?: string;
+  raw?: CitaDTO;
 }
 
 @Component({
   selector: 'app-listar-citas',
+  templateUrl: './listar-citas.html',
+  styleUrls: ['./listar-citas.css'],
   standalone: true,
   imports: [
     CommonModule,
-    DatePipe,
     FormsModule,
     MatFormFieldModule,
     MatInputModule,
     MatDatepickerModule,
-    MatNativeDateModule,
-    MatPaginatorModule
-  ],
-  templateUrl: './listar-citas.html',
-  styleUrls: ['./listar-citas.css'],
-  providers: [
+    MatPaginator,
     DatePipe,
-    { provide: LOCALE_ID, useValue: 'es' },
-    provideNativeDateAdapter()
-  ]
+    TitleCasePipe
+  ],
+  // ESTA LÍNEA ES LA MAGIA QUE SOLUCIONA TU ERROR:
+  providers: [provideNativeDateAdapter()]
 })
 export class ListarCitas implements OnInit {
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  citas: CitaDTO[] = [];
+  nutricionistas: any[] = [];
 
-  // --- Propiedades de Paginación ---
-  public pageSizeOptions: number[] = [3, 5, 10];
-  public pageSize: number = 3;
-  public pageIndex: number = 0;
-  public totalAppointments: number = 0;
+  // Variables de Estado
+  filtroActivo: 'hoy' | 'manana' | 'calendario' = 'hoy';
+  loading: boolean = false;
+  selectedDate: Date = new Date();
+  activeTab: 'hoy' | 'mañana' = 'hoy';
 
-  // --- Propiedades del Componente ---
-  public selectedDate: Date = new Date();
-  public appointments: Appointment[] = [];
-  public paginatedAppointments: Appointment[] = [];
-  public selectedAppointment: Appointment | null = null;
-  public activeTab: 'hoy' | 'mañana' = 'hoy';
+  // Datos para la vista
+  appointments: CitaDTOView[] = [];
+  paginatedAppointments: CitaDTOView[] = [];
+  selectedAppointment: CitaDTOView | null = null; // La cita que seleccionas con click
 
-  private allAppointments: Appointment[] = [];
+  // Paginación
+  pageSizeOptions = [3, 5, 10];
+  pageSize = 3;
+  pageIndex = 0;
+  totalAppointments = 0;
 
-  constructor(public datePipe: DatePipe) {}
+  constructor(
+    private listarCitaService: ListarCitaService,
+    private programarCitaService: ProgramarCitaService,
+    private router: Router,
+    private cd: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
-    this.createMockAppointments();
-    this.loadAppointments(this.selectedDate);
+    // 1. Primero cargamos nutricionistas para tener los nombres
+    this.cargarNutricionistas();
   }
 
-  // 1. Generación de 10 Citas (TODAS ZOOM MEETING)
-  createMockAppointments(): void {
-    const today = new Date();
-    const tomorrow = new Date();
-    tomorrow.setDate(today.getDate() + 1);
+  // --- Lógica de Datos ---
 
-    this.allAppointments = [
-      { id: 1, patientName: 'Fabiana Catillo', time: '10:00', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1000', description: 'Seguimiento escoger-plan Nutricional', avatarInitials: 'FC', appointmentDate: today },
-      { id: 2, patientName: 'Carlos Mendoza', time: '11:30', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1130', description: 'Primera consulta y evaluación', avatarInitials: 'CM', appointmentDate: today },
-      { id: 3, patientName: 'Ana Torres', time: '14:00', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1400', description: 'Revisión de resultados', avatarInitials: 'AT', appointmentDate: today },
-      { id: 4, patientName: 'Roberto Gómez', time: '15:15', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1515', description: 'Control trimestral de peso', avatarInitials: 'RG', appointmentDate: today },
-      { id: 5, patientName: 'Elena Vílchez', time: '16:45', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1645', description: 'Ajuste de dieta deportiva', avatarInitials: 'EV', appointmentDate: today },
-
-      { id: 6, patientName: 'Luis Flores', time: '09:00', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/0900', description: 'Introducción al ayuno intermitente', avatarInitials: 'LF', appointmentDate: tomorrow },
-      { id: 7, patientName: 'Sara Díaz', time: '10:30', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1030', description: 'Mediciones y escoger-plan inicial', avatarInitials: 'SD', appointmentDate: tomorrow },
-      { id: 8, patientName: 'Miguel Ramos', time: '12:00', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1200', description: 'Revisión de diario alimenticio', avatarInitials: 'MR', appointmentDate: tomorrow },
-      { id: 9, patientName: 'Claudia Soto', time: '15:00', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1500', description: 'Cita de seguimiento general', avatarInitials: 'CS', appointmentDate: tomorrow },
-      { id: 10, patientName: 'Javier Pérez', time: '17:30', meetingType: 'Zoom Meeting', meetingLink: 'https://zoom.us/j/1730', description: 'Optimización de ingesta proteica', avatarInitials: 'JP', appointmentDate: tomorrow }
-    ];
-  }
-
-  // Actualiza la pestaña activa basándose en la fecha seleccionada
-  updateTabStatus(date: Date): void {
-    const todayString = this.normalizeDate(new Date());
-    const tomorrow = new Date();
-    tomorrow.setDate(new Date().getDate() + 1);
-    const tomorrowString = this.normalizeDate(tomorrow);
-    const selectedDateString = this.normalizeDate(date);
-
-    if (selectedDateString === todayString) {
-      this.activeTab = 'hoy';
-    } else if (selectedDateString === tomorrowString) {
-      this.activeTab = 'mañana';
-    } else {
-      // Si seleccionó otra fecha, ponemos 'hoy' como pestaña de fallback (o null)
-      this.activeTab = 'hoy';
-    }
-  }
-
-  // 2. Lógica de Filtrado y Carga de Citas
-  normalizeDate(date: Date): string {
-    return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
-  }
-
-  loadAppointments(date: Date): void {
-    const targetDateString = this.normalizeDate(date);
-
-    // 1. FILTRAR
-    this.appointments = this.allAppointments.filter(app => {
-      return this.normalizeDate(app.appointmentDate) === targetDateString;
+  cargarNutricionistas() {
+    this.programarCitaService.listarNutricionistas().subscribe({
+      next: (data) => {
+        this.nutricionistas = data;
+        this.cargarHoy(); // Una vez listos, cargamos las citas
+      },
+      error: () => this.cargarHoy()
     });
+  }
 
-    this.appointments.sort((a, b) => (a.time > b.time) ? 1 : -1);
+  getNombreNutricionista(id: number): string {
+    if (!this.nutricionistas.length) return 'Cargando...';
+    const nutri = this.nutricionistas.find(n => n.id === id);
+    return (nutri && nutri.idusuario) ? `${nutri.idusuario.nombre} ${nutri.idusuario.apellido}` : 'Nutricionista';
+  }
 
-    // 🚨 Llamada a la función que causaba el error 🚨
-    this.updateTabStatus(date); // ¡Ahora existe!
+  private initialsFromName(name: string): string {
+    if (!name) return 'NP';
+    // Toma la primera letra de las dos primeras palabras
+    return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+  }
 
-    // 2. ACTUALIZAR PAGINACIÓN
+  // --- Cargas de Citas ---
+
+  cargarHoy() {
+    this.setLoadingState('hoy');
+    this.listarCitaService.listarMisCitasHoy().subscribe(this.processDataObserver());
+  }
+
+  cargarManana() {
+    this.setLoadingState('mañana', 'manana');
+    this.listarCitaService.listarMisCitasManana().subscribe(this.processDataObserver());
+  }
+
+  cargarPorFecha(fechaStr: string) {
+    this.loading = true;
+    this.filtroActivo = 'calendario';
+    this.citas = [];
+    this.listarCitaService.listarPorFecha(fechaStr).subscribe(this.processDataObserver());
+  }
+
+  private setLoadingState(tab: 'hoy' | 'mañana', filtro: any = 'hoy') {
+    this.loading = true;
+    this.activeTab = tab;
+    this.filtroActivo = filtro;
+    this.citas = [];
+    this.selectedAppointment = null; // Limpiar selección al cambiar pestaña
+  }
+
+  private processDataObserver() {
+    return {
+      next: (data: any[]) => {
+        this.citas = data;
+        this.buildAppointments();
+        this.loading = false;
+        this.cd.detectChanges();
+      },
+      error: (e: any) => {
+        console.error(e);
+        this.loading = false;
+        this.cd.detectChanges();
+      }
+    };
+  }
+
+  // --- Construcción de la Vista (DTOView) ---
+
+  private buildAppointments() {
+    this.appointments = this.citas.map(c => {
+      const nombre = this.getNombreNutricionista(c.idNutricionista);
+      return {
+        id: c.id,
+        patientName: nombre,
+        avatarInitials: this.initialsFromName(nombre),
+        date: c.dia, // Asegúrate que tu backend manda 'dia' o 'fecha'
+        time: c.hora,
+        meetingType: c.link ? 'Reunión Virtual' : 'Presencial',
+        meetingLink: c.link,
+        description: c.descripcion || 'Sin descripción',
+        raw: c
+      };
+    });
     this.totalAppointments = this.appointments.length;
     this.pageIndex = 0;
-    this.paginateAppointments();
-
-    this.selectedAppointment = null;
+    this.updatePagination();
   }
 
-  // 3. Lógica para la Paginación
-  paginateAppointments(event?: PageEvent): void {
-    if (event) {
-      this.pageSize = event.pageSize;
-      this.pageIndex = event.pageIndex;
-    }
+  // --- Eventos de la UI ---
 
+  onDateChange(event: any) {
+    const d = event.value; // Viene del Datepicker
+    if (!d) return;
+    this.selectedDate = d;
+
+    // Convertir a YYYY-MM-DD local
+    const year = d.getFullYear();
+    const month = ('0' + (d.getMonth() + 1)).slice(-2);
+    const day = ('0' + d.getDate()).slice(-2);
+    this.cargarPorFecha(`${year}-${month}-${day}`);
+  }
+
+  changeTab(tab: 'hoy' | 'mañana') {
+    if (tab === 'hoy') this.cargarHoy();
+    else this.cargarManana();
+  }
+
+  // AL HACER CLICK EN UNA TARJETA
+  selectAppointment(app: CitaDTOView) {
+    this.selectedAppointment = app;
+  }
+
+  joinMeeting(event: Event, link?: string) {
+    event.stopPropagation(); // Para que no seleccione la tarjeta al dar click en Unirse
+    if (link) window.open(link, '_blank');
+  }
+
+  paginateAppointments(event: PageEvent) {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.updatePagination();
+  }
+
+  private updatePagination() {
     const start = this.pageIndex * this.pageSize;
     const end = start + this.pageSize;
-
     this.paginatedAppointments = this.appointments.slice(start, end);
   }
 
-  // 4. Manejo de Eventos del Datepicker y Pestañas
-  onDateChange(event: any): void {
-    this.loadAppointments(this.selectedDate);
-  }
+  // --- Botones del Footer ---
 
-  changeTab(tab: 'hoy' | 'mañana'): void {
-    this.activeTab = tab;
-    let newDate = new Date();
-
-    if (tab === 'mañana') {
-      newDate.setDate(new Date().getDate() + 1);
-    }
-    this.selectedDate = newDate;
-    this.loadAppointments(this.selectedDate);
-  }
-
-  // 5. Lógica de Selección y Cancelación
-  selectAppointment(appointment: Appointment): void {
-    if (this.selectedAppointment?.id === appointment.id) {
-      this.selectedAppointment = null;
-    } else {
-      this.selectedAppointment = appointment;
+  reprogramar() {
+    if (this.selectedAppointment?.raw) {
+      this.router.navigate(['/sistema/citas/programar'], {
+        state: { datosCita: this.selectedAppointment.raw }
+      });
     }
   }
 
-  joinMeeting(event: Event, link: string): void {
-    event.stopPropagation();
-    window.open(link, '_blank');
-  }
+  cancelAppointment() {
+    if (!this.selectedAppointment?.raw?.id) return;
 
-  cancelAppointment(): void {
-    if (!this.selectedAppointment) return;
+    if (confirm('¿Seguro que deseas cancelar esta cita?')) {
+      this.listarCitaService.eliminarCita(this.selectedAppointment.raw.id).subscribe(() => {
+        // Recargar la vista actual
+        if (this.filtroActivo === 'hoy') this.cargarHoy();
+        else if (this.filtroActivo === 'manana') this.cargarManana();
+        else this.buildAppointments();
 
-    const patientName = this.selectedAppointment.patientName;
-    if (confirm(`¿Estás seguro de que deseas cancelar la cita con ${patientName}?`)) {
-
-      this.allAppointments = this.allAppointments.filter(
-        app => app.id !== this.selectedAppointment!.id
-      );
-
-      this.loadAppointments(this.selectedDate);
-      alert(`Cita con ${patientName} cancelada.`);
+        this.selectedAppointment = null;
+      });
     }
   }
 }
