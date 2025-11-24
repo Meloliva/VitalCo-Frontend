@@ -1,16 +1,15 @@
-// Archivo: `src/app/citas/listar-citas/listar-citas.ts`
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { ListarCitaService } from '../../service/listar-cita.service';
 import { ProgramarCitaService } from '../../service/programar-cita.service';
 import { CitaDTO } from '../../service/nutricionista.service';
 
-// --- IMPORTS DE MATERIAL Y ANGULAR ---
-import { MatPaginator } from '@angular/material/paginator';
-import { MatFormField } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
-import { MatDatepicker, MatDatepickerInput } from '@angular/material/datepicker';
-// 1. IMPORTAR EL ADAPTADOR DE FECHAS AQUÍ:
+// --- Imports de Material y Angular ---
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+// IMPORTANTE: Este es el arreglo para el error del DateAdapter
 import { provideNativeDateAdapter } from '@angular/material/core';
 
 import { FormsModule } from '@angular/forms';
@@ -31,20 +30,19 @@ export interface CitaDTOView {
 @Component({
   selector: 'app-listar-citas',
   templateUrl: './listar-citas.html',
-  standalone: true, // Asegúrate de que sea standalone si usas imports
-  imports: [
-    MatPaginator,
-    MatFormField,
-    MatInput,
-    MatDatepickerInput,
-    FormsModule,
-    DatePipe,
-    MatDatepicker,
-    TitleCasePipe,
-    CommonModule
-  ],
   styleUrls: ['./listar-citas.css'],
-  // 2. AGREGAR ESTO PARA SOLUCIONAR EL ERROR:
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatPaginator,
+    DatePipe,
+    TitleCasePipe
+  ],
+  // ESTA LÍNEA ES LA MAGIA QUE SOLUCIONA TU ERROR:
   providers: [provideNativeDateAdapter()]
 })
 export class ListarCitas implements OnInit {
@@ -52,15 +50,18 @@ export class ListarCitas implements OnInit {
   citas: CitaDTO[] = [];
   nutricionistas: any[] = [];
 
+  // Variables de Estado
   filtroActivo: 'hoy' | 'manana' | 'calendario' = 'hoy';
   loading: boolean = false;
-
   selectedDate: Date = new Date();
   activeTab: 'hoy' | 'mañana' = 'hoy';
+
+  // Datos para la vista
   appointments: CitaDTOView[] = [];
   paginatedAppointments: CitaDTOView[] = [];
-  selectedAppointment: CitaDTOView | null = null;
+  selectedAppointment: CitaDTOView | null = null; // La cita que seleccionas con click
 
+  // Paginación
   pageSizeOptions = [3, 5, 10];
   pageSize = 3;
   pageIndex = 0;
@@ -74,191 +75,161 @@ export class ListarCitas implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // 1. Primero cargamos nutricionistas para tener los nombres
     this.cargarNutricionistas();
   }
+
+  // --- Lógica de Datos ---
 
   cargarNutricionistas() {
     this.programarCitaService.listarNutricionistas().subscribe({
       next: (data) => {
         this.nutricionistas = data;
-        this.cargarHoy();
+        this.cargarHoy(); // Una vez listos, cargamos las citas
       },
-      error: (e) => {
-        console.error('Error cargando nutricionistas', e);
-        this.cargarHoy();
-      }
+      error: () => this.cargarHoy()
     });
   }
 
   getNombreNutricionista(id: number): string {
     if (!this.nutricionistas.length) return 'Cargando...';
     const nutri = this.nutricionistas.find(n => n.id === id);
-    if (nutri && nutri.idusuario) {
-      return `${nutri.idusuario.nombre} ${nutri.idusuario.apellido}`;
-    }
-    return 'Nutricionista no encontrado';
+    return (nutri && nutri.idusuario) ? `${nutri.idusuario.nombre} ${nutri.idusuario.apellido}` : 'Nutricionista';
   }
 
   private initialsFromName(name: string): string {
-    if (!name) return '?';
-    return name.split(' ').map(p => p[0]).slice(0,2).join('').toUpperCase();
+    if (!name) return 'NP';
+    // Toma la primera letra de las dos primeras palabras
+    return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
   }
 
+  // --- Cargas de Citas ---
+
   cargarHoy() {
-    this.loading = true;
-    this.filtroActivo = 'hoy';
-    this.activeTab = 'hoy';
-    this.citas = [];
-    this.listarCitaService.listarMisCitasHoy().subscribe({
-      next: (data) => {
-        this.citas = data;
-        this.buildAppointments();
-        this.loading = false;
-        this.cd.detectChanges();
-      },
-      error: (e) => {
-        console.error(e);
-        this.loading = false;
-        this.cd.detectChanges();
-      }
-    });
+    this.setLoadingState('hoy');
+    this.listarCitaService.listarMisCitasHoy().subscribe(this.processDataObserver());
   }
 
   cargarManana() {
-    this.loading = true;
-    this.filtroActivo = 'manana';
-    this.activeTab = 'mañana';
-    this.citas = [];
-    this.listarCitaService.listarMisCitasManana().subscribe({
-      next: (data) => {
-        this.citas = data;
-        this.buildAppointments();
-        this.loading = false;
-        this.cd.detectChanges();
-      },
-      error: (e) => {
-        console.error(e);
-        this.loading = false;
-        this.cd.detectChanges();
-      }
-    });
+    this.setLoadingState('mañana', 'manana');
+    this.listarCitaService.listarMisCitasManana().subscribe(this.processDataObserver());
   }
 
-  cargarPorFecha(event: any) {
-    const fecha = event?.target?.value;
-    if (!fecha) return;
+  cargarPorFecha(fechaStr: string) {
     this.loading = true;
     this.filtroActivo = 'calendario';
     this.citas = [];
-    this.listarCitaService.listarPorFecha(fecha).subscribe({
-      next: (data) => {
+    this.listarCitaService.listarPorFecha(fechaStr).subscribe(this.processDataObserver());
+  }
+
+  private setLoadingState(tab: 'hoy' | 'mañana', filtro: any = 'hoy') {
+    this.loading = true;
+    this.activeTab = tab;
+    this.filtroActivo = filtro;
+    this.citas = [];
+    this.selectedAppointment = null; // Limpiar selección al cambiar pestaña
+  }
+
+  private processDataObserver() {
+    return {
+      next: (data: any[]) => {
         this.citas = data;
         this.buildAppointments();
         this.loading = false;
         this.cd.detectChanges();
       },
-      error: (e) => {
+      error: (e: any) => {
         console.error(e);
         this.loading = false;
         this.cd.detectChanges();
       }
-    });
+    };
   }
+
+  // --- Construcción de la Vista (DTOView) ---
 
   private buildAppointments() {
     this.appointments = this.citas.map(c => {
-      const nombre = this.getNombreNutricionista(c.idNutricionista) || 'Paciente';
+      const nombre = this.getNombreNutricionista(c.idNutricionista);
       return {
         id: c.id,
         patientName: nombre,
         avatarInitials: this.initialsFromName(nombre),
-        date: c.dia,
+        date: c.dia, // Asegúrate que tu backend manda 'dia' o 'fecha'
         time: c.hora,
-        meetingType: c.link ? 'Reunión Virtual' : 'Presencial',
+        meetingType: c.link ? 'Zoom Meeting' : 'Presencial',
         meetingLink: c.link,
-        description: c.descripcion,
+        description: c.descripcion || 'Sin descripción',
         raw: c
-      } as CitaDTOView;
+      };
     });
     this.totalAppointments = this.appointments.length;
     this.pageIndex = 0;
     this.updatePagination();
   }
 
+  // --- Eventos de la UI ---
+
   onDateChange(event: any) {
-    const d = event?.value || this.selectedDate;
+    const d = event.value; // Viene del Datepicker
     if (!d) return;
+    this.selectedDate = d;
 
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    const fechaStr = `${yyyy}-${mm}-${dd}`;
-
-    this.cargarPorFecha({ target: { value: fechaStr } });
+    // Convertir a YYYY-MM-DD local
+    const year = d.getFullYear();
+    const month = ('0' + (d.getMonth() + 1)).slice(-2);
+    const day = ('0' + d.getDate()).slice(-2);
+    this.cargarPorFecha(`${year}-${month}-${day}`);
   }
 
   changeTab(tab: 'hoy' | 'mañana') {
-    this.activeTab = tab;
     if (tab === 'hoy') this.cargarHoy();
     else this.cargarManana();
   }
 
+  // AL HACER CLICK EN UNA TARJETA
   selectAppointment(app: CitaDTOView) {
     this.selectedAppointment = app;
   }
 
   joinMeeting(event: Event, link?: string) {
-    event.stopPropagation();
-    if (link) {
-      window.open(link, '_blank');
-    }
+    event.stopPropagation(); // Para que no seleccione la tarjeta al dar click en Unirse
+    if (link) window.open(link, '_blank');
   }
 
-  cancelAppointment() {
-    if (!this.selectedAppointment) return;
-    if (!confirm('¿Seguro que deseas cancelar esta cita?')) return;
-    const id = this.selectedAppointment.raw?.id;
-    if (!id) return;
-    this.listarCitaService.eliminarCita(id).subscribe(() => {
-      if (this.filtroActivo === 'hoy') this.cargarHoy();
-      else if (this.filtroActivo === 'manana') this.cargarManana();
-      else {
-        const d = this.selectedDate;
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const dd = String(d.getDate()).padStart(2, '0');
-        this.cargarPorFecha({ target: { value: `${yyyy}-${mm}-${dd}` } });
-      }
-      this.selectedAppointment = null;
-    });
-  }
-
-  paginateAppointments(event: any) {
-    this.pageIndex = event.pageIndex ?? this.pageIndex;
-    this.pageSize = event.pageSize ?? this.pageSize;
+  paginateAppointments(event: PageEvent) {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
     this.updatePagination();
   }
 
   private updatePagination() {
-    this.totalAppointments = this.appointments.length;
     const start = this.pageIndex * this.pageSize;
     const end = start + this.pageSize;
     this.paginatedAppointments = this.appointments.slice(start, end);
   }
 
-  reprogramar(citaView: CitaDTOView) {
-    const cita = citaView?.raw;
-    if (cita) this.router.navigate(['/sistema/citas/programar'], { state: { datosCita: cita } });
+  // --- Botones del Footer ---
+
+  reprogramar() {
+    if (this.selectedAppointment?.raw) {
+      this.router.navigate(['/sistema/citas/programar'], {
+        state: { datosCita: this.selectedAppointment.raw }
+      });
+    }
   }
 
-  eliminar(citaView: CitaDTOView) {
-    const cita = citaView?.raw;
-    if (!cita?.id) return;
+  cancelAppointment() {
+    if (!this.selectedAppointment?.raw?.id) return;
+
     if (confirm('¿Seguro que deseas cancelar esta cita?')) {
-      this.listarCitaService.eliminarCita(cita.id).subscribe(() => {
+      this.listarCitaService.eliminarCita(this.selectedAppointment.raw.id).subscribe(() => {
+        // Recargar la vista actual
         if (this.filtroActivo === 'hoy') this.cargarHoy();
         else if (this.filtroActivo === 'manana') this.cargarManana();
         else this.buildAppointments();
+
+        this.selectedAppointment = null;
       });
     }
   }

@@ -1,436 +1,269 @@
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 
-/* --- Contenedor Principal --- */
+/* --- Layout General --- */
 .list-container {
-  padding: 0;
-  max-width: 100%;
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f9fafb;
-  border-radius: 0;
-  box-shadow: none;
   display: flex;
   flex-direction: column;
   height: 100%;
+  background-color: #f9fafb; /* Fondo gris muy suave */
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden; /* Evita scroll doble */
 }
 
-.form-title {
-  font-size: 28px;
-  color: #1f2937;
-  margin: 0;
-  font-weight: 700;
-}
-
-/* --- Header Principal --- */
+/* --- Header --- */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 28px;
-  background-color: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
-  gap: 20px;
+  padding: 20px 30px;
+  background-color: white;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.date-header {
-  background: linear-gradient(135deg, #27d079 0%, #20b870 100%);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 50px;
-  font-size: 14px;
-  font-weight: 600;
+.page-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+/* Selector de Fecha (Píldora con Gradiente) */
+.date-pill {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  padding: 10px 20px;
+  /* Gradiente verde como en tu imagen */
+  background: linear-gradient(135deg, #27d079 0%, #20b870 100%);
+  color: white;
+  border-radius: 50px;
   cursor: pointer;
+  box-shadow: 0 4px 10px rgba(39, 208, 121, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
   user-select: none;
-  box-shadow: 0 4px 12px rgba(39, 208, 121, 0.25);
-  transition: all 0.3s ease;
 }
 
-.date-header:hover {
+.date-pill:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(39, 208, 121, 0.35);
+  box-shadow: 0 6px 15px rgba(39, 208, 121, 0.35);
 }
 
-.datepicker-hidden-input {
-  position: absolute;
-  overflow: hidden;
-  width: 0;
-  height: 0;
-  opacity: 0;
+.date-text {
+  font-weight: 600;
+  font-size: 14px;
 }
 
-/* --- Pestañas (Tabs) --- */
-.tabs {
-  padding: 0 28px;
-  background-color: #ffffff;
+.hidden-input {
+  position: absolute; top: 0; left: 0; width: 0; height: 0; opacity: 0;
+}
+
+/* --- Tabs --- */
+.tabs-container {
   display: flex;
-  gap: 8px;
+  gap: 20px;
+  padding: 0 30px;
+  background-color: white;
   border-bottom: 1px solid #e5e7eb;
 }
 
-.tab-button {
-  padding: 14px 20px;
-  font-size: 15px;
-  font-weight: 600;
+.tab-btn {
+  background: none;
   border: none;
-  background-color: transparent;
-  color: #9ca3af;
-  border-radius: 0;
-  border-bottom: 3px solid transparent;
-  margin: 0;
+  padding: 16px 5px;
+  font-size: 15px;
+  color: #9ca3af; /* Gris cuando inactivo */
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  position: relative;
+  transition: color 0.3s;
 }
 
-.tab-button:hover {
+.tab-btn:hover {
   color: #6b7280;
 }
 
-.tab-button.active {
-  color: #27d079;
-  border-bottom-color: #27d079;
-  background-color: transparent;
+.tab-btn.active {
+  color: #27d079; /* Verde activo */
 }
 
-/* --- Contenido Principal --- */
-.main-content {
+.active-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #27d079;
+  border-radius: 3px 3px 0 0;
+}
+
+/* --- Contenido --- */
+.content-area {
   flex: 1;
-  padding: 24px 28px;
-  background-color: #f9fafb;
+  padding: 24px 30px;
   overflow-y: auto;
 }
 
-/* --- Lista de Citas --- */
-.appointment-list {
+.empty-state {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  min-height: 200px;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  margin-top: 50px;
+  padding: 40px;
+  border: 2px dashed #e5e7eb;
+  border-radius: 12px;
 }
+.empty-state i { font-size: 40px; margin-bottom: 10px; }
 
+/* --- Tarjeta de Cita --- */
 .appointment-card {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 18px 20px;
+  background: white;
+  border-radius: 12px;
+  padding: 18px 24px;
+  margin-bottom: 16px;
   border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  background-color: #ffffff;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  gap: 20px;
 }
 
 .appointment-card:hover {
   border-color: #d1d5db;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
+/* Estado SELECCIONADO */
 .appointment-card.selected {
   border-color: #27d079;
-  background-color: #f0fdf4;
-  box-shadow: 0 0 0 3px rgba(39, 208, 121, 0.1);
+  background-color: #f0fdf4; /* Verde muy clarito */
+  box-shadow: 0 0 0 1px #27d079 inset;
 }
 
-/* --- Avatar --- */
-.avatar {
-  min-width: 50px;
+/* Avatar */
+.card-avatar {
+  width: 50px;
   height: 50px;
   border-radius: 50%;
   background: linear-gradient(135deg, #c7f0d8 0%, #a6f3d0 100%);
   color: #059669;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   font-weight: 700;
   font-size: 18px;
   flex-shrink: 0;
 }
 
-/* --- Detalles --- */
-.details {
-  flex-grow: 1;
+/* Info Central */
+.card-info {
+  flex: 1;
 }
 
-.row-1 {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 10px;
-}
-
-.row-1 h4 {
-  margin: 0;
+.nutri-name {
+  margin: 0 0 6px 0;
   font-size: 16px;
   font-weight: 700;
   color: #1f2937;
 }
 
-.appointment-time {
+.meta-row {
   display: flex;
-  align-items: center;
-  gap: 4px;
+  gap: 15px;
+  margin-bottom: 10px;
   font-size: 14px;
   color: #6b7280;
   font-weight: 500;
 }
 
-.appointment-time::before {
-  content: '🕐';
-  font-size: 14px;
-}
+.meta-item i { margin-right: 5px; }
 
-.meeting-type {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 14px;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-.meeting-type::before {
-  content: '📹';
-  font-size: 14px;
-}
-
-.row-2 .description-box {
+.description-box {
+  display: inline-block;
   background-color: #f3f4f6;
-  padding: 8px 12px;
+  padding: 6px 12px;
   border-radius: 6px;
   font-size: 13px;
   color: #4b5563;
-  display: inline-block;
   border-left: 3px solid #27d079;
 }
 
-/* --- Botones de Acción --- */
-.actions {
-  margin-left: auto;
-  flex-shrink: 0;
-}
-
+/* Botón Unirse */
 .btn-join {
   background: linear-gradient(135deg, #27d079 0%, #20b870 100%);
   color: white;
-  padding: 10px 24px;
   border: none;
+  padding: 10px 24px;
   border-radius: 8px;
-  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(39, 208, 121, 0.2);
+  box-shadow: 0 2px 5px rgba(39, 208, 121, 0.2);
+  transition: all 0.2s;
 }
 
 .btn-join:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(39, 208, 121, 0.3);
+  box-shadow: 0 4px 10px rgba(39, 208, 121, 0.3);
 }
 
-.btn-join:active {
-  transform: translateY(0);
-}
-
-/* --- Mensaje sin citas --- */
-.no-appointments {
-  padding: 40px 20px;
-  text-align: center;
-  color: #9ca3af;
-  font-size: 15px;
-  background-color: #ffffff;
-  border: 1px dashed #e5e7eb;
-  border-radius: 8px;
-}
-
-/* --- Footer Actions --- */
-.footer-actions {
+/* --- Footer --- */
+.footer {
+  background-color: white;
+  padding: 16px 30px;
+  border-top: 1px solid #e5e7eb;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 28px;
-  background-color: #ffffff;
-  border-top: 1px solid #e5e7eb;
-  gap: 12px;
   flex-wrap: wrap;
+  gap: 15px;
+}
+
+.footer-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-footer {
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.btn-footer:disabled {
+  background: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 .btn-reprogramar {
-  background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%);
-  color: white;
-  padding: 12px 28px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(132, 204, 22, 0.2);
+  background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%); /* Verde Lima */
+  box-shadow: 0 2px 5px rgba(132, 204, 22, 0.2);
 }
 
-.btn-reprogramar:hover {
+.btn-cancelar {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); /* Rojo */
+  box-shadow: 0 2px 5px rgba(239, 68, 68, 0.2);
+}
+
+.btn-reprogramar:hover:not(:disabled),
+.btn-cancelar:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(132, 204, 22, 0.3);
+  filter: brightness(1.05);
 }
 
-.btn-cancel {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: white;
-  padding: 12px 28px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
-}
-
-.btn-cancel:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
-
-.btn-cancel:disabled {
-  background: #fecaca;
-  color: #991b1b;
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* --- Paginador --- */
+/* Estilos Paginador */
 .custom-paginator {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 16px 28px;
-  background-color: #ffffff;
-  border-top: 1px solid #e5e7eb;
-  gap: 8px;
-}
-
-.mat-mdc-paginator {
-  background-color: transparent !important;
-  border: none !important;
-  padding: 0 !important;
-}
-
-.mat-mdc-paginator-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  font-size: 14px;
-  color: #6b7280;
-  min-height: auto;
-  padding: 0 !important;
-}
-
-.mat-mdc-paginator-page-size {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.mat-mdc-paginator-page-size-label {
-  font-size: 13px;
-  color: #6b7280;
-  margin: 0;
-}
-
-.mat-mdc-paginator-page-size-select {
-  height: 32px;
-  width: 50px !important;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  padding: 0 8px !important;
-  font-size: 13px;
-  background-color: #ffffff;
-  cursor: pointer;
-}
-
-.mat-mdc-paginator-range-label {
-  font-size: 13px;
-  color: #6b7280;
-  margin: 0 16px;
-}
-
-.mat-mdc-paginator-navigation-button {
-  background: transparent !important;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  width: 32px !important;
-  height: 32px !important;
-  padding: 0 !important;
-  min-width: 0 !important;
-  margin: 0 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.mat-mdc-paginator-navigation-button:hover:not(:disabled) {
-  background-color: #f3f4f6 !important;
-  border-color: #9ca3af;
-  color: #1f2937;
-}
-
-.mat-mdc-paginator-navigation-button:disabled {
-  border-color: #e5e7eb;
-  color: #d1d5db;
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.mat-mdc-paginator-icon {
-  color: currentColor;
-}
-
-/* --- Responsive --- */
-@media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 16px 20px;
-  }
-
-  .date-header {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .appointment-card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .actions {
-    margin-left: 0;
-    width: 100%;
-  }
-
-  .btn-join {
-    width: 100%;
-  }
-
-  .row-1 {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .footer-actions {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .btn-reprogramar,
-  .btn-cancel {
-    width: 100%;
-  }
+  background: transparent;
 }

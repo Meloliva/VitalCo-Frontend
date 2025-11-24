@@ -1,110 +1,95 @@
 <div class="list-container">
 
-  <!-- HEADER -->
   <div class="header">
-    <h1 class="form-title">Citas</h1>
+    <h1 class="page-title">Citas</h1>
 
-    <div class="date-header" (click)="picker.open()">
-      <mat-form-field class="datepicker-hidden-input">
-        <input
-          matInput
-          [matDatepicker]="picker"
-          [(ngModel)]="selectedDate"
-          (dateChange)="onDateChange($event)"
-        />
-        <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>
+    <div class="date-pill" (click)="picker.open()">
+      <input matInput [matDatepicker]="picker" class="hidden-input"
+             [(ngModel)]="selectedDate" (dateChange)="onDateChange($event)">
+      <mat-datepicker #picker></mat-datepicker>
 
-      <i class="fas fa-calendar-alt"></i>
-      {{ selectedDate | date:'EEEE, d \'de\' MMMM \'de\' yyyy' | titlecase }}
+      <i class="fas fa-calendar-alt icon"></i>
+      <span class="date-text">
+        {{ selectedDate | date:'EEEE, d \'de\' MMMM \'de\' yyyy' | titlecase }}
+      </span>
+      <i class="fas fa-chevron-down arrow"></i>
     </div>
   </div>
 
-  <!-- TABS -->
-  <div class="tabs">
-    <button
-      class="tab-button"
-      [class.active]="activeTab === 'hoy'"
-      (click)="changeTab('hoy')">
+  <div class="tabs-container">
+    <button class="tab-btn" [class.active]="activeTab === 'hoy'" (click)="changeTab('hoy')">
       Hoy
+      <div class="active-indicator" *ngIf="activeTab === 'hoy'"></div>
     </button>
-    <button
-      class="tab-button"
-      [class.active]="activeTab === 'mañana'"
-      (click)="changeTab('mañana')">
+
+    <button class="tab-btn" [class.active]="activeTab === 'mañana'" (click)="changeTab('mañana')">
       Mañana
+      <div class="active-indicator" *ngIf="activeTab === 'mañana'"></div>
     </button>
   </div>
 
-  <!-- CONTENIDO PRINCIPAL -->
-  <div class="main-content">
-    <div class="appointment-list">
-      <div
-        *ngFor="let app of paginatedAppointments"
-        class="appointment-card"
-        (click)="selectAppointment(app)"
-        [class.selected]="app.id === selectedAppointment?.id">
+  <div class="content-area">
 
-        <div class="avatar">
+    <div *ngIf="!loading && appointments.length === 0" class="empty-state">
+      <i class="fas fa-calendar-day"></i>
+      <p>No hay citas programadas para esta fecha.</p>
+    </div>
+
+    <div class="cards-list">
+      <div *ngFor="let app of paginatedAppointments"
+           class="appointment-card"
+           [class.selected]="selectedAppointment?.id === app.id"
+           (click)="selectAppointment(app)">
+
+        <div class="card-avatar">
           {{ app.avatarInitials }}
         </div>
 
-        <div class="details">
-          <div class="row-1">
-            <h4>{{ app.patientName }}</h4>
-            <span class="appointment-time">{{ app.time }}</span>
-            <span class="meeting-type">{{ app.meetingType }}</span>
+        <div class="card-info">
+          <h3 class="nutri-name">{{ app.patientName }}</h3>
+
+          <div class="meta-row">
+            <span class="meta-item"><i class="far fa-clock"></i> {{ app.time }}</span>
+            <span class="meta-item"><i class="fas fa-video"></i> {{ app.meetingType }}</span>
           </div>
-          <div class="row-2">
-            <div class="description-box">
-              {{ app.description }}
-            </div>
+
+          <div class="description-box">
+            {{ app.description }}
           </div>
         </div>
 
-        <div class="actions">
-          <button
-            class="btn-join"
-            (click)="joinMeeting($event, app.meetingLink)">
+        <div class="card-action">
+          <button class="btn-join" (click)="joinMeeting($event, app.meetingLink)">
             Unirse
           </button>
         </div>
       </div>
-
-      <div *ngIf="appointments.length === 0" class="no-appointments">
-        <i class="fas fa-calendar-times" style="font-size: 32px; color: #d1d5db; margin-bottom: 12px;"></i>
-        <p>No hay citas programadas para la fecha seleccionada.</p>
-      </div>
     </div>
   </div>
 
-  <!-- FOOTER ACTIONS -->
-  <div class="footer-actions">
-    <button
-      class="btn-reprogramar"
-      [disabled]="!selectedAppointment">
-      <i class="fas fa-calendar-check" style="margin-right: 6px;"></i>
-      Reprogramar
-    </button>
-    <button
-      class="btn-cancel"
-      (click)="cancelAppointment()"
-      [disabled]="!selectedAppointment">
-      <i class="fas fa-trash-alt" style="margin-right: 6px;"></i>
-      Cancelar cita
-    </button>
-  </div>
+  <div class="footer">
 
-  <!-- PAGINADOR -->
-  <mat-paginator
-    [length]="totalAppointments"
-    [pageSize]="pageSize"
-    [pageSizeOptions]="pageSizeOptions"
-    (page)="paginateAppointments($event)"
-    showFirstLastButtons
-    aria-label="Select page of appointments"
-    class="custom-paginator"
-  >
-  </mat-paginator>
+    <div class="footer-buttons">
+      <button class="btn-footer btn-reprogramar"
+              [disabled]="!selectedAppointment"
+              (click)="reprogramar()">
+        <i class="fas fa-calendar-check"></i> Reprogramar
+      </button>
+
+      <button class="btn-footer btn-cancelar"
+              [disabled]="!selectedAppointment"
+              (click)="cancelAppointment()">
+        <i class="fas fa-trash-alt"></i> Cancelar cita
+      </button>
+    </div>
+
+    <mat-paginator [length]="totalAppointments"
+                   [pageSize]="pageSize"
+                   [pageSizeOptions]="pageSizeOptions"
+                   (page)="paginateAppointments($event)"
+                   showFirstLastButtons
+                   class="custom-paginator">
+    </mat-paginator>
+  </div>
 
 </div>
