@@ -55,10 +55,12 @@ export class ListarCitaService {
   /**
    * 4. Notifica al backend que el paciente se unió
    */
-  unirseACita(idCita: number): Observable<any> {
+  unirseACita(idCita: number): Observable<string> {
+    // IMPORTANTE: responseType: 'text' porque el backend devuelve un String plano (el link)
     return this.http.get(`${this.apiUrl}/unirseACita/${idCita}`, {
-      headers: this.getHeaders()
-    }).pipe(catchError(this.handleError));
+      headers: this.getHeaders(),
+      responseType: 'text'
+    });
   }
 
   /**

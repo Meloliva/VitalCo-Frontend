@@ -2,11 +2,15 @@ import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { NutricionistaService } from '../../service/nutricionista.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+
+// --- Módulos de Material (CORREGIDOS) ---
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatNativeDateModule } from '@angular/material/core'; // Importante para fechas
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator'; // Importante para paginador
+
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
@@ -21,8 +25,8 @@ import { catchError, map } from 'rxjs/operators';
     MatFormFieldModule,
     MatInputModule,
     MatDatepickerModule,
-    MatNativeDateModule,
-    MatPaginatorModule
+    MatNativeDateModule, // Solución al error de DateAdapter
+    MatPaginatorModule   // Solución al error de Paginator
   ]
 })
 export class ListarCitasNutricionista implements OnInit {
@@ -30,13 +34,10 @@ export class ListarCitasNutricionista implements OnInit {
 
   appointments: any[] = [];
   paginatedAppointments: any[] = [];
-
   selectedAppointment: any = null;
   selectedDate: Date = new Date();
-
   activeTab: 'hoy' | 'mañana' | 'custom' = 'hoy';
 
-  // paginator
   pageSize = 5;
   pageSizeOptions = [5, 10, 20];
   totalAppointments = 0;
@@ -44,6 +45,7 @@ export class ListarCitasNutricionista implements OnInit {
 
   constructor(
     private nutricionistaService: NutricionistaService,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -53,8 +55,6 @@ export class ListarCitasNutricionista implements OnInit {
 
   onDateChange(date: Date | null): void {
     if (!date) return;
-
-    console.log('Fecha seleccionada:', date);
     this.selectedDate = new Date(date);
     this.updateTabStatus(this.selectedDate);
     this.loadAppointmentsForDate(this.selectedDate);
@@ -65,7 +65,6 @@ export class ListarCitasNutricionista implements OnInit {
     const tomorrowD = new Date();
     tomorrowD.setDate(tomorrowD.getDate() + 1);
     const tomorrow = this.getDateOnly(tomorrowD);
-
     const selected = this.getDateOnly(date);
 
     if (selected.getTime() === today.getTime()) {
@@ -79,7 +78,6 @@ export class ListarCitasNutricionista implements OnInit {
 
   changeTab(tab: 'hoy' | 'mañana'): void {
     this.activeTab = tab;
-
     if (tab === 'hoy') {
       this.selectedDate = new Date();
     } else {
@@ -92,102 +90,107 @@ export class ListarCitasNutricionista implements OnInit {
 
   private loadAppointmentsForDate(date: Date): void {
     const selectedStr = this.formatDateForBackend(date);
-
-    console.log('Cargando citas para fecha:', selectedStr);
+    console.log('Cargando citas para:', selectedStr);
 
     this.nutricionistaService.listarCitasPorFecha(selectedStr).subscribe({
       next: (data) => {
-        console.log('Datos recibidos del backend:', data);
-
-        // ✅ SOLUCIÓN: Verificar si el array está vacío ANTES de procesar
         if (!data || data.length === 0) {
-          console.log('No hay citas para esta fecha');
-          this.appointments = [];
-          this.paginatedAppointments = [];
-          this.totalAppointments = 0;
-          this.selectedAppointment = null;
-          this.currentPage = 0;
-          if (this.paginator) {
-            this.paginator.pageIndex = 0;
-          }
-          this.cdr.detectChanges();
+          this.limpiarLista();
           return;
         }
 
-        // ✅ Crear un array de observables para cargar todos los pacientes
         const citasConPaciente$ = data.map((c: any) => {
+          // Mapeo seguro de datos
           const citaBase = {
             id: c.idCita || c.id,
             idPaciente: c.idPaciente,
+            date: c.dia, // Guardamos fecha para validar hora
             patientName: 'Sin paciente',
             avatarInitials: '?',
-            time: this.formatTime(c.horaCita || c.hora || ''),
+            time: c.hora,
+            timeDisplay: this.formatTime(c.hora || ''),
             meetingType: c.tipoCita || c.tipo || 'Virtual',
             description: c.descripcion || 'Sin descripción',
             meetingLink: c.linkReunion || c.link || ''
           };
 
-          // Si no tiene paciente, retornar la cita base
-          if (!c.idPaciente) {
-            return of(citaBase);
-          }
+          if (!c.idPaciente) return of(citaBase);
 
-          // ✅ Cargar el paciente y retornar la cita completa
           return this.nutricionistaService.obtenerPacientePorId(c.idPaciente).pipe(
             map((p: any) => {
               const user = p.idusuario;
               if (user) {
                 citaBase.patientName = `${user.nombre} ${user.apellido}`;
                 citaBase.avatarInitials = this.getInitials(citaBase.patientName);
-              } else {
-                citaBase.patientName = 'Paciente sin datos';
               }
               return citaBase;
             }),
-            catchError(() => {
-              citaBase.patientName = 'Paciente no encontrado';
-              return of(citaBase);
-            })
+            catchError(() => of(citaBase))
           );
         });
 
-        // ✅ Esperar a que todas las citas se carguen con sus pacientes
         forkJoin(citasConPaciente$).subscribe({
           next: (citasCompletas) => {
-            // ✅ Asignar todas las citas de una vez
             this.appointments = citasCompletas;
             this.totalAppointments = this.appointments.length;
-
-            console.log('Citas procesadas:', this.appointments);
-
-            // Reiniciar paginador
-            this.currentPage = 0;
-            if (this.paginator) {
-              this.paginator.pageIndex = 0;
-            }
-
             this.paginateAppointments({ pageIndex: 0, pageSize: this.pageSize });
-            this.selectedAppointment = null;
-
             this.cdr.detectChanges();
           },
-          error: (err) => {
-            console.error('Error al cargar pacientes:', err);
-            this.appointments = [];
-            this.paginatedAppointments = [];
-            this.totalAppointments = 0;
-            this.cdr.detectChanges();
-          }
+          error: () => this.limpiarLista()
         });
       },
+      error: () => this.limpiarLista()
+    });
+  }
+
+  private limpiarLista() {
+    this.appointments = [];
+    this.paginatedAppointments = [];
+    this.totalAppointments = 0;
+    this.selectedAppointment = null;
+    this.cdr.detectChanges();
+  }
+
+  // --- LÓGICA DEL BOTÓN ---
+  esHoraDeUnirse(app: any): boolean {
+    if (!app.date || !app.time) return false;
+    const fechaCita = new Date(`${app.date}T${app.time}`);
+    const ahora = new Date();
+    const diffMs = fechaCita.getTime() - ahora.getTime();
+    const minutosRestantes = diffMs / (1000 * 60);
+    // Habilitar: 10 min antes hasta 5 min después
+    return minutosRestantes <= 10 && minutosRestantes >= -5;
+  }
+
+  obtenerTextoBoton(app: any): string {
+    if (!app.date || !app.time) return 'Error';
+    const fechaCita = new Date(`${app.date}T${app.time}`);
+    const ahora = new Date();
+    const diffMs = fechaCita.getTime() - ahora.getTime();
+    const minutosRestantes = diffMs / (1000 * 60);
+
+    if (minutosRestantes > 10) return 'Espera...';
+    if (minutosRestantes < -5) return 'Cerrado';
+    return 'Unirse';
+  }
+
+  joinMeeting(event: Event, app: any): void {
+    event.stopPropagation();
+    if (!app.id) { alert('Error: Cita sin ID'); return; }
+
+    // Llamada al servicio
+    this.nutricionistaService.unirseACita(app.id).subscribe({
+      next: (linkBackend) => {
+        if (linkBackend && linkBackend.startsWith('http')) {
+          window.open(linkBackend, '_blank');
+        } else {
+          if (app.meetingLink) window.open(app.meetingLink, '_blank');
+          else alert('Enlace no disponible.');
+        }
+      },
       error: (err) => {
-        console.error('Error al cargar citas:', err);
-        this.appointments = [];
-        this.paginatedAppointments = [];
-        this.totalAppointments = 0;
-        this.selectedAppointment = null;
-        this.currentPage = 0;
-        this.cdr.detectChanges();
+        const mensaje = err.error || 'No se pudo ingresar. Verifica el horario.';
+        alert(mensaje);
       }
     });
   }
@@ -195,105 +198,57 @@ export class ListarCitasNutricionista implements OnInit {
   paginateAppointments(event: any): void {
     this.currentPage = event.pageIndex;
     this.pageSize = event.pageSize;
-
     const startIndex = this.currentPage * this.pageSize;
     const endIndex = startIndex + this.pageSize;
-
     this.paginatedAppointments = this.appointments.slice(startIndex, endIndex);
-    console.log('Citas paginadas:', this.paginatedAppointments);
   }
 
+  selectAppointment(app: any): void {
+    this.selectedAppointment = app;
+  }
+
+  cancelAppointment(): void {
+    if (!this.selectedAppointment) return;
+    if (!confirm(`¿Cancelar cita con ${this.selectedAppointment.patientName}?`)) return;
+
+    this.nutricionistaService.eliminarCita(this.selectedAppointment.id).subscribe({
+      next: () => {
+        this.appointments = this.appointments.filter(c => c.id !== this.selectedAppointment.id);
+        this.totalAppointments = this.appointments.length;
+        this.paginateAppointments({ pageIndex: 0, pageSize: this.pageSize });
+        this.selectedAppointment = null;
+        this.cdr.detectChanges();
+      },
+      error: () => alert('Error al cancelar')
+    });
+  }
+
+  reprogramar(): void {
+    if(this.selectedAppointment) {
+      // Ajusta la ruta si es diferente
+      this.router.navigate(['/sistema/citas-nutricionista/programar'], {
+        state: { datosCita: this.selectedAppointment }
+      });
+    }
+  }
+
+  // Helpers
   private formatDateForBackend(date: Date): string {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
-
   private getDateOnly(date: Date): Date {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
-
   private formatTime(time: string): string {
-    if (!time) return 'Sin hora';
-
-    if (time.includes(':')) {
-      const parts = time.split(':');
-      return `${parts[0]}:${parts[1]}`;
-    }
-
-    return time;
+    if (!time) return '';
+    return time.substring(0, 5);
   }
-
   private getInitials(name: string): string {
-    if (!name || name === 'Sin nombre') return '?';
-    const parts = name.trim().split(' ');
-    const firstInitial = parts[0]?.[0] || '';
-    const secondInitial = parts[1]?.[0] || '';
-    return (firstInitial + secondInitial).toUpperCase();
+    if (!name) return 'NP';
+    return name.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase();
   }
-
-  selectAppointment(app: any): void {
-    this.selectedAppointment = app;
-    console.log('Cita seleccionada:', app);
-  }
-
-  joinMeeting(event: Event, link: string): void {
-    event.stopPropagation();
-    if (link) {
-      window.open(link, '_blank');
-    } else {
-      console.warn('No hay link para unirse a esta reunión.');
-      alert('Esta cita no tiene un enlace de reunión configurado.');
-    }
-  }
-
-  cancelAppointment(): void {
-    if (!this.selectedAppointment) return;
-
-    const appointmentId = this.selectedAppointment.id;
-
-    if (!confirm(`¿Está seguro de cancelar la cita con ${this.selectedAppointment.patientName}?`)) {
-      return;
-    }
-
-    this.nutricionistaService.eliminarCita(appointmentId).subscribe({
-      next: () => {
-        console.log('Cita eliminada correctamente');
-
-        // ✅ Crear un NUEVO array sin la cita eliminada
-        this.appointments = [...this.appointments.filter(c => c.id !== appointmentId)];
-
-        // Actualizar contador
-        this.totalAppointments = this.appointments.length;
-
-        // ✅ Si la página actual queda vacía, retroceder
-        const maxPage = Math.max(0, Math.ceil(this.totalAppointments / this.pageSize) - 1);
-        if (this.currentPage > maxPage) {
-          this.currentPage = maxPage;
-          if (this.paginator) {
-            this.paginator.pageIndex = maxPage;
-          }
-        }
-
-        // Repaginar
-        this.paginateAppointments({
-          pageIndex: this.currentPage,
-          pageSize: this.pageSize
-        });
-
-        this.selectedAppointment = null;
-
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error al eliminar cita:', err);
-        alert('Error al cancelar la cita. Intente nuevamente.');
-      }
-    });
-  }
-
-  trackByAppointmentId(index: number, app: any): any {
-    return app.id;
-  }
+  trackByAppointmentId(index: number, app: any): any { return app.id; }
 }
