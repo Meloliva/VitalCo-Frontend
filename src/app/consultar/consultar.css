@@ -1,3 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 /* Chart */
 .consulta-result {
   background: white;
@@ -19,7 +23,11 @@
   text-align: center;
   border-left: 4px solid #c62828;
 }
-
+h2{
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+}
 /* Info del paciente */
 .info-paciente {
   background: linear-gradient(135deg, #00BF61 0%, #02773b 100%);
@@ -127,3 +135,28 @@
   background-color: #d32f2f;
 }
 
+.form-row input[type="date"],
+.form-row input[type="text"] {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #f9f9f9;
+}
+
+.form-row input[type="date"]:focus,
+.form-row input[type="text"]:focus {
+  outline: none;
+  border-color: #4CAF50;
+  background-color: #fff;
+}
+
+.form-row input[type="date"]:hover,
+.form-row input[type="text"]:hover {
+  border-color: #bbb;
+}
+
+.form-row label{
+  font-family: 'Poppins', sans-serif !important;
+  margin: 10px;
+}

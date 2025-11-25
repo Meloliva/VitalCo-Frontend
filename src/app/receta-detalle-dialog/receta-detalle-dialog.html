@@ -1,0 +1,120 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>{{ data.nombre }}</h2>
+    <button mat-icon-button (click)="cerrar()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="dialog-content">
+    <!-- Imagen -->
+    <div class="receta-imagen" *ngIf="data.foto">
+      <img [src]="data.foto" [alt]="data.nombre" />
+    </div>
+
+    <!-- Placeholder si no hay imagen -->
+    <div class="receta-imagen-placeholder" *ngIf="!data.foto">
+      <mat-icon>restaurant_menu</mat-icon>
+      <p>{{ data.nombre }}</p>
+    </div>
+
+    <!-- Info básica -->
+    <div class="info-chips" *ngIf="data.horario || data.tiempo || data.cantidadPorcion">
+      <mat-chip-set>
+        <mat-chip *ngIf="data.horario">
+          <mat-icon>schedule</mat-icon>
+          {{ data.horario }}
+        </mat-chip>
+        <mat-chip *ngIf="data.tiempo">
+          <mat-icon>timer</mat-icon>
+          {{ data.tiempo }} min
+        </mat-chip>
+        <mat-chip *ngIf="data.cantidadPorcion">
+          <mat-icon>restaurant</mat-icon>
+          {{ data.cantidadPorcion }} porción(es)
+        </mat-chip>
+      </mat-chip-set>
+    </div>
+
+    <!-- Descripción -->
+    <div class="seccion" *ngIf="data.descripcion">
+      <h3>Descripción</h3>
+      <p>{{ data.descripcion }}</p>
+    </div>
+
+    <!-- Información nutricional -->
+    <div class="seccion nutricional" *ngIf="tieneInfoNutricional()">
+      <h3>Información Nutricional</h3>
+      <div class="nutrientes-grid">
+        <div class="nutriente" *ngIf="data.calorias">
+          <span class="valor">{{ data.calorias }}</span>
+          <span class="label">Calorías</span>
+        </div>
+        <div class="nutriente" *ngIf="data.proteinas">
+          <span class="valor">{{ data.proteinas | number:'1.1-1' }}g</span>
+          <span class="label">Proteínas</span>
+        </div>
+        <div class="nutriente" *ngIf="data.carbohidratos">
+          <span class="valor">{{ data.carbohidratos | number:'1.1-1' }}g</span>
+          <span class="label">Carbohidratos</span>
+        </div>
+        <div class="nutriente" *ngIf="data.grasas">
+          <span class="valor">{{ data.grasas | number:'1.1-1' }}g</span>
+          <span class="label">Grasas</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ingredientes -->
+    <div class="seccion" *ngIf="data.ingredientes">
+      <h3>Ingredientes</h3>
+      <div class="ingredientes-lista">
+        <p>{{ data.ingredientes }}</p>
+      </div>
+    </div>
+
+    <!-- Preparación -->
+    <div class="seccion" *ngIf="data.preparacion">
+      <h3>Preparación</h3>
+      <div class="preparacion-texto">
+        <p [innerHTML]="formatearPreparacion(data.preparacion)"></p>
+      </div>
+    </div>
+
+    <!-- Mensaje si no hay detalles -->
+    <div class="no-detalles" *ngIf="!tieneDetalles()">
+      <mat-icon>info</mat-icon>
+      <p>No hay información detallada disponible para esta receta.</p>
+    </div>
+
+    <!-- Mensaje de éxito -->
+    <div class="mensaje-exito" *ngIf="mostrarExito">
+      <mat-icon>check_circle</mat-icon>
+      <p>¡Receta agregada a tu progreso del día!</p>
+    </div>
+
+    <!-- Mensaje de error -->
+    <div class="mensaje-error" *ngIf="mensajeError">
+      <mat-icon>error</mat-icon>
+      <p>{{ mensajeError }}</p>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="cerrar()">
+      Cancelar
+    </button>
+
+    <!-- ✅ Botón para agregar a progreso -->
+    <button
+      mat-raised-button
+      color="accent"
+      (click)="agregarAProgreso()"
+      [disabled]="agregando || !puedeAgregarAProgreso()"
+      class="btn-agregar">
+      <mat-icon *ngIf="!agregando">add_circle</mat-icon>
+      <mat-spinner *ngIf="agregando" diameter="20"></mat-spinner>
+      {{ agregando ? 'Agregando...' : 'Agregar a Progreso' }}
+    </button>
+  </mat-dialog-actions>
+</div>

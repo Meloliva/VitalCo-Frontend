@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { NutricionistaService, CitaDTO } from '../../service/nutricionista.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NutricionistaService, CitaDTO, PacienteResumeDTO } from '../../service/nutricionista.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -20,9 +21,16 @@ export class ProgramarCitasNutricionista implements OnInit {
   successMessage: string = '';
   isLoading: boolean = false;
 
+  // ✅ Propiedades para el modo edición
+  isEditMode: boolean = false;
+  citaId: number | null = null;
+  citaOriginal: CitaDTO | null = null;
+
   constructor(
     private fb: FormBuilder,
-    private nutricionistaService: NutricionistaService
+    private nutricionistaService: NutricionistaService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -73,6 +81,15 @@ export class ProgramarCitasNutricionista implements OnInit {
       console.log("🧑‍⚕️ Nutricionista cargado:", nutricionista);
       console.log("⏰ Turno:", this.nutricionistaTurno);
 
+      // ✅ Verificar si estamos en modo edición
+      this.route.queryParams.subscribe(async params => {
+        if (params['id']) {
+          this.isEditMode = true;
+          this.citaId = +params['id'];
+          await this.cargarCitaParaEditar(this.citaId);
+        }
+      });
+
       // Validar hora en tiempo real cuando cambie
       this.appointmentForm.get('appointmentTime')?.valueChanges.subscribe(() => {
         this.validateAppointmentTime();
@@ -81,6 +98,46 @@ export class ProgramarCitasNutricionista implements OnInit {
     } catch (error) {
       console.error('Error al obtener datos del nutricionista', error);
       this.errorMessage = 'No se pudieron cargar los datos del nutricionista';
+    }
+  }
+
+  // ✅ Cargar datos de la cita para editar
+  async cargarCitaParaEditar(citaId: number): Promise<void> {
+    try {
+      // Los datos vienen desde el state del router
+      const citaData = history.state.cita as CitaDTO;
+
+      if (citaData) {
+        this.citaOriginal = citaData;
+
+        // Obtener el DNI del paciente (manejo seguro del union type)
+        let dniPaciente = '';
+        if (typeof citaData.idPaciente === 'object' && citaData.idPaciente !== null) {
+          dniPaciente = (citaData.idPaciente as PacienteResumeDTO).dni || '';
+        }
+
+        // Prellenar el formulario
+        this.appointmentForm.patchValue({
+          dni: dniPaciente,
+          appointmentDate: citaData.dia,
+          appointmentTime: citaData.hora.substring(0, 5), // Formato HH:mm
+          meetingLink: citaData.link,
+          subject: citaData.descripcion
+        });
+
+        // Deshabilitar el DNI en modo edición (no se puede cambiar el paciente)
+        this.appointmentForm.get('dni')?.disable();
+
+        console.log("📝 Cita cargada para editar:", citaData);
+      } else {
+        this.errorMessage = 'No se encontró la información de la cita';
+        setTimeout(() => {
+          this.router.navigate(['/nutricionista/listar-citas']);
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('Error al cargar la cita:', error);
+      this.errorMessage = 'No se pudo cargar la cita para editar';
     }
   }
 
@@ -146,7 +203,7 @@ export class ProgramarCitasNutricionista implements OnInit {
     }
 
     this.isLoading = true;
-    const form = this.appointmentForm.value;
+    const form = this.appointmentForm.getRawValue(); // ✅ getRawValue() incluye campos deshabilitados
 
     try {
       const dateObject = new Date(form.appointmentDate);
@@ -159,53 +216,87 @@ export class ProgramarCitasNutricionista implements OnInit {
         ? form.appointmentTime + ':00'
         : form.appointmentTime;
 
-      // ✅ VALIDACIÓN 1: Buscar paciente
-      const paciente = await firstValueFrom(
-        this.nutricionistaService.buscarPacientePorDni(form.dni)
-      );
+      if (this.isEditMode) {
+        // ✅ MODO EDICIÓN
 
-      if (!paciente || !paciente.id) {
-        this.errorMessage = 'No existe un paciente con ese DNI';
+        // Extraer el ID del paciente de forma segura
+        let idPaciente: number;
+
+        if (typeof this.citaOriginal!.idPaciente === 'object' && this.citaOriginal!.idPaciente !== null) {
+          idPaciente = (this.citaOriginal!.idPaciente as PacienteResumeDTO).id;
+        } else {
+          idPaciente = this.citaOriginal!.idPaciente as number;
+        }
+
+        const citaActualizada: CitaDTO = {
+          id: this.citaId!,
+          dia,
+          hora,
+          descripcion: form.subject,
+          link: form.meetingLink,
+          idPaciente: idPaciente,
+          idNutricionista: this.idNutricionista
+        };
+
+        console.log("📝 Actualizando cita:", citaActualizada);
+
+        await firstValueFrom(this.nutricionistaService.editarCita(citaActualizada));
+
+        this.successMessage = '¡Cita actualizada correctamente!';
         this.isLoading = false;
-        return;
-      }
 
-      try {
-        const existeCita = await firstValueFrom(
-          this.nutricionistaService.verificarDisponibilidad(this.idNutricionista, dia, hora)
+        setTimeout(() => {
+          this.router.navigate(['/nutricionista/listar-citas']);
+        }, 2000);
+
+      } else {
+        // ✅ MODO REGISTRO
+        const paciente = await firstValueFrom(
+          this.nutricionistaService.buscarPacientePorDni(form.dni)
         );
 
-        if (existeCita) {
-          this.errorMessage = 'Ya tienes una cita registrada para ese día y hora. Por favor, elige otro horario.';
+        if (!paciente || !paciente.id) {
+          this.errorMessage = 'No existe un paciente con ese DNI';
           this.isLoading = false;
           return;
         }
-      } catch (error) {
-        console.warn('No se pudo verificar disponibilidad:', error);
-        // Continuar sin validar (el backend lo validará)
+
+        try {
+          const existeCita = await firstValueFrom(
+            this.nutricionistaService.verificarDisponibilidad(this.idNutricionista, dia, hora)
+          );
+
+          if (existeCita) {
+            this.errorMessage = 'Ya tienes una cita registrada para ese día y hora. Por favor, elige otro horario.';
+            this.isLoading = false;
+            return;
+          }
+        } catch (error) {
+          console.warn('No se pudo verificar disponibilidad:', error);
+        }
+
+        const cita: CitaDTO = {
+          dia,
+          hora,
+          descripcion: form.subject,
+          link: form.meetingLink,
+          idPaciente: paciente.id,
+          idNutricionista: this.idNutricionista
+        };
+
+        console.log("📤 Registrando cita:", cita);
+
+        await firstValueFrom(this.nutricionistaService.registrarCita(cita));
+
+        this.successMessage = '¡Cita registrada correctamente!';
+        this.appointmentForm.reset();
+        this.isLoading = false;
+
+        setTimeout(() => this.successMessage = '', 5000);
       }
 
-      const cita: CitaDTO = {
-        dia,
-        hora,
-        descripcion: form.subject,
-        link: form.meetingLink,
-        idPaciente: paciente.id,
-        idNutricionista: this.idNutricionista
-      };
-
-      console.log("📤 Registrando cita:", cita);
-
-      await firstValueFrom(this.nutricionistaService.registrarCita(cita));
-
-      this.successMessage = '¡Cita registrada correctamente!';
-      this.appointmentForm.reset();
-      this.isLoading = false;
-
-      setTimeout(() => this.successMessage = '', 5000);
-
     } catch (error: any) {
-      console.error('Error al registrar la cita', error);
+      console.error('Error al procesar la cita', error);
       this.isLoading = false;
 
       if (error?.error?.message) {
@@ -213,9 +304,14 @@ export class ProgramarCitasNutricionista implements OnInit {
       } else if (error?.message) {
         this.errorMessage = error.message;
       } else {
-        this.errorMessage = 'Error al registrar la cita. Intenta nuevamente.';
+        this.errorMessage = `Error al ${this.isEditMode ? 'actualizar' : 'registrar'} la cita. Intenta nuevamente.`;
       }
     }
+  }
+
+  // ✅ Método para cancelar la edición
+  cancelarEdicion(): void {
+    this.router.navigate(['/nutricionista/listar-citas']);
   }
 
   // Getters para el template

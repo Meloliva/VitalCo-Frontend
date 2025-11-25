@@ -2,7 +2,12 @@
   width: 90%; /* ✅ Ocupa la mitad del ancho de la pantalla */
   margin: 0 auto; /* ✅ Lo centra horizontalmente */
 }
-
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
 
 /* Avatar Section */
 .avatar-section {

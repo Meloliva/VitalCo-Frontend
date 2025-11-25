@@ -183,11 +183,36 @@
   font-weight: bold;
   transition: background-color 0.3s;
   border: none;
+  margin: 10px;
+}
+.btn-cancel:hover {
+  background-color: #93271c;
 }
 
 .btn-cancel:disabled {
   background-color: #f8baba;
   color: #e74c3c;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-reprogramar {
+  background-color: rgb(155, 209, 91);
+  color: white;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  border: none;
+  margin: 10px;
+}
+
+.btn-reprogramar:hover {
+  background-color: #4a8c4a;
+}
+.btn-reprogramar:disabled {
+  background-color: #83a883;
+  color: white;
   opacity: 0.7;
   cursor: not-allowed;
 }
