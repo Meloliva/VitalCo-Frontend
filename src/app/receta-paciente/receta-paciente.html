@@ -42,10 +42,17 @@
 <div class="recetas-area">
   <div class="recetas-list" *ngIf="recetas.length > 0">
 
-    <!-- Mis recetas del día -->
+    <!-- ⬇️⬇️⬇️ REEMPLAZA DESDE AQUÍ ⬇️⬇️⬇️ -->
     <mat-card class="receta-card" *ngFor="let receta of recetas"
               [class.solo-eliminar]="selectedTab === 2">
-      <div class="receta-left">
+
+      <!-- ✅ IMAGEN A LA IZQUIERDA -->
+      <div class="receta-imagen" *ngIf="receta.foto">
+        <img [src]="receta.foto" [alt]="receta.nombre" />
+      </div>
+
+      <!-- ✅ CONTENIDO EN EL CENTRO -->
+      <div class="receta-contenido">
         <div class="receta-titulo" *ngIf="selectedTab !== 2">
           <span class="titulo-text">{{ receta.nombre }}</span>
           <mat-icon class="heart"
@@ -68,6 +75,7 @@
         </div>
       </div>
 
+      <!-- ✅ BOTÓN A LA DERECHA -->
       <div class="receta-right">
         <button mat-stroked-button
                 class="eliminar-btn"
@@ -85,12 +93,13 @@
       </div>
     </mat-card>
 
-  </div>
+  </div> <!-- ✅ cierre de recetas-list -->
 
   <div class="no-recetas" *ngIf="recetas.length === 0">
     <p>No hay recetas disponibles</p>
   </div>
-</div>
+</div> <!-- ✅ cierre de recetas-area -->
+
 
 <!-- Paginador -->
 <div class="paginator-row" *ngIf="!isSearching && selectedTab !== 2 && totalRecetas > 0">
@@ -101,4 +110,7 @@
     (page)="onPageChange($event)"
     showFirstLastButtons>
   </mat-paginator>
-</div>
+   </div>
+
+
+
