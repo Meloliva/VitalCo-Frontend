@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, signal, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, inject, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { NutricionistaService } from '../../service/nutricionista.service';
 import { firstValueFrom } from 'rxjs';
 
@@ -26,6 +26,7 @@ export class PrivateLayoutNutricionista implements OnInit {
 
   private router = inject(Router);
   private nutricionistaService = inject(NutricionistaService);
+  @Inject(PLATFORM_ID) private platformId = inject(PLATFORM_ID); // <-- Agregado
 
   async ngOnInit() {
     await this.cargarDatosUsuario();
@@ -65,12 +66,12 @@ export class PrivateLayoutNutricionista implements OnInit {
   salir(): void {
     console.log('Cerrando sesión...');
     try {
-      localStorage.clear();
+      if (isPlatformBrowser(this.platformId)) { // <-- Protección
+        localStorage.clear();
+      }
     } catch (e) {
       console.error('Error al limpiar localStorage:', e);
     }
     this.router.navigate(['/inicio']);
   }
-
-  protected readonly removeEventListener = removeEventListener;
 }
