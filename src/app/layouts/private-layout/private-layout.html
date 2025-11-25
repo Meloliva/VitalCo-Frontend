@@ -11,41 +11,40 @@
     </div>
 
     <nav class="sidebar-nav">
-      <a routerLink="/sistema/progreso-paciente" routerLinkActive="active" class="nav-item">
-        <img src="/Images/iconos/iconoSistemas/image%2021.png" alt="Progreso" class="nav-icon">
+      <a routerLink="/sistema/progreso-paciente" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
         <span>Progreso</span>
       </a>
 
-      <a routerLink="/sistema/perfil-paciente" routerLinkActive="active" class="nav-item">
-        <img src="/Images/iconos/iconoSistemas/image%2022.png" alt="Perfil" class="nav-icon">
+      <a routerLink="/sistema/perfil-paciente" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"  class="nav-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
         <span>Perfil</span>
       </a>
 
-      <a routerLink="/sistema/receta-paciente" routerLinkActive="active" class="nav-item">
-        <img src="/Images/iconos/iconoSistemas/user-multiple.png" alt="Recetas" class="nav-icon">
+      <a routerLink="/sistema/receta-paciente" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"  class="nav-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
         <span>Recetas</span>
       </a>
 
       <div *ngIf="isPremium" class="citas-container">
         <a (click)="toggleCitas()" class="nav-item citas-parent" [class.expanded]="citasExpanded">
-          <img src="/Images/iconos/iconoSistemas/image%2054.png" alt="Citas" class="nav-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
           <span>Citas</span>
-          <svg class="chevron-icon" [class.rotated]="citasExpanded" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg class="chevron-icon" [class.rotated]="citasExpanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline>
           </svg>
         </a>
 
         <div class="citas-submenu" [class.show]="citasExpanded">
-          <a routerLink="/sistema/citas/programar" routerLinkActive="active" class="nav-item sub-link">
+          <a routerLink="/sistema/citas/programar" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"  class="nav-item sub-link">
             <span>Programar Cita</span>
           </a>
-          <a routerLink="/sistema/citas/listar" routerLinkActive="active" class="nav-item sub-link">
+          <a routerLink="/sistema/citas/listar" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"  class="nav-item sub-link">
             <span>Listar</span>
           </a>
         </div>
       </div>
 
-      <a routerLink="/sistema/cambiar-plan" routerLinkActive="active" class="nav-item">
+      <a routerLink="/sistema/cambiar-plan" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"  class="nav-item">
         <img src="/Images/iconos/iconoSistemas/setting-01.png" alt="Cambiar Plan" class="nav-icon">
         <span>Cambiar Plan</span>
       </a>
