@@ -131,32 +131,30 @@ export class PerfilPacienteComponent implements OnInit {
   }
 
   private subirFoto(file: File) {
-    // Validar tamaño (ejemplo: máximo 5MB)
     if (file.size > 5 * 1024 * 1024) {
       this.mostrarNotificacion('La imagen no debe superar 5MB', true);
       return;
     }
 
-    // Validar tipo de archivo
     if (!file.type.startsWith('image/')) {
       this.mostrarNotificacion('Solo se permiten imágenes', true);
       return;
     }
 
-    // Convertir a Base64
     const reader = new FileReader();
     reader.onload = () => {
       const fotoBase64 = reader.result as string;
 
-      // ✅ ACTUALIZAR LA IMAGEN INMEDIATAMENTE EN EL PERFIL
       this.fotoPerfilUrl = fotoBase64;
       this.cdr.detectChanges();
 
-      // ✅ ACTUALIZAR EL SIDEBAR INSTANTÁNEAMENTE (ANTES de enviar al servidor)
+      // ✅ AGREGAR LOGS
+      console.log('🔥 PERFIL: Guardando en localStorage');
       localStorage.setItem('userAvatar', fotoBase64);
+
+      console.log('🔥 PERFIL: Disparando evento avatarChanged');
       window.dispatchEvent(new Event('avatarChanged'));
 
-      // Luego enviar al backend
       this.actualizarFotoPerfil(fotoBase64);
     };
     reader.onerror = () => {

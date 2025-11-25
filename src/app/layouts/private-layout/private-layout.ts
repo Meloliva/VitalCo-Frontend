@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { UserService } from '../../service/userlayout-service';
@@ -23,10 +23,12 @@ export class PrivateLayout implements OnInit, OnDestroy {
   citasExpanded: boolean = false;
   private userSubscription?: Subscription;
   private routerSubscription?: Subscription;
+  private avatarListener?: () => void;
 
   constructor(
     private router: Router,
     private userService: UserService,
+    private cdr: ChangeDetectorRef, // ✅ AGREGAR ESTO
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
@@ -34,6 +36,18 @@ export class PrivateLayout implements OnInit, OnDestroy {
     this.userService.initUserFromStorage();
     this.loadUserData();
     this.checkRoute();
+
+    if (isPlatformBrowser(this.platformId)) {
+      this.avatarListener = () => {
+        const newAvatar = localStorage.getItem('userAvatar');
+        if (newAvatar) {
+          console.log('📸 Sidebar: Avatar actualizado');
+          this.userAvatar = newAvatar;
+          this.cdr.detectChanges(); // ✅ AGREGAR ESTO
+        }
+      };
+      window.addEventListener('avatarChanged', this.avatarListener);
+    }
 
     this.routerSubscription = this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
@@ -50,20 +64,21 @@ export class PrivateLayout implements OnInit, OnDestroy {
     if (this.routerSubscription) {
       this.routerSubscription.unsubscribe();
     }
+    if (isPlatformBrowser(this.platformId) && this.avatarListener) {
+      window.removeEventListener('avatarChanged', this.avatarListener);
+    }
   }
 
   private checkRoute() {
     this.hidePageCard = this.router.url.includes('/cambiar-plan');
   }
 
-  // 👇 NUEVO MÉTODO: Mantener abierto si estamos en una ruta de citas
   private checkCitasRoute() {
     if (this.router.url.includes('/sistema/citas/')) {
       this.citasExpanded = true;
     }
   }
 
-  // 👇 NUEVO MÉTODO: Toggle del menú
   toggleCitas() {
     this.citasExpanded = !this.citasExpanded;
   }
