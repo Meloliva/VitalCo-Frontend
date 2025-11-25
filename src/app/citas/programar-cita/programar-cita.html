@@ -1,131 +1,75 @@
 <div class="main-content-area">
   <div class="schedule-appointment-container wide-card">
-    <h1 class="form-title">Programar Cita</h1>
 
-    <div *ngIf="successMessage" class="alert alert-success" style="color: green; border: 1px solid green; padding: 10px; margin-bottom: 15px;">
+    <h1 class="form-title">
+      {{ esEdicion ? 'Reprogramar Cita' : 'Programar Cita' }}
+    </h1>
+
+    <div *ngIf="successMessage" class="alert alert-success" style="color: green; border: 1px solid green; padding: 10px; margin-bottom: 15px; border-radius: 5px; background: #f0fff4;">
       ✅ {{ successMessage }}
     </div>
-    <div *ngIf="errorMessage" class="alert alert-error" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 15px;">
+    <div *ngIf="errorMessage" class="alert alert-error" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 15px; border-radius: 5px; background: #fff5f5;">
       ❌ {{ errorMessage }}
     </div>
 
-    <div *ngIf="isLoading && nutricionistas.length === 0" style="text-align: center; padding: 20px; font-family: 'Arial', sans-serif;">
-      Cargando...
+    <div *ngIf="isLoading && nutricionistas.length === 0" style="text-align: center; padding: 20px;">
+      Cargando datos...
     </div>
 
     <form class="appointment-form" [formGroup]="appointmentForm" (ngSubmit)="onSubmit()" *ngIf="appointmentForm">
 
       <div class="form-group">
         <label for="dni">DNI <span class="required">*</span></label>
-        <input
-          type="text"
-          id="dni"
-          name="dni"
-          placeholder="Ingresa tu DNI"
-          formControlName="dni"
-          [class.input-error]="dni?.invalid && dni?.touched"
-        />
-        <div class="error-text" *ngIf="dni?.invalid && dni?.touched">
-          <span *ngIf="dni?.errors?.['required']">El DNI es obligatorio.</span>
-          <span *ngIf="dni?.errors?.['pattern']">Debe tener exactamente 8 dígitos.</span>
-        </div>
+        <input type="text" id="dni" formControlName="dni" [class.input-error]="dni?.invalid && dni?.touched" />
       </div>
 
       <div class="form-group">
         <label for="nutritionist">Seleccionar Nutricionista <span class="required">*</span></label>
-        <select
-          id="nutritionist"
-          name="nutritionist"
-          formControlName="nutritionist"
-          [class.input-error]="nutritionist?.invalid && nutritionist?.touched"
-        >
+        <select id="nutritionist" formControlName="nutritionist" [class.input-error]="nutritionist?.invalid && nutritionist?.touched">
           <option [value]="null" disabled>Elige un nutricionista</option>
-          <option *ngIf="nutricionistas.length === 0" [value]="null" disabled>
-            (No hay nutricionistas disponibles)
-          </option>
           <option *ngFor="let nutri of nutricionistas" [value]="nutri.id">
             {{ nutri.idusuario.nombre }} {{ nutri.idusuario.apellido }}
           </option>
         </select>
         <div class="error-text" *ngIf="nutritionist?.invalid && nutritionist?.touched">
-          <span *ngIf="nutritionist?.errors?.['required']">Debes seleccionar un nutricionista.</span>
+          Selecciona un nutricionista.
         </div>
       </div>
 
       <div class="form-group date-time-group">
         <label>Fecha y Hora <span class="required">*</span></label>
         <div class="date-time-inputs">
-
           <div class="input-wrapper">
-            <input
-              type="date"
-              id="appointmentDate"
-              formControlName="appointmentDate"
-              [class.input-error]="appointmentDate?.invalid && appointmentDate?.touched"
-            />
-            <div class="error-text" *ngIf="appointmentDate?.invalid && appointmentDate?.touched">
-              <span *ngIf="appointmentDate?.errors?.['required']">La fecha es obligatoria.</span>
-            </div>
+            <input type="date" formControlName="appointmentDate" [class.input-error]="appointmentDate?.invalid && appointmentDate?.touched" />
           </div>
-
           <div class="input-wrapper">
-            <input
-              type="time"
-              id="appointmentTime"
-              formControlName="appointmentTime"
-              [class.input-error]="appointmentTime?.invalid && appointmentTime?.touched"
-            />
-            <div class="error-text" *ngIf="appointmentTime?.invalid && appointmentTime?.touched">
-              <span *ngIf="appointmentTime?.errors?.['required']">La hora es obligatoria.</span>
-              <span *ngIf="appointmentTime?.errors?.['pattern']">Formato inválido (HH:MM).</span>
-            </div>
+            <input type="time" formControlName="appointmentTime" [class.input-error]="appointmentTime?.invalid && appointmentTime?.touched" />
           </div>
+        </div>
+        <div class="error-text" *ngIf="(appointmentDate?.invalid && appointmentDate?.touched) || (appointmentTime?.invalid && appointmentTime?.touched)">
+          Fecha y hora requeridas.
         </div>
       </div>
 
       <div class="form-group">
         <label for="description">Descripción <span class="required">*</span></label>
-        <textarea
-          id="description"
-          name="description"
-          rows="6"
-          placeholder="Describe el motivo de tu cita (mín. 10 caracteres)"
-          formControlName="description"
-          [class.input-error]="description?.invalid && description?.touched"
-        ></textarea>
-        <div class="char-count">{{ description?.value?.length || 0 }} / 500</div>
-        <div class="error-text" *ngIf="description?.invalid && description?.touched">
-          <span *ngIf="description?.errors?.['required']">La descripción es obligatoria.</span>
-          <span *ngIf="description?.errors?.['minlength']">Mínimo 10 caracteres.</span>
-        </div>
+        <textarea id="description" rows="4" formControlName="description" [class.input-error]="description?.invalid && description?.touched"></textarea>
       </div>
 
       <div class="form-group">
-        <label for="link">Link de la reunión</label>
-        <input
-          type="text"
-          id="link"
-          name="link"
-          placeholder="Ej: https://meet.google.com/xyz-abc-def"
-          formControlName="link"
-          [class.input-error]="link?.invalid && link?.touched"
-        />
-        <div class="error-text" *ngIf="link?.invalid && link?.touched">
-          <span *ngIf="link?.errors?.['pattern']">Por favor, ingresa un link válido (ej: http://...).</span>
-        </div>
+        <label for="link">Link de reunión (Opcional)</label>
+        <input type="text" id="link" formControlName="link" placeholder="https://zoom.us/..." />
       </div>
 
       <div class="form-actions">
-        <button
-          type="submit"
-          class="btn-programar"
-          [disabled]="appointmentForm.invalid || isLoading"
-        >
-          <span *ngIf="!isLoading">Programar</span>
-          <span *ngIf="isLoading">Enviando...</span>
+        <button type="submit" class="btn-programar" [disabled]="appointmentForm.invalid || isLoading">
+          <span *ngIf="!isLoading">
+            {{ esEdicion ? 'Guardar Cambios' : 'Programar Cita' }}
+          </span>
+          <span *ngIf="isLoading">Procesando...</span>
         </button>
       </div>
-    </form>
 
+    </form>
   </div>
 </div>

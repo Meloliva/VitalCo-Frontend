@@ -1,11 +1,11 @@
-import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { UserService } from '../../service/userlayout-service';
 import { Usuario } from '../../models/usuario.model';
 import { Paciente } from '../../models/paciente.model';
 import { Nutricionista } from '../../models/nutricionista.model';
-import { Subscription } from 'rxjs';
+import { Subscription, firstValueFrom } from 'rxjs'; // <-- firstValueFrom agregado
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -23,31 +23,17 @@ export class PrivateLayout implements OnInit, OnDestroy {
   citasExpanded: boolean = false;
   private userSubscription?: Subscription;
   private routerSubscription?: Subscription;
-  private avatarListener?: () => void;
 
   constructor(
     private router: Router,
     private userService: UserService,
-    private cdr: ChangeDetectorRef, // ✅ AGREGAR ESTO
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit() {
     this.userService.initUserFromStorage();
-    this.loadUserData();
+    this.loadInitialData(); // <-- Inicia la carga de datos del perfil completo
     this.checkRoute();
-
-    if (isPlatformBrowser(this.platformId)) {
-      this.avatarListener = () => {
-        const newAvatar = localStorage.getItem('userAvatar');
-        if (newAvatar) {
-          console.log('📸 Sidebar: Avatar actualizado');
-          this.userAvatar = newAvatar;
-          this.cdr.detectChanges(); // ✅ AGREGAR ESTO
-        }
-      };
-      window.addEventListener('avatarChanged', this.avatarListener);
-    }
 
     this.routerSubscription = this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
@@ -63,9 +49,6 @@ export class PrivateLayout implements OnInit, OnDestroy {
     }
     if (this.routerSubscription) {
       this.routerSubscription.unsubscribe();
-    }
-    if (isPlatformBrowser(this.platformId) && this.avatarListener) {
-      window.removeEventListener('avatarChanged', this.avatarListener);
     }
   }
 
@@ -83,26 +66,41 @@ export class PrivateLayout implements OnInit, OnDestroy {
     this.citasExpanded = !this.citasExpanded;
   }
 
-  loadUserData() {
+  async loadInitialData() {
+    // 1. Cargar datos básicos de localStorage (casi instantáneo en el navegador)
+    this.loadFromLocalStorage();
+
+    // 2. Intentar cargar el perfil completo del backend (asíncrono, para el estado Premium)
+    try {
+      const user = await firstValueFrom(this.userService.fetchPerfilAutenticado());
+
+      if (user) {
+        // Actualizar el estado con datos frescos
+        if ('idusuario' in user) {
+          const userWithUsuario = user as Paciente | Nutricionista;
+          this.userName = `${userWithUsuario.idusuario.nombre} ${userWithUsuario.idusuario.apellido}`;
+          this.userAvatar = userWithUsuario.idusuario.fotoPerfil ?? '/Images/iconos/iconoSistemas/image 18.png';
+        } else {
+          const usuario = user as Usuario;
+          this.userName = `${usuario.nombre} ${usuario.apellido}`;
+          this.userAvatar = usuario.fotoPerfil ?? '/Images/iconos/iconoSistemas/image 18.png';
+        }
+        this.isPremium = this.userService.isPremium();
+      }
+    } catch (error) {
+      // Si el perfil no se carga (ej. 403/401), se asume que la guardia de rutas se encargará.
+      console.warn('Fallo al cargar el perfil completo en el Layout. Dependiendo del local storage.');
+    }
+
+    // 3. Suscribirse para escuchar cambios futuros
     this.userSubscription = this.userService.getCurrentUser().subscribe({
       next: (user) => {
         if (user) {
-          if ('idusuario' in user) {
-            const userWithUsuario = user as Paciente | Nutricionista;
-            this.userName = `${userWithUsuario.idusuario.nombre} ${userWithUsuario.idusuario.apellido}`;
-            this.userAvatar = userWithUsuario.idusuario.fotoPerfil ?? '/Images/iconos/iconoSistemas/image 18.png';
-          } else {
-            const usuario = user as Usuario;
-            this.userName = `${usuario.nombre} ${usuario.apellido}`;
-            this.userAvatar = usuario.fotoPerfil ?? '/Images/iconos/iconoSistemas/image 18.png';
-          }
+          // Esto es lo que actualiza isPremium si hay un cambio de plan en otra página
           this.isPremium = this.userService.isPremium();
-        } else {
-          this.loadFromLocalStorage();
+          this.userName = this.userService.getUserFullName();
+          this.userAvatar = this.userService.getUserAvatar();
         }
-      },
-      error: () => {
-        this.loadFromLocalStorage();
       }
     });
   }

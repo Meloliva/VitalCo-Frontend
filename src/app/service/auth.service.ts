@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable, map, tap } from 'rxjs';
 import { UserService } from './userlayout-service';
+import { isPlatformBrowser } from '@angular/common';
 
 interface AuthResponseDTO {
   jwt: string;
@@ -14,7 +15,11 @@ interface AuthResponseDTO {
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api';
 
-  constructor(private http: HttpClient, private userService: UserService) {}
+  constructor(
+    private http: HttpClient,
+    private userService: UserService,
+    @Inject(PLATFORM_ID) private platformId: Object // <-- Agregado para SSR
+  ) {}
 
   login(dni: string, contraseña: string): Observable<AuthResponseDTO> {
     const payload = { dni, contraseña };
@@ -25,23 +30,26 @@ export class AuthService {
         let token = headerToken || (body ? body.jwt : undefined);
         const roles = body?.roles || [];
 
-        // ✅ Remover prefijo "Bearer " si existe
+        // Remover prefijo "Bearer " si existe
         if (token && token.startsWith('Bearer ')) {
           token = token.substring(7);
         }
-        if (token) {
-          localStorage.setItem('token', token);
-          console.log('✅ Token guardado:', token);
-          console.log('✅ Token completo:', token.substring(0, 50) + '...');
-          console.log('✅ Token guardado (sin Bearer):', token.substring(0, 20) + '...');
-        } else {
-          console.error('❌ No se recibió token del backend');
-        }
-        if (roles && roles.length > 0) {
-          localStorage.setItem('roles', JSON.stringify(roles));
-          const shortRole = roles[0].replace(/^ROLE_/, '');
-          localStorage.setItem('userRole', shortRole);
-          console.log('✅ Rol guardado:', shortRole);
+
+        if (isPlatformBrowser(this.platformId)) { // <-- Protección SSR
+          if (token) {
+            localStorage.setItem('token', token);
+            console.log('✅ Token guardado:', token);
+            console.log('✅ Token completo:', token.substring(0, 50) + '...');
+            console.log('✅ Token guardado (sin Bearer):', token.substring(0, 20) + '...');
+          } else {
+            console.error('❌ No se recibió token del backend');
+          }
+          if (roles && roles.length > 0) {
+            localStorage.setItem('roles', JSON.stringify(roles));
+            const shortRole = roles[0].replace(/^ROLE_/, '');
+            localStorage.setItem('userRole', shortRole);
+            console.log('✅ Rol guardado:', shortRole);
+          }
         }
 
         return {
@@ -60,19 +68,27 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('roles');
-    localStorage.removeItem('userRole');
+    if (isPlatformBrowser(this.platformId)) { // <-- Protección SSR
+      localStorage.removeItem('token');
+      localStorage.removeItem('roles');
+      localStorage.removeItem('userRole');
+    }
   }
 
   getToken(): string | null {
-    return localStorage.getItem('token');
+    if (isPlatformBrowser(this.platformId)) { // <-- Protección SSR
+      return localStorage.getItem('token');
+    }
+    return null;
   }
 
   getRoles(): string[] {
     try {
-      const r = localStorage.getItem('roles');
-      return r ? JSON.parse(r) : [];
+      if (isPlatformBrowser(this.platformId)) { // <-- Protección SSR
+        const r = localStorage.getItem('roles');
+        return r ? JSON.parse(r) : [];
+      }
+      return [];
     } catch {
       return [];
     }

@@ -1,12 +1,80 @@
 // @ts-ignore
 
-import { Routes } from '@angular/router';
+import { Routes, CanActivateFn } from '@angular/router';
 import { PublicLayout } from './layouts/public-layout/public-layout';
 import { PrivateLayout } from './layouts/private-layout/private-layout';
 import {PrivateLayoutNutricionista} from './layouts/private-layout-nutricionista/private-layout-nutricionista';
 import {DatosSaludComponent} from './registro-usuario/datos-salud/datos-salud';
 import {RegistroUsuarioComponent} from './registro-usuario/registro-usuario';
 import {ListarCitasNutricionista} from './citas-nutricionista/listar/listar';
+import { inject, PLATFORM_ID } from '@angular/core';
+import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { AuthService } from './service/auth.service';
+import { isPlatformBrowser } from '@angular/common';
+
+
+// 🛡️ GUARDIA 1: Protege rutas privadas (solo usuarios con rol específico entran)
+const roleGuard = (expectedRoles: string[]): CanActivateFn => {
+  return (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+    const authService = inject(AuthService);
+    const router = inject(Router);
+    const platformId = inject(PLATFORM_ID);
+
+    if (!isPlatformBrowser(platformId)) return true;
+
+    if (!authService.isLoggedIn()) {
+      // No mostramos alerta aquí para no ser invasivos, simplemente redirigimos
+      router.navigate(['/iniciarsesion']);
+      return false;
+    }
+
+    const userRoles = authService.getRoles().map(r => r.replace('ROLE_', ''));
+    const isAuthorized = userRoles.some(role => expectedRoles.includes(role));
+
+    if (!isAuthorized) {
+      alert('Acceso denegado. Serás redirigido a tu perfil.');
+      if (userRoles.includes('NUTRICIONISTA')) {
+        router.navigate(['/nutricionista/perfil']);
+      } else if (userRoles.includes('PACIENTE')) {
+        router.navigate(['/sistema/perfil-paciente']);
+      } else {
+        router.navigate(['/inicio']);
+      }
+      return false;
+    }
+
+    return true;
+  };
+};
+
+// 🛡️ GUARDIA 2 (NUEVO): Protege rutas públicas (Login/Registro)
+// Si ya estás logueado, NO te deja entrar al login y te manda a tu dashboard.
+const publicGuard = (): CanActivateFn => {
+  return () => {
+    const authService = inject(AuthService);
+    const router = inject(Router);
+    const platformId = inject(PLATFORM_ID);
+
+    if (!isPlatformBrowser(platformId)) return true;
+
+    // Si YA está logueado, lo redirigimos a su sitio
+    if (authService.isLoggedIn()) {
+      const userRoles = authService.getRoles().map(r => r.replace('ROLE_', ''));
+
+      if (userRoles.includes('PACIENTE')) {
+        router.navigate(['/sistema/progreso-paciente']);
+      } else if (userRoles.includes('NUTRICIONISTA')) {
+        router.navigate(['/nutricionista/perfil']);
+      } else {
+        router.navigate(['/inicio']);
+      }
+      return false; // Bloquea el acceso al login
+    }
+
+    return true; // Deja pasar si NO está logueado
+  };
+};
+
 
 export const routes: Routes = [
   {
@@ -19,8 +87,20 @@ export const routes: Routes = [
       { path: 'planes', loadComponent: () => import('./planes/planes').then(m => m.Planes) },
       { path: 'testimonios', loadComponent: () => import('./testimonios/testimonios').then(m => m.Testimonios) },
       { path: 'centro-de-ayuda', loadComponent: () => import('./centro-de-ayuda/centro-de-ayuda').then(m => m.CentroDeAyuda) },
-      { path: 'registro', loadComponent: () => import('./registro/registro').then(m => m.Registro) },
-      { path: 'iniciarsesion', loadComponent: () => import('./iniciarsesion/iniciarsesion').then(m => m.Iniciarsesion) },
+
+      // 👇 APLICAMOS publicGuard AQUÍ
+      {
+        path: 'registro',
+        loadComponent: () => import('./registro/registro').then(m => m.Registro),
+        canActivate: [publicGuard()] // <-- Agregado
+      },
+      // 👇 APLICAMOS publicGuard AQUÍ
+      {
+        path: 'iniciarsesion',
+        loadComponent: () => import('./iniciarsesion/iniciarsesion').then(m => m.Iniciarsesion),
+        canActivate: [publicGuard()] // <-- Agregado
+      },
+
       { path: 'recuperar-password', loadComponent: () => import('./recuperar-password/recuperar-password').then(m => m.RecuperarPasswordComponent) },
       { path: 'datos-salud',loadComponent: () => import('./registro-usuario/datos-salud/datos-salud').then(m => m.DatosSaludComponent)},
       { path: 'macronutrientes',loadComponent: () => import('./registro-usuario/macronutrientes/macronutrientes').then(m => m.MacronutrientesComponent)},
@@ -28,8 +108,6 @@ export const routes: Routes = [
       { path: 'objetivo',loadComponent: () => import('./registro-usuario/objetivo/objetivo').then(m => m.ObjetivoComponent)},
       { path: 'escoger-plan',loadComponent: () => import('./registro-usuario/escoger-plan/escoger-plan').then(m => m.EscogerPlanComponent)},
       {path: 'registro-usuario',loadComponent: () =>import('./registro-usuario/registro-usuario').then(m=>RegistroUsuarioComponent)},
-
-
 
       {
         path: 'recuperar-password',
@@ -48,23 +126,23 @@ export const routes: Routes = [
           }
         ]
       },
-
       {
         path: 'password-success',
         loadComponent: () => import('./recuperar-password/password-success/password-success').then(m => m.PasswordSuccessComponent)
       }
-
     ]
   },
 
   {
     path: 'seleccion-registro',
-    loadComponent: () => import('./seleccion-registro/seleccion-registro').then(m => m.SeleccionRegistro)
+    loadComponent: () => import('./seleccion-registro/seleccion-registro').then(m => m.SeleccionRegistro),
+    canActivate: [publicGuard()] // <-- Agregado también aquí por seguridad
   },
 
   {
     path: 'nutricionista',
     component: PrivateLayoutNutricionista,
+    canActivate: [roleGuard(['NUTRICIONISTA'])],
     children: [
       {
         path: 'perfil',
@@ -117,8 +195,9 @@ export const routes: Routes = [
   {
     path: 'sistema',
     component: PrivateLayout,
+    canActivate: [roleGuard(['PACIENTE'])],
     children: [
-      { path: '', redirectTo: '/progreso-paciente', pathMatch: 'full' },
+      { path: '', redirectTo: '/sistema/progreso-paciente', pathMatch: 'full' },
       {
         path: 'progreso-paciente',
         loadComponent: () => import('./progreso-paciente/progreso-paciente').then(m => m.ProgresoPaciente)

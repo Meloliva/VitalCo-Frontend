@@ -57,6 +57,14 @@ export class ProgramarCitaService {
     );
   }
 
+  actualizarCita(cita: CitaDTO): Observable<CitaDTO> {
+    return this.http.put<CitaDTO>(
+      `${this.apiUrl}/actualizarCita`,
+      cita,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(this.handleError));
+  }
+
   private handleError(error: HttpErrorResponse) {
     /**
      * 🚨 CORRECCIÓN 3:
