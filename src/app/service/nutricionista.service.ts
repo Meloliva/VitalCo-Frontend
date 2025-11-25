@@ -218,7 +218,7 @@ export class NutricionistaService {
       { headers: this.getHeaders() }
     );
   }
-  editar (cita: CitaDTO): Observable<CitaDTO> {
+  editarCita (cita: CitaDTO): Observable<CitaDTO> {
     return this.http.put<CitaDTO>(
       `${this.apiUrl}/actualizarCita`,
       cita,

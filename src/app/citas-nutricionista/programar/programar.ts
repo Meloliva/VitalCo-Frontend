@@ -240,7 +240,7 @@ export class ProgramarCitasNutricionista implements OnInit {
 
         console.log("📝 Actualizando cita:", citaActualizada);
 
-        await firstValueFrom(this.nutricionistaService.editar(citaActualizada));
+        await firstValueFrom(this.nutricionistaService.editarCita(citaActualizada));
 
         this.successMessage = '¡Cita actualizada correctamente!';
         this.isLoading = false;
@@ -311,7 +311,7 @@ export class ProgramarCitasNutricionista implements OnInit {
 
   // ✅ Método para cancelar la edición
   cancelarEdicion(): void {
-    this.router.navigate(['nutricionista/citas/listar']);
+    this.router.navigate(['/nutricionista/listar-citas']);
   }
 
   // Getters para el template
