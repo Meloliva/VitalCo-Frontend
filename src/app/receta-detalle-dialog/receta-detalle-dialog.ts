@@ -57,17 +57,24 @@ export class RecetaDetalleDialogComponent {
   }
 
   tieneInfoNutricional(): boolean {
-    return !!(this.data.calorias || this.data.proteinas ||
-      this.data.carbohidratos || this.data.grasas);
+    return !!(
+      this.data.calorias ||
+      this.data.proteinas ||
+      this.data.carbohidratos ||
+      this.data.grasas
+    );
   }
 
   tieneDetalles(): boolean {
-    return !!(this.data.descripcion || this.data.ingredientes ||
-      this.data.preparacion || this.tieneInfoNutricional());
+    return !!(
+      this.data.descripcion ||
+      this.data.ingredientes ||
+      this.data.preparacion ||
+      this.tieneInfoNutricional()
+    );
   }
 
   puedeAgregarAProgreso(): boolean {
-    // Verificar que tengamos el ID necesario para agregar a progreso
     return !!this.data.idPlanRecetaReceta;
   }
 
@@ -93,9 +100,8 @@ export class RecetaDetalleDialogComponent {
         this.agregando = false;
         this.mostrarExito = true;
 
-        // Cerrar el modal después de 2 segundos y notificar que se actualizó
         setTimeout(() => {
-          this.cerrar(true); // ✅ Pasar true para indicar que hubo cambios
+          this.cerrar(true);
         }, 2000);
       },
       error: (error) => {
@@ -113,25 +119,38 @@ export class RecetaDetalleDialogComponent {
     });
   }
 
-  formatearPreparacion(preparacion: string): string {
-    if (!preparacion) return '';
-
-    if (preparacion.includes('<ol>') || preparacion.includes('<li>')) {
-      return preparacion;
+  obtenerIngredientesArray(): string[] {
+    if (!this.data.ingredientes) {
+      return [];
     }
 
-    const lineas = preparacion.split('\n').filter(l => l.trim());
-    if (lineas.some(l => /^\d+\./.test(l.trim()))) {
-      const items = lineas.map(l => {
-        const texto = l.replace(/^\d+\.\s*/, '');
-        return `<li>${texto}</li>`;
-      }).join('');
-      return `<ol>${items}</ol>`;
+    const ingredientes = this.data.ingredientes
+      .split(/[\n,;]+/)
+      .map(item => item.trim())
+      .filter(item => item.length > 0);
+
+    return ingredientes;
+  }
+
+  obtenerPreparacionArray(): string[] {
+    if (!this.data.preparacion) {
+      return [];
     }
 
-    return preparacion.split('\n')
-      .filter(l => l.trim())
-      .map(l => `<p>${l}</p>`)
-      .join('');
+    // Separar por números seguidos de punto (1., 2., 3., etc.) o saltos de línea
+    let pasos = this.data.preparacion
+      .split(/(?:\d+\.\s*|\n)+/)
+      .map(item => item.trim())
+      .filter(item => item.length > 0);
+
+    // Si no se encontraron separadores numéricos, intentar separar por punto seguido de espacio
+    if (pasos.length === 1) {
+      pasos = this.data.preparacion
+        .split(/\.\s+/)
+        .map(item => item.trim())
+        .filter(item => item.length > 0);
+    }
+
+    return pasos;
   }
 }

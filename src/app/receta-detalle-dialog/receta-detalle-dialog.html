@@ -67,9 +67,11 @@
 
     <!-- Ingredientes -->
     <div class="seccion" *ngIf="data.ingredientes">
-      <h3>Ingredientes</h3>
+      <h3>Ingredientes ({{ data.cantidadPorcion || 1 }} porción<span *ngIf="(data.cantidadPorcion || 1) > 1">es</span>)</h3>
       <div class="ingredientes-lista">
-        <p>{{ data.ingredientes }}</p>
+        <ul>
+          <li *ngFor="let ingrediente of obtenerIngredientesArray()">{{ ingrediente }}</li>
+        </ul>
       </div>
     </div>
 
@@ -77,7 +79,9 @@
     <div class="seccion" *ngIf="data.preparacion">
       <h3>Preparación</h3>
       <div class="preparacion-texto">
-        <p [innerHTML]="formatearPreparacion(data.preparacion)"></p>
+        <ol>
+          <li *ngFor="let paso of obtenerPreparacionArray()">{{ paso }}</li>
+        </ol>
       </div>
     </div>
 
@@ -101,14 +105,16 @@
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
-    <button mat-button (click)="cerrar()">
+    <button
+      mat-raised-button
+      (click)="cerrar()"
+      class="btn-cancelar">
       Cancelar
     </button>
 
     <!-- ✅ Botón para agregar a progreso -->
     <button
       mat-raised-button
-      color="accent"
       (click)="agregarAProgreso()"
       [disabled]="agregando || !puedeAgregarAProgreso()"
       class="btn-agregar">
