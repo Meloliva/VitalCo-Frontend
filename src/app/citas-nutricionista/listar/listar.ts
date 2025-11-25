@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { NutricionistaService } from '../../service/nutricionista.service';
+import { NutricionistaService, CitaDTO } from '../../service/nutricionista.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -100,11 +100,21 @@ export class ListarCitasNutricionista implements OnInit {
         }
 
         const citasConPaciente$ = data.map((c: any) => {
-          // Mapeo seguro de datos
-          const citaBase = {
+          // ✅ Guardar los datos completos de la cita para el backend
+          const citaCompleta: CitaDTO = {
             id: c.idCita || c.id,
-            idPaciente: c.idPaciente,
-            date: c.dia, // Guardamos fecha para validar hora
+            dia: c.dia,
+            hora: c.hora,
+            descripcion: c.descripcion || 'Sin descripción',
+            link: c.linkReunion || c.link || '',
+            idPaciente: c.idPaciente, // Puede ser número u objeto
+            idNutricionista: c.idNutricionista
+          };
+
+          // Mapeo para la UI
+          const citaBase = {
+            ...citaCompleta, // ✅ Guardamos los datos originales
+            date: c.dia,
             patientName: 'Sin paciente',
             avatarInitials: '?',
             time: c.hora,
@@ -116,6 +126,17 @@ export class ListarCitasNutricionista implements OnInit {
 
           if (!c.idPaciente) return of(citaBase);
 
+          // Si idPaciente es un objeto, usar directamente sus datos
+          if (typeof c.idPaciente === 'object' && c.idPaciente !== null) {
+            const user = c.idPaciente.idusuario || c.idPaciente;
+            if (user && user.nombre) {
+              citaBase.patientName = `${user.nombre} ${user.apellido || ''}`.trim();
+              citaBase.avatarInitials = this.getInitials(citaBase.patientName);
+            }
+            return of(citaBase);
+          }
+
+          // Si es un número, hacer la petición
           return this.nutricionistaService.obtenerPacientePorId(c.idPaciente).pipe(
             map((p: any) => {
               const user = p.idusuario;
@@ -223,13 +244,31 @@ export class ListarCitasNutricionista implements OnInit {
     });
   }
 
+  // ✅ MÉTODO REPROGRAMAR - FUNCIONAL
   reprogramar(): void {
-    if(this.selectedAppointment) {
-      // Ajusta la ruta si es diferente
-      this.router.navigate(['/sistema/citas-nutricionista/programar'], {
-        state: { datosCita: this.selectedAppointment }
-      });
+    if (!this.selectedAppointment) {
+      alert('Por favor selecciona una cita para reprogramar');
+      return;
     }
+
+    // Construir el objeto CitaDTO completo con los datos originales
+    const citaParaEditar: CitaDTO = {
+      id: this.selectedAppointment.id,
+      dia: this.selectedAppointment.dia,
+      hora: this.selectedAppointment.hora,
+      descripcion: this.selectedAppointment.descripcion,
+      link: this.selectedAppointment.link,
+      idPaciente: this.selectedAppointment.idPaciente,
+      idNutricionista: this.selectedAppointment.idNutricionista
+    };
+
+    console.log('🔄 Navegando a editar con cita:', citaParaEditar);
+
+    // Navegar al componente de programar en modo edición
+    this.router.navigate(['nutricionista/citas/programar'], {
+      queryParams: { id: this.selectedAppointment.id },
+      state: { cita: citaParaEditar }
+    });
   }
 
   // Helpers

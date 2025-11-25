@@ -1,6 +1,7 @@
 <div class="main-content-area">
   <div class="schedule-appointment-container wide-card">
-    <h1 class="form-title">Programar Cita</h1>
+    <!-- ✅ Título dinámico según el modo -->
+    <h1 class="form-title">{{ isEditMode ? 'Reprogramar Cita' : 'Programar Cita' }}</h1>
 
     <!-- Mensajes de éxito/error -->
     <div *ngIf="successMessage" class="alert alert-success">
@@ -22,8 +23,12 @@
           placeholder="Ingrese DNI del paciente"
           formControlName="dni"
           [class.input-error]="dni?.invalid && dni?.touched"
+          [class.input-disabled]="isEditMode"
         />
-        <div class="error-text" *ngIf="dni?.invalid && dni?.touched">
+        <div class="info-text" *ngIf="isEditMode">
+          ℹ️ El DNI no puede modificarse en modo edición
+        </div>
+        <div class="error-text" *ngIf="dni?.invalid && dni?.touched && !isEditMode">
           <span *ngIf="dni?.errors?.['required']">El DNI es obligatorio</span>
           <span *ngIf="dni?.errors?.['pattern'] || dni?.errors?.['minlength'] || dni?.errors?.['maxlength']">
             Debe tener exactamente 8 dígitos
@@ -103,14 +108,26 @@
         </div>
       </div>
 
-      <!-- Botón -->
+      <!-- Botones -->
       <div class="form-actions">
+        <!-- ✅ Botón de cancelar en modo edición -->
+        <button
+          *ngIf="isEditMode"
+          type="button"
+          class="btn-cancelar"
+          (click)="cancelarEdicion()"
+          [disabled]="isLoading"
+        >
+          Cancelar
+        </button>
+
+        <!-- ✅ Botón dinámico según el modo -->
         <button
           type="submit"
           class="btn-programar"
           [disabled]="appointmentForm.invalid || isLoading"
         >
-          <span *ngIf="!isLoading">Programar</span>
+          <span *ngIf="!isLoading">{{ isEditMode ? 'Actualizar' : 'Programar' }}</span>
           <span *ngIf="isLoading">Procesando...</span>
         </button>
       </div>
