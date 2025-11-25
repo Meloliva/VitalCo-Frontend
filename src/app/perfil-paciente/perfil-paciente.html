@@ -4,7 +4,13 @@
     <!-- Avatar y botón cambiar foto -->
     <div class="avatar-section">
       <div class="avatar-wrapper">
-        <mat-icon class="avatar-icon">person</mat-icon>
+        <img *ngIf="fotoPerfilUrl; else iconoDefault"
+             [src]="fotoPerfilUrl"
+             alt="Foto de perfil"
+             class="avatar-img">
+        <ng-template #iconoDefault>
+          <mat-icon class="avatar-icon">person</mat-icon>
+        </ng-template>
       </div>
       <button
         type="button"
@@ -172,4 +178,3 @@
 
   </form>
 </div>
-

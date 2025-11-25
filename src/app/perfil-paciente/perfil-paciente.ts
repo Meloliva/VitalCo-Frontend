@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef,Component, OnInit } from '@angular/core';
 import { UserService } from '../service/userlayout-service';
 import { Usuario } from '../models/usuario.model';
 import { Paciente } from '../models/paciente.model';
@@ -14,6 +14,8 @@ import { Nutricionista } from '../models/nutricionista.model';
 import { PerfilPacienteService } from '../service/perfil-paciente.service';
 import { EditarPaciente } from '../models/editar-paciente.model';
 import {Router} from '@angular/router';
+
+
 
 @Component({
   standalone: true,
@@ -36,13 +38,15 @@ export class PerfilPacienteComponent implements OnInit {
   planActual: string = 'Gratuito';
   pacienteId!: number;
   datosOriginales: any = {}; // ✅ Guardar valores originales
+  fotoPerfilUrl: string | null = null; // ✅ URL de la foto de perfil
 
   constructor(
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private userService: UserService,
     private perfilPacienteService: PerfilPacienteService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -69,6 +73,9 @@ export class PerfilPacienteComponent implements OnInit {
 
         this.pacienteId = paciente.id;
         console.log('🆔 Paciente ID:', this.pacienteId);
+
+        // ✅ Cargar foto de perfil
+        this.fotoPerfilUrl = paciente.idusuario.fotoPerfil || null;
 
         // ✅ Guardar valores originales
         this.datosOriginales = {
@@ -108,9 +115,77 @@ export class PerfilPacienteComponent implements OnInit {
   }
 
   cambiarFoto() {
-    console.log('Cambiando foto...');
+    // Crear input file dinámicamente
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*'; // Solo imágenes
+
+    input.onchange = (event: any) => {
+      const file = event.target.files[0];
+      if (file) {
+        this.subirFoto(file);
+      }
+    };
+
+    input.click(); // Abrir selector de archivos
   }
 
+  private subirFoto(file: File) {
+    // Validar tamaño (ejemplo: máximo 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      this.mostrarNotificacion('La imagen no debe superar 5MB', true);
+      return;
+    }
+
+    // Validar tipo de archivo
+    if (!file.type.startsWith('image/')) {
+      this.mostrarNotificacion('Solo se permiten imágenes', true);
+      return;
+    }
+
+    // Convertir a Base64
+    const reader = new FileReader();
+    reader.onload = () => {
+      const fotoBase64 = reader.result as string;
+
+      // ✅ ACTUALIZAR LA IMAGEN INMEDIATAMENTE EN EL PERFIL
+      this.fotoPerfilUrl = fotoBase64;
+      this.cdr.detectChanges();
+
+      // ✅ ACTUALIZAR EL SIDEBAR INSTANTÁNEAMENTE (ANTES de enviar al servidor)
+      localStorage.setItem('userAvatar', fotoBase64);
+      window.dispatchEvent(new Event('avatarChanged'));
+
+      // Luego enviar al backend
+      this.actualizarFotoPerfil(fotoBase64);
+    };
+    reader.onerror = () => {
+      this.mostrarNotificacion('Error al leer la imagen', true);
+    };
+    reader.readAsDataURL(file);
+  }
+  private actualizarFotoPerfil(fotoUrl: string) {
+    const dto: EditarPaciente = {
+      id: this.pacienteId,
+      fotoPerfil: fotoUrl
+    };
+
+    console.log('📸 Actualizando foto de perfil...');
+
+    this.perfilPacienteService.editarPaciente(dto).subscribe({
+      next: (paciente) => {
+        console.log('✅ Foto actualizada en el servidor:', paciente);
+        this.mostrarNotificacion('Foto actualizada exitosamente!');
+
+
+      },
+      error: (err) => {
+        console.error('❌ Error al actualizar foto:', err);
+        this.mostrarNotificacion('Error al actualizar la foto', true);
+        this.cargarPerfilPaciente();
+      }
+    });
+  }
   guardarCambios() {
     if (this.perfilForm.invalid) {
       this.mostrarNotificacion('Por favor, corrige los errores del formulario', true);
@@ -255,4 +330,3 @@ export class PerfilPacienteComponent implements OnInit {
     return this.perfilForm.get('peso');
   }
 }
-
