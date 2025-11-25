@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -9,7 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatOptionModule } from '@angular/material/core';
 import { firstValueFrom } from 'rxjs';
-import {ActivatedRoute, Router} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { NutricionistaService, HorarioDTO, RecetaDTO } from '../../service/nutricionista.service';
 
@@ -35,6 +35,7 @@ export class RegistrarRecetaNutricionista implements OnInit {
   recetaForm!: FormGroup;
   imagenPreview: string | null = null;
   archivoBase64: string | null = null;
+  procesandoImagen = false;
 
   horarios: HorarioDTO[] = [];
 
@@ -45,7 +46,8 @@ export class RegistrarRecetaNutricionista implements OnInit {
     private fb: FormBuilder,
     private nutricionistaService: NutricionistaService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef // ✅ Inyectado para detectar cambios
   ) {}
 
   async ngOnInit() {
@@ -60,6 +62,7 @@ export class RegistrarRecetaNutricionista implements OnInit {
       this.cargarReceta(this.idEditar);
     }
   }
+
   async cargarReceta(id: number) {
     const recetas = await firstValueFrom(this.nutricionistaService.getRecetas());
     const receta = recetas.find(r => r.idReceta === id);
@@ -79,6 +82,13 @@ export class RegistrarRecetaNutricionista implements OnInit {
       ingredientes: receta.ingredientes,
       preparacion: receta.preparacion
     });
+
+    // ✅ Cargar la imagen si existe
+    if (receta.foto) {
+      this.imagenPreview = receta.foto;
+      this.archivoBase64 = receta.foto;
+      this.cdr.detectChanges();
+    }
   }
 
   inicializarFormulario() {
@@ -111,7 +121,7 @@ export class RegistrarRecetaNutricionista implements OnInit {
     }
   }
 
-  onFileSelected(event: Event): void {
+  async onFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
 
     if (input.files && input.files.length > 0) {
@@ -122,14 +132,73 @@ export class RegistrarRecetaNutricionista implements OnInit {
         return;
       }
 
+      this.procesandoImagen = true;
+      this.imagenPreview = null;
+      this.cdr.detectChanges(); // ✅ Forzar actualización
+
+      try {
+        this.archivoBase64 = await this.procesarImagen(file);
+        this.imagenPreview = this.archivoBase64;
+
+        console.log("✅ Imagen procesada correctamente");
+        console.log("📦 Tamaño en KB:", (this.archivoBase64.length / 1024).toFixed(2));
+
+        this.cdr.detectChanges(); // ✅ Forzar actualización después de cargar
+      } catch (error) {
+        console.error("❌ Error al procesar imagen:", error);
+        alert("Error al procesar la imagen");
+      } finally {
+        this.procesandoImagen = false;
+        this.cdr.detectChanges(); // ✅ Forzar actualización final
+      }
+    }
+  }
+
+  private procesarImagen(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
       const reader = new FileReader();
+
       reader.onload = (e) => {
-        this.imagenPreview = e.target?.result as string;
-        this.archivoBase64 = this.imagenPreview; // guardamos base64
+        const img = new Image();
+
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            if (!ctx) {
+              reject(new Error('No se pudo crear el contexto del canvas'));
+              return;
+            }
+
+            // Redimensionar a máximo 800px de ancho manteniendo proporción
+            const maxWidth = 800;
+            const scale = maxWidth / img.width;
+            canvas.width = maxWidth;
+            canvas.height = img.height * scale;
+
+            // Dibujar imagen redimensionada
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            // Convertir a base64 con calidad 0.7 (70%)
+            const comprimida = canvas.toDataURL('image/jpeg', 0.7);
+
+            console.log("📦 Tamaño original:", (e.target?.result as string).length);
+            console.log("📦 Tamaño comprimido:", comprimida.length);
+
+            resolve(comprimida);
+          } catch (error) {
+            reject(error);
+          }
+        };
+
+        img.onerror = () => reject(new Error('Error al cargar la imagen'));
+        img.src = e.target?.result as string;
       };
 
+      reader.onerror = () => reject(new Error('Error al leer el archivo'));
       reader.readAsDataURL(file);
-    }
+    });
   }
 
   async guardar(): Promise<void> {
@@ -148,15 +217,15 @@ export class RegistrarRecetaNutricionista implements OnInit {
     const receta: RecetaDTO = {
       nombre: valores.nombre,
       descripcion: valores.descripcion,
-      tiempo: valores.tiempo,
-      carbohidratos: valores.azucares,
-      grasas: valores.grasaSaturada,
-      proteinas: valores.proteina,
-      calorias: valores.calorias,
-      cantidadPorcion: valores.pesoPorcion,
+      tiempo: Number(valores.tiempo),
+      carbohidratos: Number(valores.azucares),
+      grasas: Number(valores.grasaSaturada),
+      proteinas: Number(valores.proteina),
+      calorias: Number(valores.calorias),
+      cantidadPorcion: Number(valores.pesoPorcion),
       ingredientes: valores.ingredientes,
       preparacion: valores.preparacion,
-      foto: null, // imagen opcional
+      foto: this.archivoBase64,
       idhorario: {
         id: valores.horario,
         nombre: ""
@@ -169,38 +238,46 @@ export class RegistrarRecetaNutricionista implements OnInit {
       await firstValueFrom(this.nutricionistaService.registrarReceta(receta));
       alert("✅ Receta registrada correctamente");
       this.limpiarFormulario();
-    } catch (e) {
-      console.error("❌ Error al registrar receta:", e);
+    } catch (e: any) {
+      console.error("❌ Error completo:", e);
+      console.error("❌ Detalle del error:", e.error);
       alert("❌ Error al guardar la receta");
     }
   }
+
   async actualizar() {
+    if (this.recetaForm.invalid) {
+      alert("⚠️ Completa los campos obligatorios.");
+      return;
+    }
+
     const valores = this.recetaForm.value;
 
     const recetaEditada: RecetaDTO = {
       idReceta: this.idEditar!,
       nombre: valores.nombre,
       descripcion: valores.descripcion,
-      tiempo: valores.tiempo,
-      carbohidratos: valores.azucares,
-      grasas: valores.grasaSaturada,
-      proteinas: valores.proteina,
-      calorias: valores.calorias,
-      cantidadPorcion: valores.pesoPorcion,
+      tiempo: Number(valores.tiempo),
+      carbohidratos: Number(valores.azucares),
+      grasas: Number(valores.grasaSaturada),
+      proteinas: Number(valores.proteina),
+      calorias: Number(valores.calorias),
+      cantidadPorcion: Number(valores.pesoPorcion),
       ingredientes: valores.ingredientes,
       preparacion: valores.preparacion,
-      foto: null,
+      foto: this.archivoBase64,
       idhorario: { id: valores.horario, nombre: "" }
     };
 
-    await firstValueFrom(this.nutricionistaService.actualizarReceta(recetaEditada));
-
-    alert("Receta actualizada correctamente");
-
-    // ✅ Redirigir al listar
-    this.router.navigate(['/nutricionista/recetas-nutricionista/listar']);
+    try {
+      await firstValueFrom(this.nutricionistaService.actualizarReceta(recetaEditada));
+      alert("✅ Receta actualizada correctamente");
+      this.router.navigate(['/nutricionista/recetas-nutricionista/listar']);
+    } catch (e: any) {
+      console.error("❌ Error al actualizar:", e);
+      alert("❌ Error al actualizar la receta");
+    }
   }
-
 
   limpiarFormulario() {
     this.recetaForm.reset();

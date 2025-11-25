@@ -1,57 +1,79 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { Router } from '@angular/router';
 
 import { NutricionistaService, RecetaDTO } from '../../service/nutricionista.service';
-import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-listar',
   standalone: true,
   imports: [
     CommonModule,
-    MatTableModule,
     MatPaginatorModule,
-    MatSortModule,
     MatIconModule,
-    MatButtonModule
+    MatCardModule
   ],
   templateUrl: './listar.html',
   styleUrls: ['./listar.css'],
 })
 export class ListarRecetasNutricionista implements OnInit {
 
-  displayedColumns: string[] = ['foto', 'nombre', 'horario', 'tiempo', 'calorias', 'acciones'];
   dataSource = new MatTableDataSource<RecetaDTO>();
+  recetasPaginadas: RecetaDTO[] = [];
+
+  // Configuración del paginador
+  pageSize = 5;
+  pageIndex = 0;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private nutricionistaService: NutricionistaService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.cargarRecetas();
+  }
+
+  cargarRecetas(): void {
     this.nutricionistaService.getRecetas().subscribe({
       next: (data) => {
+        console.log("✅ Recetas cargadas:", data);
         this.dataSource.data = data;
+        this.actualizarRecetasPaginadas();
+        this.cdr.detectChanges();
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        console.error("❌ Error al cargar recetas:", err);
+      }
     });
   }
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+  actualizarRecetasPaginadas(): void {
+    const startIndex = this.pageIndex * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.recetasPaginadas = this.dataSource.data.slice(startIndex, endIndex);
+    this.cdr.detectChanges();
   }
 
-  editar(id: number | undefined) {
-    if (!id) return;
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.actualizarRecetasPaginadas();
+  }
+
+  editar(id: number | undefined): void {
+    if (!id) {
+      console.warn("⚠️ ID de receta no válido");
+      return;
+    }
+    console.log("✏️ Editando receta:", id);
     this.router.navigate(['/nutricionista/recetas-nutricionista/editar', id]);
   }
 }
