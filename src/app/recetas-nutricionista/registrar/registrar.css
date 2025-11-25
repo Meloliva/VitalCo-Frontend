@@ -186,31 +186,48 @@ textarea.mat-mdc-input-element {
 
 .btn-modificar,
 .btn-guardar {
-  padding: 12px 40px;
+  padding: 14px 50px;
   font-size: 16px;
-  border-radius: 10px;
   font-weight: 500;
   text-transform: none;
   transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .btn-modificar {
-  background-color: #22c55e;
+  background-color: #00BF61;
   color: white;
+  border-radius: 8px;
 }
 
 .btn-modificar:hover {
   background-color: #16a34a;
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
 }
 
 .btn-guardar {
-  background-color: #10b981;
-  color: white;
+  background-color: #00BF61!important;
+  color: white !important;
+  border-radius: 8px !important;
+  letter-spacing: 0.5px;
 }
 
 .btn-guardar:hover {
-  background-color: #059669;
+  background-color: #059669 !important;
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
 }
+
+/* Efecto al hacer clic */
+.btn-guardar:active,
+.btn-modificar:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 
 /* ==========================
    📝 Textarea

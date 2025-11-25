@@ -83,7 +83,7 @@ export interface RecetaDTO {
   nombre: string;
   preparacion: string;
   cantidadPorcion: number;
-  foto?: null;  // <-- opcional
+  foto?: string | null; // <-- opcional
 }
 
 export interface HorarioDTO {

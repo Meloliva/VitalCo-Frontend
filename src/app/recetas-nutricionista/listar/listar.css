@@ -1,15 +1,237 @@
-/* Redondear la imagen y darle espacio */
-.foto-receta {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 10px;
-  margin-top: 8px;
-  margin-bottom: 8px;
+/* ==========================
+   🍽️ Contenedor Principal
+   ========================== */
+.recetas-container {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 20px;
 }
 
-/* Aumentar espacio vertical de TODAS las celdas de foto */
-.foto-cell {
-  padding-top: 12px !important;
-  padding-bottom: 12px !important;
+.recetas-card {
+  background-color: #ffffff;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+}
+
+.titulo-recetas {
+  color: #00BF61;
+  font-size: 28px!important;
+  font-weight: 700;
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+/* ==========================
+   📋 Lista de Recetas
+   ========================== */
+.recetas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ==========================
+   🎴 Card Individual
+   ========================== */
+.receta-card {
+  background-color: #ffffff;
+  border: 2px solid #00BF61;
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.receta-card:hover {
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+  transform: translateY(-2px);
+}
+
+.receta-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ==========================
+   🖼️ Imagen
+   ========================== */
+.receta-imagen {
+  flex-shrink: 0;
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f9fafb;
+}
+
+.receta-imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ==========================
+   📝 Información
+   ========================== */
+.receta-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.receta-nombre {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+}
+
+.receta-descripcion {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 12px 0;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ==========================
+   🥗 Información Nutricional
+   ========================== */
+.receta-nutricion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.nutricion-item {
+  font-size: 13px;
+  color: #4b5563;
+  background-color: #f3f4f6;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nutricion-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  color: #9ca3af !important;
+}
+
+/* ==========================
+   🔘 Botón Editar
+   ========================== */
+.receta-acciones {
+  flex-shrink: 0;
+}
+
+.btn-editar {
+  background-color: #00BF61;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.btn-editar:hover {
+  background-color: #00BF61;
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-editar:active {
+  transform: translateY(0);
+}
+
+/* ==========================
+   ❌ Sin Recetas
+   ========================== */
+.sin-recetas {
+  text-align: center;
+  padding: 60px 20px;
+  color: #9ca3af;
+  font-size: 16px;
+}
+
+/* ==========================
+   📄 Paginador
+   ========================== */
+.paginador-container {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.paginador-container ::ng-deep .mat-mdc-paginator {
+  background-color: transparent;
+  border-radius: 8px;
+}
+
+.paginador-container ::ng-deep .mat-mdc-paginator-container {
+  padding: 0;
+  justify-content: center;
+}
+
+/* ==========================
+   📱 Responsive
+   ========================== */
+@media (max-width: 768px) {
+  .receta-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .receta-imagen {
+    width: 80px;
+    height: 80px;
+  }
+
+  .receta-acciones {
+    width: 100%;
+  }
+
+  .btn-editar {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .recetas-container {
+    padding: 15px;
+  }
+
+  .titulo-recetas {
+    font-size: 20px;
+  }
+
+  .receta-card {
+    padding: 15px;
+  }
+
+  .receta-nombre {
+    font-size: 16px;
+  }
+
+  .receta-descripcion {
+    font-size: 13px;
+  }
 }
