@@ -4,13 +4,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common'; // <-- Importar isPlatformBrowser
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core'; // <-- Importar Inject y PLATFORM_ID
 import { UserService } from '../service/userlayout-service';
 import { Usuario } from '../models/usuario.model';
 import { Paciente } from '../models/paciente.model';
-import { Nutricionista } from '../models/nutricionista.model';
 import { PerfilPacienteService } from '../service/perfil-paciente.service';
 import { EditarPaciente } from '../models/editar-paciente.model';
 import { Router } from '@angular/router';
@@ -36,8 +35,6 @@ export class PerfilPacienteComponent implements OnInit {
   planActual: string = 'Gratuito';
   pacienteId!: number;
   datosOriginales: any = {};
-
-  // ✅ CORRECCIÓN: Declaramos la variable que tu HTML está pidiendo
   fotoPerfilUrl: string = '';
 
   constructor(
@@ -45,12 +42,19 @@ export class PerfilPacienteComponent implements OnInit {
     private snackBar: MatSnackBar,
     private userService: UserService,
     private perfilPacienteService: PerfilPacienteService,
-    private router: Router
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object // <-- Inyección necesaria para detectar navegador
   ) {}
 
   ngOnInit(): void {
     this.iniciarFormulario();
-    this.cargarPerfilPaciente();
+
+    // 🛡️ CORRECCIÓN CRÍTICA:
+    // Solo cargamos los datos si estamos en el NAVEGADOR.
+    // En el servidor (SSR) no tenemos token, así que no tiene sentido llamar a la API.
+    if (isPlatformBrowser(this.platformId)) {
+      this.cargarPerfilPaciente();
+    }
   }
 
   iniciarFormulario() {
@@ -69,11 +73,7 @@ export class PerfilPacienteComponent implements OnInit {
     this.userService.getUsuarioPaciente().subscribe({
       next: (paciente: Paciente) => {
         console.log('✅ Perfil paciente cargado:', paciente);
-
         this.pacienteId = paciente.id;
-
-        // ✅ CORRECCIÓN: Asignamos el valor a la variable para que el HTML lo lea
-        // Si no hay foto, dejamos un string vacío o la ruta por defecto
         this.fotoPerfilUrl = paciente.idusuario.fotoPerfil || '/Images/iconos/iconoSistemas/image 18.png';
 
         this.datosOriginales = {
@@ -99,8 +99,7 @@ export class PerfilPacienteComponent implements OnInit {
       error: (err) => {
         console.error('❌ Error al cargar el perfil del paciente:', err);
 
-        // ✅ MANEJO DE ERROR AL REFRESCAR:
-        // Si el error es 403 (Prohibido) o 401 (No autorizado), limpiamos todo y mandamos al login
+        // Si falla en el navegador, ahí sí manejamos el logout
         if (err.status === 403 || err.status === 401 || err.status === 0) {
           this.mostrarNotificacion('Sesión expirada. Por favor, inicia sesión nuevamente.', true);
           this.eliminarTokenYLlevarAInicio();
@@ -111,10 +110,12 @@ export class PerfilPacienteComponent implements OnInit {
     });
   }
 
-  // Función auxiliar para limpiar y salir
   private eliminarTokenYLlevarAInicio(): void {
-    this.userService.clearUser();
-    localStorage.removeItem('token');
+    // 🛡️ CORRECCIÓN: Protección para no romper el servidor si esto se llama por error
+    if (isPlatformBrowser(this.platformId)) {
+      this.userService.clearUser();
+      localStorage.removeItem('token');
+    }
     this.router.navigate(['/iniciarsesion']);
   }
 
@@ -129,7 +130,6 @@ export class PerfilPacienteComponent implements OnInit {
 
   cambiarFoto() {
     console.log('Cambiando foto...');
-    // Aquí iría tu lógica para subir foto
   }
 
   guardarCambios() {
@@ -139,36 +139,14 @@ export class PerfilPacienteComponent implements OnInit {
     }
 
     const formValues = this.perfilForm.value;
+    const dto: EditarPaciente = { id: this.pacienteId };
 
-    const dto: EditarPaciente = {
-      id: this.pacienteId,
-    };
-
-    if (formValues.edad != null && formValues.edad !== this.datosOriginales.edad) {
-      dto.edad = Number(formValues.edad);
-    }
-
-    if (formValues.altura != null && formValues.altura !== this.datosOriginales.altura) {
-      dto.altura = Number(formValues.altura);
-    }
-
-    if (formValues.cntTrigliceridos != null && formValues.cntTrigliceridos !== this.datosOriginales.cntTrigliceridos) {
-      dto.trigliceridos = Number(formValues.cntTrigliceridos);
-    }
-
-    if (formValues.peso != null && formValues.peso !== this.datosOriginales.peso) {
-      dto.peso = Number(formValues.peso);
-    }
-
-    if (formValues.correo && formValues.correo.trim() !== this.datosOriginales.correo) {
-      dto.correo = formValues.correo.trim();
-    }
-
-    if (formValues.contrasena && formValues.contrasena.trim() !== '') {
-      dto.contraseña = formValues.contrasena.trim();
-    }
-
-    console.log('📦 DTO enviado (solo campos modificados):', dto);
+    if (formValues.edad != null && formValues.edad !== this.datosOriginales.edad) dto.edad = Number(formValues.edad);
+    if (formValues.altura != null && formValues.altura !== this.datosOriginales.altura) dto.altura = Number(formValues.altura);
+    if (formValues.cntTrigliceridos != null && formValues.cntTrigliceridos !== this.datosOriginales.cntTrigliceridos) dto.trigliceridos = Number(formValues.cntTrigliceridos);
+    if (formValues.peso != null && formValues.peso !== this.datosOriginales.peso) dto.peso = Number(formValues.peso);
+    if (formValues.correo && formValues.correo.trim() !== this.datosOriginales.correo) dto.correo = formValues.correo.trim();
+    if (formValues.contrasena && formValues.contrasena.trim() !== '') dto.contraseña = formValues.contrasena.trim();
 
     if (Object.keys(dto).length === 1) {
       this.mostrarNotificacion('No hay cambios para guardar');
@@ -177,14 +155,10 @@ export class PerfilPacienteComponent implements OnInit {
 
     this.perfilPacienteService.editarPaciente(dto).subscribe({
       next: (paciente) => {
-        console.log('✅ Paciente actualizado:', paciente);
         this.mostrarNotificacion('Cambios guardados exitosamente!');
-
-        // Actualizamos la variable local también si la foto cambió (aunque aquí editamos datos, no foto)
         if (paciente.idusuario.fotoPerfil) {
           this.fotoPerfilUrl = paciente.idusuario.fotoPerfil;
         }
-
         this.datosOriginales = {
           correo: paciente.idusuario?.correo || this.datosOriginales.correo,
           edad: paciente.edad || this.datosOriginales.edad,
@@ -192,40 +166,30 @@ export class PerfilPacienteComponent implements OnInit {
           cntTrigliceridos: paciente.trigliceridos || this.datosOriginales.cntTrigliceridos,
           peso: paciente.peso || this.datosOriginales.peso,
         };
-
         this.perfilForm.patchValue({ contrasena: '' });
       },
       error: (err) => {
-        console.error('❌ Error al guardar cambios:', err);
-
         let mensajeError = 'Error al guardar los cambios';
-        if (err.error?.message) {
-          mensajeError += ': ' + err.error.message;
-        }
-
+        if (err.error?.message) mensajeError += ': ' + err.error.message;
         this.mostrarNotificacion(mensajeError, true);
       }
     });
   }
 
   eliminarCuenta() {
-    const confirmacion = confirm('¿Estás seguro de que quieres eliminar tu cuenta?');
-    if (confirmacion) {
+    if (confirm('¿Estás seguro de que quieres eliminar tu cuenta?')) {
       this.perfilPacienteService.eliminarUsuario().subscribe({
         next: () => {
-          console.log('✅ Cuenta eliminada');
           this.mostrarNotificacion('Cuenta eliminada exitosamente');
-
-          this.userService.clearUser();
-          localStorage.removeItem('token');
-          localStorage.removeItem('roles');
-          localStorage.removeItem('userRole');
-          setTimeout(() => {
-            this.router.navigate(['/inicio']);
-          }, 1500);
+          if (isPlatformBrowser(this.platformId)) {
+            this.userService.clearUser();
+            localStorage.removeItem('token');
+            localStorage.removeItem('roles');
+            localStorage.removeItem('userRole');
+          }
+          setTimeout(() => { this.router.navigate(['/inicio']); }, 1500);
         },
         error: (err) => {
-          console.error('❌ Error al eliminar cuenta:', err);
           this.mostrarNotificacion('Error al eliminar la cuenta', true);
         }
       });
@@ -233,9 +197,7 @@ export class PerfilPacienteComponent implements OnInit {
   }
 
   eliminarPlan() {
-    const confirmacion = confirm('¿Estás seguro de que quieres eliminar tu plan Premium?');
-    if (confirmacion) {
-      console.log('Plan eliminado');
+    if (confirm('¿Estás seguro de que quieres eliminar tu plan Premium?')) {
       this.mostrarNotificacion('Plan eliminado');
     }
   }
@@ -247,7 +209,7 @@ export class PerfilPacienteComponent implements OnInit {
     });
   }
 
-  // Getters para el HTML
+  // Getters
   get edad() { return this.perfilForm.get('edad'); }
   get altura() { return this.perfilForm.get('altura'); }
   get sexo() { return this.perfilForm.get('sexo'); }
