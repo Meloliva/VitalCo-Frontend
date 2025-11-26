@@ -16,14 +16,14 @@ export interface RolDTO {
 export interface UsuarioDTO {
   id?: number;
   dni: string;
-  contraseña: string;
+  contraseña?: string;
   nombre: string;
   apellido: string;
   correo: string;
   genero: string;
   rol?: RolDTO;
   estado?: string;
-  fotoPerfil?: string;
+  fotoPerfil?: string | null;
 }
 
 export interface TurnoDTO {

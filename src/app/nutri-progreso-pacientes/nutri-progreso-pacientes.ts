@@ -1,16 +1,39 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { NutricionistaRequerimientoDTO } from '../models/nutricionista-requerimiento';
+import { SeguimientoDTO } from '../models/seguimiendo-paciente.model';
+
+import { SeguimientoService } from '../service/seguimiento.service';
+import { NutricionistaService, UsuarioDTO } from '../service/nutricionista.service';
+import { Paciente } from '../models/paciente.model';
+
+interface PacienteVista {
+  dni: string;
+  nombre: string;
+  apellido: string;
+  foto: string | null;
+
+  calorias: { actual: number; meta: number };
+  proteinas: { actual: number; meta: number };
+  carbohidratos: { actual: number; meta: number };
+  grasas: { actual: number; meta: number };
+
+  desayuno: number;
+  almuerzo: number;
+  snack: number;
+  cena: number;
+
+  idPlanNutricional: number;
+}
 
 @Component({
   selector: 'app-nutri-progreso-pacientes',
@@ -19,96 +42,288 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
     CommonModule,
     FormsModule,
     MatCardModule,
-    MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
     MatIconModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatSnackBarModule
   ],
   templateUrl: './nutri-progreso-pacientes.html',
   styleUrls: ['./nutri-progreso-pacientes.css']
 })
-export class NutriProgresoPacientesComponent {
+export class NutriProgresoPacientesComponent implements OnInit {
 
-  vistaActual: 'buscar' | 'resultados' | 'ver' | 'editar' | 'confirmacion' = 'buscar';
+  vista: 'buscar' | 'lista' | 'detalle' | 'editar' = 'buscar';
 
-  fechaSeguimiento = '';
-  dniFiltro = '';
+  fechaBusqueda = '';
+  dniBusqueda = '';
 
-  pacientes = [
-    {
-      id: 1,
-      nombre: 'Andrea García Heredia',
-      dni: '20478945',
-      estado: 'Editar Modificados',
-      fecha: '16/09/25',
-      calorias: { actual: 1600, meta: 2000 },
-      macros: {
-        proteina: { actual: 70, meta: 100 },
-        carbohidratos: { actual: 200, meta: 250 },
-        grasas: { actual: 97, meta: 100 }
-      },
-      comidas: { desayuno: 250, almuerzo: 600, snacks: 150, cena: 400 },
-      metas: { calorias: 1157, proteinas: 90, grasas: 35, carbohidratos: 60, tiempo: '6 meses' }
-    }
-  ];
+  pacientes: PacienteVista[] = [];
+  pacienteActual: PacienteVista | null = null;
 
-  pacienteSeleccionado: any = null;
-  metasEditadas: any = {};
-  mensajeConfirmacion = '';
+  paginaActual = 0;
+  itemsPorPagina = 5;
 
+  metasEditadas = {
+    calorias: 0,
+    proteinas: 0,
+    grasas: 0,
+    carbohidratos: 0
+  };
 
-  // 🔹 PAGINADOR
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  // ✅ Para validar que no sean menores a lo consumido
+  minimoPermitido = {
+    calorias: 0,
+    proteinas: 0,
+    grasas: 0,
+    carbohidratos: 0
+  };
 
-  pageSize = 3;
-  pageIndex = 0;
+  erroresValidacion = {
+    calorias: '',
+    proteinas: '',
+    grasas: '',
+    carbohidratos: ''
+  };
 
-  get pacientesPaginados() {
-    const start = this.pageIndex * this.pageSize;
-    const end = start + this.pageSize;
-    return this.pacientes.slice(start, end);
+  cargando = false;
+
+  constructor(
+    private seguimientoService: SeguimientoService,
+    private nutricionistaService: NutricionistaService,
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit() {
+    const hoy = new Date();
+    this.fechaBusqueda = hoy.toISOString().split('T')[0];
   }
 
-  onPageChange(event: any) {
-    this.pageSize = event.pageSize;
-    this.pageIndex = event.pageIndex;
+  get pacientesPaginados(): PacienteVista[] {
+    const inicio = this.paginaActual * this.itemsPorPagina;
+    return this.pacientes.slice(inicio, inicio + this.itemsPorPagina);
   }
 
+  onCambioPagina(event: PageEvent) {
+    this.paginaActual = event.pageIndex;
+    this.itemsPorPagina = event.pageSize;
+  }
 
   buscar() {
-    this.vistaActual = 'resultados';
+    if (!this.fechaBusqueda) {
+      this.mensaje('Seleccione una fecha');
+      return;
+    }
+
+    if (!this.dniBusqueda.trim()) {
+      this.mensaje('Ingrese un DNI para buscar');
+      return;
+    }
+
+    this.cargando = true;
+
+    this.nutricionistaService.buscarPacientePorDni(this.dniBusqueda.trim()).subscribe({
+      next: (paciente: Paciente) => {
+
+        if (!paciente.idPlanNutricional) {
+          this.mensaje("Este paciente no tiene un plan nutricional asignado.");
+          this.cargando = false;
+          this.cdr.markForCheck();
+          return;
+        }
+
+        const idPlan = paciente.idPlanNutricional.id;
+
+        this.seguimientoService.obtenerResumenPorDniYFecha(this.dniBusqueda.trim(), this.fechaBusqueda)
+          .subscribe({
+            next: (data: SeguimientoDTO) => {
+
+              const vista = this.mapearPaciente(
+                data,
+                paciente.idusuario,
+                idPlan
+              );
+
+              this.pacientes = [vista];
+              this.vista = 'lista';
+              this.paginaActual = 0;
+              this.cargando = false;
+
+              this.cdr.markForCheck();
+            },
+            error: () => {
+              this.mensaje("No hay seguimiento para esa fecha.");
+              this.cargando = false;
+              this.cdr.markForCheck();
+            }
+          });
+      },
+      error: () => {
+        this.mensaje("No se encontró un paciente con ese DNI.");
+        this.cargando = false;
+        this.cdr.markForCheck();
+      }
+    });
   }
 
-  verPaciente(paciente: any) {
-    this.pacienteSeleccionado = paciente;
-    this.vistaActual = 'ver';
+  private mapearPaciente(
+    datos: SeguimientoDTO,
+    usuario: UsuarioDTO,
+    idPlan: number
+  ): PacienteVista {
+
+    const t = datos.totalesNutricionales;
+    const c = datos.caloriasPorHorario;
+
+    return {
+      dni: usuario.dni || '',
+      nombre: usuario.nombre || 'N/A',
+      apellido: usuario.apellido || 'N/A',
+      foto: usuario.fotoPerfil || null,
+
+      calorias: { actual: t.calorias, meta: t.requerido_calorias },
+      proteinas: { actual: t.proteinas, meta: t.requerido_proteinas },
+      carbohidratos: { actual: t.carbohidratos, meta: t.requerido_carbohidratos },
+      grasas: { actual: t.grasas, meta: t.requerido_grasas },
+
+      desayuno: c.desayuno || 0,
+      almuerzo: c.almuerzo || 0,
+      snack: c.snack || 0,
+      cena: c.cena || 0,
+
+      idPlanNutricional: idPlan
+    };
   }
 
-  editarPaciente(paciente: any) {
-    this.pacienteSeleccionado = paciente;
-    this.metasEditadas = { ...paciente.metas };
-    this.vistaActual = 'editar';
+  verDetalle(p: PacienteVista) {
+    this.pacienteActual = { ...p };
+    this.vista = 'detalle';
+    this.cdr.markForCheck();
   }
 
-  guardarCambios() {
-    this.pacienteSeleccionado.metas = { ...this.metasEditadas };
-    this.vistaActual = 'confirmacion';
-    this.mensajeConfirmacion = 'Se modificó correctamente';
+  abrirEdicion(p: PacienteVista) {
+    this.pacienteActual = { ...p };
+    this.metasEditadas = {
+      calorias: p.calorias.meta,
+      proteinas: p.proteinas.meta,
+      grasas: p.grasas.meta,
+      carbohidratos: p.carbohidratos.meta
+    };
+
+    // ✅ Establecer los mínimos permitidos (lo ya consumido)
+    this.minimoPermitido = {
+      calorias: p.calorias.actual,
+      proteinas: p.proteinas.actual,
+      grasas: p.grasas.actual,
+      carbohidratos: p.carbohidratos.actual
+    };
+
+    // ✅ Limpiar errores previos
+    this.erroresValidacion = {
+      calorias: '',
+      proteinas: '',
+      grasas: '',
+      carbohidratos: ''
+    };
+
+    this.vista = 'editar';
+    this.cdr.markForCheck();
+  }
+
+  // ✅ Validar campo individual
+  validarCampo(campo: 'calorias' | 'proteinas' | 'grasas' | 'carbohidratos') {
+    const valor = this.metasEditadas[campo];
+    const minimo = this.minimoPermitido[campo];
+
+    if (valor < minimo) {
+      this.erroresValidacion[campo] = `Mínimo permitido: ${minimo} (ya consumido)`;
+      return false;
+    } else {
+      this.erroresValidacion[campo] = '';
+      return true;
+    }
+  }
+
+  // ✅ Validar todos los campos antes de guardar
+  validarTodos(): boolean {
+    const camposValidos = this.validarCampo('calorias') &&
+      this.validarCampo('proteinas') &&
+      this.validarCampo('grasas') &&
+      this.validarCampo('carbohidratos');
+
+    if (!camposValidos) {
+      this.mensaje('Por favor, revise los valores ingresados.');
+    }
+
+    return camposValidos;
+  }
+
+  guardar() {
+    if (!this.pacienteActual) return;
+
+    // ✅ Validar antes de guardar
+    if (!this.validarTodos()) {
+      this.cdr.markForCheck();
+      return;
+    }
+
+    const dto: NutricionistaRequerimientoDTO = {
+      idPlanNutricional: this.pacienteActual.idPlanNutricional,
+      caloriasDiaria: this.metasEditadas.calorias,
+      proteinasDiaria: this.metasEditadas.proteinas,
+      grasasDiaria: this.metasEditadas.grasas,
+      carbohidratosDiaria: this.metasEditadas.carbohidratos
+    };
+
+    this.cargando = true;
+
+    this.seguimientoService.editarPlanAlimenticio(this.pacienteActual.dni, dto)
+      .subscribe({
+        next: () => {
+          // ✅ Actualizar los datos en el array y en pacienteActual
+          if (this.pacientes.length > 0) {
+            this.pacientes[0].calorias.meta = this.metasEditadas.calorias;
+            this.pacientes[0].proteinas.meta = this.metasEditadas.proteinas;
+            this.pacientes[0].grasas.meta = this.metasEditadas.grasas;
+            this.pacientes[0].carbohidratos.meta = this.metasEditadas.carbohidratos;
+
+            this.pacienteActual = { ...this.pacientes[0] };
+          }
+
+          this.mensaje("Metas nutricionales actualizadas.");
+          this.vista = 'detalle';
+          this.cargando = false;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.mensaje("Error al guardar cambios.");
+          this.cargando = false;
+          this.cdr.markForCheck();
+        }
+      });
   }
 
   volver() {
-    if (['ver', 'editar', 'confirmacion'].includes(this.vistaActual)) {
-      this.vistaActual = 'resultados';
+    if (this.vista === 'detalle' || this.vista === 'editar') {
+      this.vista = 'lista';
     } else {
-      this.vistaActual = 'buscar';
+      this.vista = 'buscar';
+      this.pacientes = [];
     }
+    this.pacienteActual = null;
+    this.cdr.markForCheck();
   }
 
-  porcentaje(actual: number, meta: number) {
-    return (actual / meta) * 100;
+  porcentaje(actual: number, meta: number): number {
+    return meta > 0 ? Math.min((actual / meta) * 100, 100) : 0;
+  }
+
+  private mensaje(txt: string) {
+    this.snackBar.open(txt, 'Cerrar', {
+      duration: 3000,
+      horizontalPosition: 'center',
+      verticalPosition: 'top'
+    });
   }
 }
-

@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import {SeguimientoDTO} from '../models/seguimiendo-paciente.model';
+import {NutricionistaRequerimientoDTO} from '../models/nutricionista-requerimiento';
 
 export interface SeguimientoResumenDTO {
   nombrePaciente: string;
@@ -52,10 +53,13 @@ export class SeguimientoService {
   }
 
   obtenerResumenPorFecha(fecha: string): Observable<SeguimientoDTO> {
-    return this.http.get<SeguimientoResumenDTO>(
+    return this.http.get<SeguimientoDTO>(
       `${this.apiUrl}/listarSeguimientos/${fecha}`,
       { headers: this.getHeaders() }
     );
   }
 
+  editarPlanAlimenticio(dni: string, dto: NutricionistaRequerimientoDTO) {
+    return this.http.put(`${this.apiUrl}/editarNutrientes/${dni}`, dto);
+  }
 }

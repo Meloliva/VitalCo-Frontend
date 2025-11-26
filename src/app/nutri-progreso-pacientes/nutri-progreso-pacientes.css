@@ -1,188 +1,180 @@
-
-.main-content {
-  flex-grow: 1;
+/* Contenedor principal */
+.contenedor-principal {
+  min-height: 100vh;
   padding: 48px 28px;
   background: #ffffff;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  overflow-y: auto;
-  box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
 }
 
-.container {
-  background: #ffffff;
-  padding: 40px;
-  border-radius: 24px;
-  max-width: 900px;
+.seccion {
   width: 100%;
+  max-width: 900px;
 }
 
 h1 {
   color: #16a34a;
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 600;
   margin-bottom: 24px;
 }
 
-/* ===== Mat-Card principal ===== */
-.form-card {
-  background: #fff !important;
-  border: 2px solid #16a34a !important;
-  border-radius: 16px !important;
-  padding: 32px !important;
-  box-shadow: none !important;
+.subtitulo {
+  text-align: center;
+  color: #666;
+  font-size: 20px;
+  font-weight: bold;
+  margin: -16px 0 24px;
 }
 
-.form-card mat-card-content {
-  padding: 0 !important;
-  margin: 0 !important;
+/* Tarjetas */
+.tarjeta {
+  background: #fff;
+  border: 2px solid #16a34a;
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 20px;
 }
 
-/* ===== Labels personalizados FUERA de mat-form-field ===== */
-.field-label {
+.tarjeta-edicion {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Formularios */
+.fila-form {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.campo {
+  flex: 1;
+  min-width: 200px;
+}
+
+.campo label,
+.campo-edicion label {
+  display: block;
   font-size: 14px;
   font-weight: 500;
   color: #333;
   margin-bottom: 8px;
-  display: block;
 }
 
-.edit-label {
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 8px;
+.campo-edicion {
+  margin-bottom: 20px;
   text-align: center;
+}
+
+/* Inputs */
+.input-verde {
+  width: 100%;
+  background: #e0f8e7;
+  border: 2px solid #16a34a;
+  border-radius: 10px;
+  padding: 12px 16px;
   font-size: 14px;
-  display: block;
+  outline: none;
+  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
 }
 
-/* ===== Form Fields de Angular Material con outline ===== */
-::ng-deep .mat-mdc-form-field {
-  width: 100%;
+.input-verde:focus {
+  border-color: #00bf61;
 }
 
-::ng-deep .full-width {
-  width: 100%;
+.input-verde:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-/* Ocultar el label flotante de Material */
-::ng-deep .mat-mdc-form-field .mat-mdc-floating-label {
-  display: none !important;
-}
-
-/* Estilo del outline */
-::ng-deep .mat-mdc-text-field-wrapper {
-  background: #e0f2e9 !important;
-  border-radius: 12px !important;
-}
-
-::ng-deep .mdc-notched-outline {
-  display: none !important;
-}
-
-::ng-deep .mat-mdc-form-field-infix {
-  padding: 8px 0 !important;
-  min-height: auto !important;
-}
-
-::ng-deep .mat-mdc-input-element {
-  color: #333 !important;
-  font-size: 14px !important;
-  padding: 12px 16px !important;
-  background: transparent !important;
-  height: auto !important;
-}
-
-::ng-deep .mat-mdc-input-element::placeholder {
-  color: #999 !important;
-}
-
-/* Remover el subscript */
-::ng-deep .mat-mdc-form-field-subscript-wrapper {
-  display: none !important;
-}
-
-/* Remover el hint wrapper */
-::ng-deep .mat-mdc-form-field-bottom-align {
-  display: none !important;
-}
-
-/* Input disabled */
-::ng-deep .mat-mdc-input-element:disabled {
-  color: #666 !important;
-  opacity: 0.7;
-}
-
-.form-row {
-  display: flex;
-  gap: 20px;
-  align-items: flex-end;
-  margin-bottom: 30px;
-}
-
-.form-group {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-/* ===== Botones de Angular Material ===== */
-.btn-save {
-  background: #00bf61 !important;
-  color: #fff !important;
-  padding: 12px 24px !important;
+/* Botones */
+.btn-verde {
+  background: #00bf61;
+  color: white;
   border: none;
-  border-radius: 10px !important;
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  font-weight: 500 !important;
-  font-size: 14px !important;
-  height: auto !important;
-  line-height: normal !important;
+  font-family: 'Poppins', sans-serif;
+  transition: background 0.2s;
 }
 
-.btn-save:hover {
-  background: #00a854 !important;
+.btn-verde:hover:not(:disabled) {
+  background: #00a854;
 }
 
-.btn-save-large {
-  margin-top: 30px;
-  padding: 14px 48px !important;
-  border-radius: 12px !important;
-  font-size: 16px !important;
-  font-weight: 600 !important;
+.btn-verde:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-::ng-deep .btn-save .mdc-button__label {
+.btn-grande {
+  padding: 14px 48px;
+  font-size: 16px;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.btn-verde-guardar {
+  background-color: #00a854; /* verde */
+  color: white;              /* texto blanco */
+  padding: 12px 20px;        /* alto del botón */
+  width: 80%;                /* lo hace largo (puedes subir a 90%) */
+  max-width: 400px;          /* límite opcional */
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: block;
+  margin: 40px auto 20px auto; /* arriba - derecha - abajo - izquierda */
+  font-weight: bold;
+}
+
+.btn-volver {
+  background: none;
+  border: none;
+  color: #00bf61;
+  cursor: pointer;
+  padding: 8px;
+  margin-bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
   font-family: 'Poppins', sans-serif;
 }
 
-.btn-group {
-  display: flex;
-  align-items: flex-end;
+.btn-volver:hover {
+  background: rgba(0, 191, 97, 0.1);
+  border-radius: 8px;
 }
 
-/* ===== Tarjetas de pacientes ===== */
-.paciente-card {
+/* Tarjetas de pacientes */
+.tarjeta-paciente {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px !important;
-  border: 1px solid #ddd !important;
-  border-radius: 12px !important;
-  margin-bottom: 10px;
-  background: #fff !important;
-  box-shadow: none !important;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  background: #fff;
 }
 
-.paciente-info {
+.info-paciente {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-.foto {
+.avatar {
   width: 50px;
   height: 50px;
   background: #c7f9cc;
@@ -190,17 +182,24 @@ h1 {
   flex-shrink: 0;
 }
 
-.paciente-info h3 {
+.info-paciente h3 {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
   color: #333;
 }
 
-.paciente-info p {
-  margin: 4px 0 0 0;
+.info-paciente p {
+  margin: 4px 0 0;
   font-size: 14px;
   color: #666;
+}
+
+.info-paciente small {
+  display: block;
+  font-size: 12px;
+  color: #999;
+  margin-top: 2px;
 }
 
 .acciones {
@@ -208,46 +207,18 @@ h1 {
   gap: 12px;
 }
 
-/* ===== Botón de regreso con Material Icon ===== */
-.btn-back {
-  background: none !important;
-  border: none;
-  color: #00bf61 !important;
-  cursor: pointer;
-  margin-bottom: 20px;
-  padding: 8px !important;
-  width: 48px !important;
-  height: 48px !important;
-}
-
-.btn-back:hover {
-  background: rgba(0, 191, 97, 0.1) !important;
-}
-
-.btn-back mat-icon {
-  font-size: 32px;
-  width: 32px;
-  height: 32px;
-}
-
-.fecha-box {
-  background: #00bf61;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 12px;
+.sin-datos {
   text-align: center;
-  margin-bottom: 20px;
-  display: inline-block;
-  font-weight: 600;
+  padding: 40px;
+  color: #666;
 }
 
-/* ===== Sección de gráfica ===== */
-.grafica-section {
+/* Gráfica circular */
+.seccion-grafica {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 40px;
-  margin-bottom: 40px;
+  margin-bottom: 32px;
+  align-items: center;
 }
 
 .grafica-circular {
@@ -257,159 +228,128 @@ h1 {
   flex-shrink: 0;
 }
 
-.grafica-circular svg {
-  transform: rotate(-90deg);
-}
-
-.grafica-text {
+.texto-centro {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  font-weight: bold;
-  color: #333;
-  font-size: 16px;
+  display: flex;
+  flex-direction: column;
 }
 
+.texto-centro strong {
+  font-size: 24px;
+  color: #333;
+}
+
+.texto-centro span {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Macros */
 .macros {
   flex: 1;
 }
 
-.macro-item {
+.macro {
   margin-bottom: 16px;
 }
 
-.macro-label {
+.macro label {
+  display: block;
   font-weight: 600;
   color: #333;
-  margin-bottom: 6px;
   font-size: 14px;
+  margin-bottom: 6px;
 }
 
-.macro-bar {
+.barra {
   width: 100%;
-  background: #e5e7eb;
   height: 10px;
+  background: #e5e7eb;
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 4px;
 }
 
-.macro-fill {
-  height: 10px;
+.relleno {
+  height: 100%;
   background: #00bf61;
-  transition: width 0.5s;
   border-radius: 10px;
+  transition: width 0.3s;
 }
 
-.macro-value {
+.macro span {
   font-size: 13px;
   color: #666;
 }
 
-/* ===== Sección de comidas ===== */
+/* Comidas */
 .comidas {
-  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
 }
 
-.comidas > div {
-  margin-bottom: 20px;
-}
-
-.comidas h3 {
+.comidas > div h3 {
   color: #16a34a;
-  font-weight: bold;
-  margin-bottom: 4px;
   font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
 }
 
-.divider {
-  border-bottom: 2px solid #16a34a;
+.linea {
   width: 50px;
+  height: 2px;
+  background: #16a34a;
   margin-bottom: 8px;
 }
 
-.comidas p {
+.comidas > div p {
   margin: 0;
   color: #333;
   font-size: 14px;
 }
 
-/* ===== Editar Paciente ===== */
-.edit-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* Paginador */
+::ng-deep .mat-mdc-paginator {
+  background: transparent !important;
+  margin-top: 16px;
+  font-family: 'Poppins', sans-serif !important;
+}
+
+::ng-deep .mat-mdc-paginator-container {
   justify-content: center;
-  border: 2px solid #16a34a !important;
-  border-radius: 20px !important;
-  padding: 40px 60px !important;
-  max-width: 500px;
-  margin: 0 auto;
 }
 
-.edit-form mat-card-content {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.edit-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-  width: 100%;
-  max-width: 300px;
-}
-
-.edit-field {
-  width: 100%;
-}
-
-::ng-deep .edit-field .mat-mdc-text-field-wrapper {
-  background: #f1f5f9 !important;
-}
-
-::ng-deep .edit-field .mat-mdc-input-element {
-  text-align: center;
-  font-size: 16px !important;
-}
-
-/* ===== Confirmación ===== */
-.confirm-box {
-  text-align: center;
-}
-
-.success-msg {
-  background: #d9f99d;
-  color: #166534;
-  padding: 20px;
-  border-radius: 12px;
-  font-weight: bold;
-  font-size: 16px;
-}
-
-/* ===== Responsive ===== */
+/* Responsive */
 @media (max-width: 768px) {
-  .main-content {
+  .contenedor-principal {
     padding: 24px 16px;
   }
 
-  .container {
+  h1 {
+    font-size: 24px;
+  }
+
+  .tarjeta {
     padding: 20px;
   }
 
-  .form-row {
+  .fila-form {
     flex-direction: column;
-    gap: 16px;
   }
 
-  .grafica-section {
+  .campo {
+    width: 100%;
+  }
+
+  .seccion-grafica {
     flex-direction: column;
-    gap: 30px;
+    gap: 24px;
   }
 
   .grafica-circular {
@@ -417,14 +357,10 @@ h1 {
     height: 180px;
   }
 
-  .edit-form {
-    padding: 30px 20px !important;
-  }
-
-  .paciente-card {
+  .tarjeta-paciente {
     flex-direction: column;
-    gap: 16px;
     align-items: flex-start;
+    gap: 16px;
   }
 
   .acciones {
@@ -432,75 +368,169 @@ h1 {
     justify-content: flex-end;
   }
 
+  .comidas {
+    grid-template-columns: 1fr;
+  }
 
-  /* INPUT RECTANGULAR VERDE */
-  .input-green {
+  .tarjeta-edicion {
+    padding: 20px;
+  }
+
+  .btn-grande {
     width: 100%;
-    background: #e0f8e7;
-    border: 2px solid #16a34a;
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-size: 14px;
-    outline: none;
+    max-width: 100%;
   }
+}
+/* ========================================
+   VALIDACIÓN - ESTILOS ADICIONALES
+   ======================================== */
 
-  .input-green:disabled {
-    opacity: 0.7;
-  }
-
-  /* ELIMINA diseño mat que bloqueaba tu input */
-  ::ng-deep .mat-mdc-form-field {
-    display: none !important;
-  }
-
+.campo-edicion {
+  margin-bottom: 24px;
+  text-align: left;
+  position: relative;
 }
 
-/* ===== Paginador personalizado ===== */
-::ng-deep .mat-mdc-paginator {
-  background: #ffffff !important;
-  color: #333 !important;
-  font-family: 'Poppins', sans-serif !important;
-  border-radius: 12px;
-  padding: 8px 16px;
-  box-shadow: none !important;
-}
-
-/* Selector de "Items per page" */
-::ng-deep .mat-mdc-paginator-page-size .mat-mdc-form-field-infix {
-  background: transparent !important;
-  border: none !important;
-}
-
-::ng-deep .mat-mdc-select-value {
-  color: #333 !important;
-}
-
-/* Flechas de navegación */
-::ng-deep .mat-mdc-paginator-navigation-previous,
-::ng-deep .mat-mdc-paginator-navigation-next,
-::ng-deep .mat-mdc-paginator-navigation-first,
-::ng-deep .mat-mdc-paginator-navigation-last {
-  color: #333 !important;
-}
-
-/* Texto "1 – 3 of 5" */
-::ng-deep .mat-mdc-paginator-range-label {
-  color: #333 !important;
+.campo-edicion label {
+  display: block;
   font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
 }
 
-/* Eliminar fondo gris del dropdown */
-::ng-deep .mat-mdc-select-trigger {
-  background: transparent !important;
+/* Input con error */
+.input-error {
+  border-color: #d32f2f !important;
+  background-color: #ffebee !important;
 }
 
-/* Eliminar borde verde del dropdown */
-::ng-deep .mat-mdc-form-field-outline {
-  display: none !important;
+.input-error:focus {
+  box-shadow: 0 0 5px rgba(211, 47, 47, 0.3) !important;
 }
 
-/* CORRECCIÓN: Eliminar fondo verde del select */
-::ng-deep .mat-mdc-paginator-page-size .mat-mdc-text-field-wrapper {
-  background: #f5f5f5 !important;
-  border-radius: 8px !important;
+/* Mensaje de error */
+.error-texto {
+  display: block;
+  color: #d32f2f;
+  font-size: 12px;
+  margin-top: 6px;
+  font-weight: 500;
+  animation: slideIn 0.2s ease-in-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Info del mínimo permitido */
+.info-minimo {
+  display: block;
+  color: #1976d2;
+  font-size: 11px;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* Input normal (sin error) */
+.input-verde {
+  width: 100%;
+  background: #e0f8e7;
+  border: 2px solid #16a34a;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
+  outline: none;
+  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.input-verde:focus {
+  border-color: #00bf61;
+  box-shadow: 0 0 5px rgba(0, 191, 97, 0.3);
+}
+
+.input-verde:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #f0f0f0;
+}
+
+/* Botón guardar mejorado */
+.btn-verde-guardar {
+  background-color: #00a854;
+  color: white;
+  padding: 14px 32px;
+  width: 100%;
+  max-width: 350px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: block;
+  margin: 32px auto 0;
+  font-weight: 600;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 168, 84, 0.2);
+}
+
+.btn-verde-guardar:hover:not(:disabled) {
+  background-color: #00843d;
+  box-shadow: 0 4px 12px rgba(0, 168, 84, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-verde-guardar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-verde-guardar:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Tarjeta de edición */
+.tarjeta-edicion {
+  max-width: 500px;
+  margin: 0 auto;
+  background: #ffffff;
+  border: 2px solid #16a34a;
+  border-radius: 16px;
+  padding: 32px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .campo-edicion {
+    margin-bottom: 20px;
+  }
+
+  .campo-edicion label {
+    font-size: 13px;
+  }
+
+  .error-texto {
+    font-size: 11px;
+  }
+
+  .btn-verde-guardar {
+    padding: 12px 24px;
+    font-size: 14px;
+    max-width: 100%;
+    margin: 24px auto 0;
+  }
+
+  .tarjeta-edicion {
+    padding: 20px;
+  }
 }

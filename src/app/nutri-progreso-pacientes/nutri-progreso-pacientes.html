@@ -1,186 +1,268 @@
-<div class="main-content">
+<div class="contenedor-principal">
 
-  <!--  BUSCAR -->
-  <div *ngIf="vistaActual === 'buscar'" class="container">
+  <!-- BÚSQUEDA -->
+  <div *ngIf="vista === 'buscar'" class="seccion">
     <h1>Progreso de Pacientes</h1>
 
-    <div class="form-card">
-      <div class="form-row">
-
-        <div class="form-group">
-          <label class="field-label">Fecha de Seguimiento</label>
+    <div class="tarjeta">
+      <div class="fila-form">
+        <div class="campo">
+          <label>Fecha de Seguimiento</label>
           <input
             type="date"
-            class="input-green"
-            [(ngModel)]="fechaSeguimiento"
+            class="input-verde"
+            [(ngModel)]="fechaBusqueda"
+            [disabled]="cargando"
           />
         </div>
 
-        <div class="form-group">
-          <label class="field-label">Filtrar por DNI</label>
+        <div class="campo">
+          <label>DNI del Paciente</label>
           <input
             type="text"
-            class="input-green"
-            placeholder="Buscar por DNI"
-            [(ngModel)]="dniFiltro"
+            class="input-verde"
+            placeholder="Ingrese el DNI"
+            [(ngModel)]="dniBusqueda"
+            [disabled]="cargando"
+            maxlength="8"
           />
         </div>
 
-        <div class="form-group btn-group">
-          <button class="btn-save" (click)="buscar()">Buscar</button>
-        </div>
+        <button
+          class="btn-verde"
+          (click)="buscar()"
+          [disabled]="cargando"
+        >
+          {{ cargando ? 'Buscando...' : 'Buscar' }}
+        </button>
       </div>
     </div>
   </div>
 
+  <!-- LISTA DE RESULTADOS -->
+  <div *ngIf="vista === 'lista'" class="seccion">
+    <h1>Resultados</h1>
 
-  <!-- RESULTADOS -->
-  <div *ngIf="vistaActual === 'resultados'" class="container">
-    <h1>Progreso de Pacientes</h1>
+    <div class="tarjeta">
+      <button class="btn-volver" (click)="volver()">
+        <mat-icon>arrow_back</mat-icon> Nueva Búsqueda
+      </button>
 
-    <div class="form-card">
-      <div class="form-row">
-
-        <div class="form-group">
-          <label class="field-label">Fecha de Seguimiento</label>
-          <input
-            class="input-green"
-            type="date"
-            [(ngModel)]="fechaSeguimiento"
-            disabled
-          />
-        </div>
-
-        <div class="form-group">
-          <label class="field-label">Filtrar por DNI</label>
-          <input
-            class="input-green"
-            type="text"
-            [(ngModel)]="dniFiltro"
-            disabled
-          />
-        </div>
-
-        <div class="form-group btn-group">
-          <button class="btn-save" (click)="buscar()">Buscar</button>
-        </div>
-
+      <div *ngIf="pacientes.length === 0" class="sin-datos">
+        No se encontraron seguimientos
       </div>
 
-      <!-- Tarjetas de pacientes paginadas -->
-      <mat-card
-        class="paciente-card"
-        *ngFor="let p of pacientesPaginados"
-      >
-        <div class="paciente-info">
-          <div class="foto"></div>
+      <div *ngFor="let p of pacientesPaginados" class="tarjeta-paciente">
+        <div class="info-paciente">
+          <!-- ✅ Mostrar foto si existe -->
+          <div class="avatar" *ngIf="p.foto">
+            <img [src]="p.foto" [alt]="p.nombre" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"/>
+          </div>
+          <div class="avatar" *ngIf="!p.foto" style="background-color: #ddd; display: flex; align-items: center; justify-content: center;">
+            <span>{{ (p.nombre.charAt(0) + p.apellido.charAt(0)).toUpperCase() }}</span>
+          </div>
           <div>
-            <h3>{{ p.nombre }}</h3>
-            <p>{{ p.estado }}</p>
+            <!-- ✅ Mostrar nombre completo -->
+            <h3>{{ p.nombre }} {{ p.apellido }}</h3>
+            <p>{{ p.calorias.actual }} / {{ p.calorias.meta }} kcal</p>
+            <small>DNI: {{ p.dni }}</small>
           </div>
         </div>
-
         <div class="acciones">
-          <button class="btn-save" (click)="verPaciente(p)">Ver</button>
-          <button class="btn-save" (click)="editarPaciente(p)">Editar</button>
+          <button class="btn-verde" (click)="verDetalle(p)">Ver</button>
+          <button class="btn-verde" (click)="abrirEdicion(p)">Editar</button>
         </div>
-      </mat-card>
+      </div>
 
-      <!--  PAGINADOR -->
       <mat-paginator
+        *ngIf="pacientes.length > 0"
         [length]="pacientes.length"
-        [pageSize]="pageSize"
-        [pageSizeOptions]="[3, 5, 10]"
-        (page)="onPageChange($event)"
-        class="paginator"
+        [pageSize]="itemsPorPagina"
+        [pageSizeOptions]="[5, 10, 20]"
+        (page)="onCambioPagina($event)"
       >
       </mat-paginator>
-
     </div>
   </div>
 
-
-  <!-- 👁️‍🗨️ 3️⃣ VER PACIENTE -->
-  <div *ngIf="vistaActual === 'ver'" class="container">
-    <button mat-icon-button class="btn-back" (click)="volver()">
-      <mat-icon>arrow_back</mat-icon>
+  <!-- DETALLE -->
+  <div *ngIf="vista === 'detalle' && pacienteActual" class="seccion">
+    <button class="btn-volver" (click)="volver()">
+      <mat-icon>arrow_back</mat-icon> Volver
     </button>
-    <div class="fecha-box">{{ pacienteSeleccionado?.fecha }}</div>
 
-    <div class="grafica-section">
-      <div class="grafica-circular">
-        <svg viewBox="0 0 200 200">
-          <circle cx="100" cy="100" r="90" stroke="#e5e7eb" stroke-width="20" fill="none" />
-          <circle
-            cx="100"
-            cy="100"
-            r="90"
-            stroke="#fde047"
-            stroke-width="20"
-            fill="none"
-            stroke-linecap="round"
-            [attr.stroke-dasharray]="(porcentaje(pacienteSeleccionado.calorias.actual, pacienteSeleccionado.calorias.meta)*5.65) + ', 565'"
-          />
-        </svg>
-        <div class="grafica-text">
-          {{ pacienteSeleccionado.calorias.actual }} / {{ pacienteSeleccionado.calorias.meta }} kcal
-        </div>
-      </div>
+    <h1>{{ pacienteActual.nombre }} {{ pacienteActual.apellido }}</h1>
 
-      <div class="macros">
-        <div class="macro-item" *ngFor="let macro of ['proteina','carbohidratos','grasas']">
-          <div class="macro-label">{{ macro | titlecase }}</div>
-          <div class="macro-bar">
-            <div class="macro-fill"
-                 [style.width.%]="porcentaje(pacienteSeleccionado.macros[macro].actual, pacienteSeleccionado.macros[macro].meta)">
-            </div>
+    <div class="tarjeta">
+      <!-- Calorías circulares -->
+      <div class="seccion-grafica">
+        <div class="grafica-circular">
+          <svg viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="85" stroke="#e5e7eb" stroke-width="18" fill="none"/>
+            <circle
+              cx="100" cy="100" r="85"
+              stroke="#fde047"
+              stroke-width="18"
+              fill="none"
+              stroke-linecap="round"
+              [attr.stroke-dasharray]="(porcentaje(pacienteActual.calorias.actual, pacienteActual.calorias.meta) * 5.34) + ', 534'"
+              transform="rotate(-90 100 100)"
+            />
+          </svg>
+          <div class="texto-centro">
+            <strong>{{ pacienteActual.calorias.actual }}</strong>
+            <span>/ {{ pacienteActual.calorias.meta }} kcal</span>
           </div>
-          <div class="macro-value">{{ pacienteSeleccionado.macros[macro].actual }} g</div>
+        </div>
+
+        <!-- Macros -->
+        <div class="macros">
+          <div class="macro">
+            <label>Proteínas</label>
+            <div class="barra">
+              <div class="relleno" [style.width.%]="porcentaje(pacienteActual.proteinas.actual, pacienteActual.proteinas.meta)"></div>
+            </div>
+            <span>{{ pacienteActual.proteinas.actual }} / {{ pacienteActual.proteinas.meta }} g</span>
+          </div>
+
+          <div class="macro">
+            <label>Carbohidratos</label>
+            <div class="barra">
+              <div class="relleno" [style.width.%]="porcentaje(pacienteActual.carbohidratos.actual, pacienteActual.carbohidratos.meta)"></div>
+            </div>
+            <span>{{ pacienteActual.carbohidratos.actual }} / {{ pacienteActual.carbohidratos.meta }} g</span>
+          </div>
+
+          <div class="macro">
+            <label>Grasas</label>
+            <div class="barra">
+              <div class="relleno" [style.width.%]="porcentaje(pacienteActual.grasas.actual, pacienteActual.grasas.meta)"></div>
+            </div>
+            <span>{{ pacienteActual.grasas.actual }} / {{ pacienteActual.grasas.meta }} g</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="comidas">
-      <div *ngFor="let comida of ['desayuno','almuerzo','snacks','cena']">
-        <h3>{{ comida | titlecase }}</h3>
-        <div class="divider"></div>
-        <p>{{ pacienteSeleccionado.comidas[comida] }} kcal</p>
+      <!-- Comidas -->
+      <div class="comidas">
+        <div>
+          <h3>Desayuno</h3>
+          <div class="linea"></div>
+          <p>{{ pacienteActual.desayuno }} kcal</p>
+        </div>
+
+        <div>
+          <h3>Almuerzo</h3>
+          <div class="linea"></div>
+          <p>{{ pacienteActual.almuerzo }} kcal</p>
+        </div>
+
+        <div>
+          <h3>Snack</h3>
+          <div class="linea"></div>
+          <p>{{ pacienteActual.snack }} kcal</p>
+        </div>
+
+        <div>
+          <h3>Cena</h3>
+          <div class="linea"></div>
+          <p>{{ pacienteActual.cena }} kcal</p>
+        </div>
       </div>
     </div>
   </div>
 
-
-  <!-- ✏EDITAR PACIENTE -->
-  <div *ngIf="vistaActual === 'editar'" class="container">
-    <button mat-icon-button class="btn-back" (click)="volver()">
-      <mat-icon>arrow_back</mat-icon>
+  <!-- EDICIÓN -->
+  <div *ngIf="vista === 'editar' && pacienteActual" class="seccion">
+    <button class="btn-volver" (click)="volver()">
+      <mat-icon>arrow_back</mat-icon> Volver
     </button>
 
-    <h1>Modificar Macronutrientes</h1>
+    <h1>Editar Macronutrientes</h1>
+    <p class="subtitulo">{{ pacienteActual.nombre }} {{ pacienteActual.apellido }}</p>
 
-    <mat-card class="form-card edit-form">
-      <mat-card-content>
-        <div class="edit-group" *ngFor="let campo of ['calorias','proteinas','grasas','carbohidratos','tiempo']">
-          <label class="edit-label">{{ campo | titlecase }}</label>
-          <mat-form-field appearance="outline" class="edit-field">
-            <input matInput [(ngModel)]="metasEditadas[campo]" [type]="campo==='tiempo'?'text':'number'">
-          </mat-form-field>
-        </div>
+    <div class="tarjeta tarjeta-edicion">
+      <!-- CALORÍAS -->
+      <div class="campo-edicion">
+        <label>Calorías Diarias</label>
+        <input
+          type="number"
+          class="input-verde"
+          [class.input-error]="erroresValidacion.calorias"
+          [(ngModel)]="metasEditadas.calorias"
+          (blur)="validarCampo('calorias')"
+          [disabled]="cargando"
+          [attr.min]="minimoPermitido.calorias"
+          min="0"
+        />
+        <small class="error-texto" *ngIf="erroresValidacion.calorias">
+          ⚠️ {{ erroresValidacion.calorias }}
+        </small>
+      </div>
 
-        <button mat-raised-button class="btn-save btn-save-large" (click)="guardarCambios()">
-          Guardar
-        </button>
-      </mat-card-content>
-    </mat-card>
-  </div>
+      <!-- PROTEÍNAS -->
+      <div class="campo-edicion">
+        <label>Proteínas Diarias (g)</label>
+        <input
+          type="number"
+          class="input-verde"
+          [class.input-error]="erroresValidacion.proteinas"
+          [(ngModel)]="metasEditadas.proteinas"
+          (blur)="validarCampo('proteinas')"
+          [disabled]="cargando"
+          [attr.min]="minimoPermitido.proteinas"
+          min="0"
+        />
+        <small class="error-texto" *ngIf="erroresValidacion.proteinas">
+          ⚠️ {{ erroresValidacion.proteinas }}
+        </small>
+      </div>
 
+      <!-- GRASAS -->
+      <div class="campo-edicion">
+        <label>Grasas Diarias (g)</label>
+        <input
+          type="number"
+          class="input-verde"
+          [class.input-error]="erroresValidacion.grasas"
+          [(ngModel)]="metasEditadas.grasas"
+          (blur)="validarCampo('grasas')"
+          [disabled]="cargando"
+          [attr.min]="minimoPermitido.grasas"
+          min="0"
+        />
+        <small class="error-texto" *ngIf="erroresValidacion.grasas">
+          ⚠️ {{ erroresValidacion.grasas }}
+        </small>
+      </div>
 
-  <!-- ✅  CONFIRMACIÓN -->
-  <div *ngIf="vistaActual === 'confirmacion'" class="container confirm-box">
-    <button mat-icon-button class="btn-back" (click)="volver()">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    <div class="success-msg">{{ mensajeConfirmacion }}</div>
+      <!-- CARBOHIDRATOS -->
+      <div class="campo-edicion">
+        <label>Carbohidratos Diarios (g)</label>
+        <input
+          type="number"
+          class="input-verde"
+          [class.input-error]="erroresValidacion.carbohidratos"
+          [(ngModel)]="metasEditadas.carbohidratos"
+          (blur)="validarCampo('carbohidratos')"
+          [disabled]="cargando"
+          [attr.min]="minimoPermitido.carbohidratos"
+          min="0"
+        />
+        <small class="error-texto" *ngIf="erroresValidacion.carbohidratos">
+          ⚠️ {{ erroresValidacion.carbohidratos }}
+        </small>
+      </div>
+
+      <!-- BOTÓN GUARDAR -->
+      <button
+        class="btn-verde-guardar"
+        (click)="guardar()"
+        [disabled]="cargando"
+      >
+        {{ cargando ? 'Guardando...' : 'Guardar Cambios' }}
+      </button>
+    </div>
   </div>
 
 </div>
