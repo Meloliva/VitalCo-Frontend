@@ -13,26 +13,33 @@ import { AuthService } from './service/auth.service';
 import { isPlatformBrowser } from '@angular/common';
 
 
-// 🛡️ GUARDIA 1: Protege rutas privadas (solo usuarios con rol específico entran)
+// 🛡️ GUARDIA 1: Protege rutas privadas (Rol específico o Login requerido)
 const roleGuard = (expectedRoles: string[]): CanActivateFn => {
   return (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
     const authService = inject(AuthService);
     const router = inject(Router);
     const platformId = inject(PLATFORM_ID);
 
+    // Si es SSR (Servidor), dejamos pasar para renderizar, la seguridad real es en el cliente
     if (!isPlatformBrowser(platformId)) return true;
 
+    // 1. Verificar si está logueado
     if (!authService.isLoggedIn()) {
-      // No mostramos alerta aquí para no ser invasivos, simplemente redirigimos
+      // 🔔 ALERTA RESTAURADA: Usuario no logueado
+      alert('Debes iniciar sesión para acceder a esta ruta.');
       router.navigate(['/iniciarsesion']);
       return false;
     }
 
+    // 2. Verificar roles
     const userRoles = authService.getRoles().map(r => r.replace('ROLE_', ''));
     const isAuthorized = userRoles.some(role => expectedRoles.includes(role));
 
     if (!isAuthorized) {
+      // 🔔 ALERTA RESTAURADA: Usuario logueado pero sin permisos (ej: Paciente entrando a Nutricionista)
       alert('Acceso denegado. Serás redirigido a tu perfil.');
+
+      // Redirección inteligente según el rol que SÍ tiene
       if (userRoles.includes('NUTRICIONISTA')) {
         router.navigate(['/nutricionista/perfil']);
       } else if (userRoles.includes('PACIENTE')) {
@@ -47,8 +54,7 @@ const roleGuard = (expectedRoles: string[]): CanActivateFn => {
   };
 };
 
-// 🛡️ GUARDIA 2 (NUEVO): Protege rutas públicas (Login/Registro)
-// Si ya estás logueado, NO te deja entrar al login y te manda a tu dashboard.
+// 🛡️ GUARDIA 2: Protege rutas públicas (Evita duplicar sesión)
 const publicGuard = (): CanActivateFn => {
   return () => {
     const authService = inject(AuthService);
@@ -57,7 +63,7 @@ const publicGuard = (): CanActivateFn => {
 
     if (!isPlatformBrowser(platformId)) return true;
 
-    // Si YA está logueado, lo redirigimos a su sitio
+    // Si YA está logueado, lo mandamos a su dashboard sin mostrar el login
     if (authService.isLoggedIn()) {
       const userRoles = authService.getRoles().map(r => r.replace('ROLE_', ''));
 
@@ -68,10 +74,10 @@ const publicGuard = (): CanActivateFn => {
       } else {
         router.navigate(['/inicio']);
       }
-      return false; // Bloquea el acceso al login
+      return false;
     }
 
-    return true; // Deja pasar si NO está logueado
+    return true;
   };
 };
 
@@ -88,17 +94,16 @@ export const routes: Routes = [
       { path: 'testimonios', loadComponent: () => import('./testimonios/testimonios').then(m => m.Testimonios) },
       { path: 'centro-de-ayuda', loadComponent: () => import('./centro-de-ayuda/centro-de-ayuda').then(m => m.CentroDeAyuda) },
 
-      // 👇 APLICAMOS publicGuard AQUÍ
+      // Rutas públicas protegidas por publicGuard (si ya estás logueado, te saca de aquí)
       {
         path: 'registro',
         loadComponent: () => import('./registro/registro').then(m => m.Registro),
-        canActivate: [publicGuard()] // <-- Agregado
+        canActivate: [publicGuard()]
       },
-      // 👇 APLICAMOS publicGuard AQUÍ
       {
         path: 'iniciarsesion',
         loadComponent: () => import('./iniciarsesion/iniciarsesion').then(m => m.Iniciarsesion),
-        canActivate: [publicGuard()] // <-- Agregado
+        canActivate: [publicGuard()]
       },
 
       { path: 'recuperar-password', loadComponent: () => import('./recuperar-password/recuperar-password').then(m => m.RecuperarPasswordComponent) },
@@ -136,13 +141,13 @@ export const routes: Routes = [
   {
     path: 'seleccion-registro',
     loadComponent: () => import('./seleccion-registro/seleccion-registro').then(m => m.SeleccionRegistro),
-    canActivate: [publicGuard()] // <-- Agregado también aquí por seguridad
+    canActivate: [publicGuard()]
   },
 
   {
     path: 'nutricionista',
     component: PrivateLayoutNutricionista,
-    canActivate: [roleGuard(['NUTRICIONISTA'])],
+    canActivate: [roleGuard(['NUTRICIONISTA'])], // <-- Requiere rol NUTRICIONISTA
     children: [
       {
         path: 'perfil',
@@ -195,7 +200,7 @@ export const routes: Routes = [
   {
     path: 'sistema',
     component: PrivateLayout,
-    canActivate: [roleGuard(['PACIENTE'])],
+    canActivate: [roleGuard(['PACIENTE'])], // <-- Requiere rol PACIENTE
     children: [
       { path: '', redirectTo: '/sistema/progreso-paciente', pathMatch: 'full' },
       {
