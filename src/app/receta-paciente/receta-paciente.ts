@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core'; // 1. Importar ChangeDetectorRef
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTabGroup, MatTab } from '@angular/material/tabs';
@@ -31,7 +31,6 @@ interface RecetaDisplay {
   foto?: string;
   idPlanReceta?: number;
   idPlanRecetaReceta?: number;
-
 }
 
 @Component({
@@ -71,10 +70,12 @@ export class RecetaPaciente implements OnInit {
 
   constructor(
     private recetaService: RecetaPacienteService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cd: ChangeDetectorRef // 2. Inyectar ChangeDetectorRef
   ) {}
 
   ngOnInit() {
+    this.selectedTab = 0;
     this.cargarRecetas();
   }
 
@@ -89,6 +90,7 @@ export class RecetaPaciente implements OnInit {
           this.allRecetas = this.convertirPlanRecetasADisplay(planes);
           this.totalRecetas = this.allRecetas.length;
           this.paginarRecetas();
+          this.cd.detectChanges(); // 3. Forzar detección de cambios
         },
         error: (error) => console.error('Error al cargar recetas:', error)
       });
@@ -99,6 +101,7 @@ export class RecetaPaciente implements OnInit {
           this.allRecetas = this.convertirPlanRecetasADisplay(planes);
           this.totalRecetas = this.allRecetas.length;
           this.paginarRecetas();
+          this.cd.detectChanges(); // 3. Forzar detección de cambios
         },
         error: (error) => console.error('Error al cargar favoritos:', error)
       });
@@ -112,6 +115,7 @@ export class RecetaPaciente implements OnInit {
             descripcion: r.descripcion
           }));
           this.totalRecetas = this.recetas.length;
+          this.cd.detectChanges(); // 3. Forzar detección de cambios
         },
         error: (error) => console.error('Error al cargar recetas del día:', error)
       });
@@ -127,10 +131,10 @@ export class RecetaPaciente implements OnInit {
         recetasDisplay.push({
           id: receta.id,
           idPlanReceta: plan.id,
-          idPlanRecetaReceta: relacion.idPlanRecetaReceta, // ✅ Agregar este campo
+          idPlanRecetaReceta: relacion.idPlanRecetaReceta,
           nombre: receta.nombre,
           descripcion: receta.descripcion,
-          favorito: plan.favorito,
+          favorito: !!plan.favorito, // Asegurar booleano
           horario: receta.idhorario?.nombre,
           tiempo: receta.tiempo,
           calorias: receta.calorias,
@@ -144,7 +148,6 @@ export class RecetaPaciente implements OnInit {
       });
     });
 
-    console.log('Recetas convertidas con idPlanRecetaReceta:', recetasDisplay);
     return recetasDisplay;
   }
 
@@ -181,20 +184,10 @@ export class RecetaPaciente implements OnInit {
         }));
         this.totalRecetas = this.recetas.length;
         this.pageIndex = 0;
-
-        this.searchQuery = '';
-        if (this.searchInput?.nativeElement) {
-          this.searchInput.nativeElement.value = '';
-          this.searchInput.nativeElement.blur();
-        }
+        this.cd.detectChanges(); // 3. Forzar detección de cambios tras búsqueda
       },
       error: (error) => {
         console.error('Error en búsqueda:', error);
-        this.searchQuery = '';
-        if (this.searchInput?.nativeElement) {
-          this.searchInput.nativeElement.value = '';
-          this.searchInput.nativeElement.blur();
-        }
       }
     });
   }
@@ -206,64 +199,68 @@ export class RecetaPaciente implements OnInit {
     }
 
     const nuevoEstado = !receta.favorito;
+
+    // Actualización Optimista
+    this.actualizarEstadoFavoritoLocal(receta.idPlanReceta, nuevoEstado);
+
     console.log(`Actualizando favorito de plan ${receta.idPlanReceta} a ${nuevoEstado}`);
 
     this.recetaService.actualizarFavorito(receta.idPlanReceta, nuevoEstado).subscribe({
       next: (updated) => {
-        console.log('Favorito actualizado:', updated);
-        receta.favorito = updated.favorito;
+        console.log('Favorito confirmado por backend:', updated);
+        this.actualizarEstadoFavoritoLocal(receta.idPlanReceta!, updated.favorito);
 
-        // Si estamos en favoritos y se desmarca, recargar
         if (this.selectedTab === 1 && !nuevoEstado) {
-          setTimeout(() => this.cargarRecetas(), 500);
+          this.recetas = this.recetas.filter(r => r.idPlanReceta !== receta.idPlanReceta);
+          this.allRecetas = this.allRecetas.filter(r => r.idPlanReceta !== receta.idPlanReceta);
+          this.totalRecetas = this.allRecetas.length;
+          this.paginarRecetas();
         }
+        this.cd.detectChanges(); // 3. Confirmar cambios
       },
       error: (error) => {
         console.error('Error al actualizar favorito:', error);
-        alert('Error al actualizar favorito. Por favor, intenta nuevamente.');
+        this.actualizarEstadoFavoritoLocal(receta.idPlanReceta!, !nuevoEstado);
+        alert('No se pudo actualizar el estado de favorito. Intente nuevamente.');
+        this.cd.detectChanges(); // 3. Revertir cambios visualmente
+      }
+    });
+  }
+
+  private actualizarEstadoFavoritoLocal(idPlanReceta: number, estado: boolean) {
+    this.allRecetas.forEach(r => {
+      if (r.idPlanReceta === idPlanReceta) {
+        r.favorito = estado;
+      }
+    });
+
+    this.recetas.forEach(r => {
+      if (r.idPlanReceta === idPlanReceta) {
+        r.favorito = estado;
       }
     });
   }
 
   verReceta(receta: RecetaDisplay) {
-    console.log('Abriendo detalle de receta:', receta);
-
     const dialogRef = this.dialog.open(RecetaDetalleDialogComponent, {
       width: '700px',
       maxWidth: '95vw',
       maxHeight: '90vh',
       data: {
         ...receta,
-        idPlanRecetaReceta: this.obtenerIdPlanRecetaReceta(receta) // ✅ Pasar el ID necesario
+        idPlanRecetaReceta: this.obtenerIdPlanRecetaReceta(receta)
       },
       panelClass: 'receta-dialog'
     });
 
-    // ✅ Escuchar cuando se cierra el modal
     dialogRef.afterClosed().subscribe(result => {
-      // Si result es true, significa que se agregó una receta a progreso
-      if (result === true) {
-        console.log('Receta agregada a progreso, actualizando vista...');
-
-        // Si estamos en la pestaña "Mis recetas del día", recargar
-        if (this.selectedTab === 2) {
-          this.cargarRecetas();
-        }
-
-        // Mostrar un mensaje opcional
-        // this.mostrarMensaje('Receta agregada a tu progreso del día');
+      if (result === true && this.selectedTab === 2) {
+        this.cargarRecetas();
       }
     });
   }
 
-// ✅ Método auxiliar para obtener el ID correcto
   private obtenerIdPlanRecetaReceta(receta: RecetaDisplay): number | undefined {
-    // Si la receta viene del listado normal, necesitamos buscar su idPlanRecetaReceta
-    // Este ID debe venir en la conversión desde el backend
-
-    // Por ahora, si no está disponible directamente, lo dejamos undefined
-    // y el botón se deshabilitará
-
     return (receta as any).idPlanRecetaReceta;
   }
 
@@ -281,7 +278,7 @@ export class RecetaPaciente implements OnInit {
 
   onFiltroChange() {
     if (this.selectedFilters.length === 0) {
-      this.paginarRecetas();
+      this.cargarRecetas();
       return;
     }
 
@@ -306,6 +303,7 @@ export class RecetaPaciente implements OnInit {
         this.totalRecetas = this.allRecetas.length;
         this.pageIndex = 0;
         this.paginarRecetas();
+        this.cd.detectChanges(); // 3. Detectar cambios tras filtro
       },
       error: (error) => console.error('Error al filtrar:', error)
     });
@@ -313,14 +311,7 @@ export class RecetaPaciente implements OnInit {
 
   eliminarReceta(receta: RecetaDisplay) {
     if (!confirm(`¿Eliminar "${receta.nombre}" de tus recetas del día?`)) return;
-
-    // Eliminación solo visual (sin backend)
-    console.log('Eliminando receta de la vista:', receta.nombre);
     this.recetas = this.recetas.filter(r => r.nombre !== receta.nombre);
     this.totalRecetas = this.recetas.length;
-
-    // Nota: Esta eliminación es solo visual. La receta volverá a aparecer
-    // si recargas la página, ya que no se elimina del backend
-    console.info('⚠️ Nota: Eliminación solo visual. Requiere soporte del backend para persistir.');
   }
 }
