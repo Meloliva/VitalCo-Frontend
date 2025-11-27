@@ -122,9 +122,14 @@ export class NutriProgresoPacientesComponent implements OnInit {
     }
 
     this.cargando = true;
+    const dniLimpio = this.dniBusqueda.trim();
 
-    this.nutricionistaService.buscarPacientePorDni(this.dniBusqueda.trim()).subscribe({
+    console.log('🔍 Buscando paciente con DNI:', dniLimpio);
+    console.log('📅 Fecha de búsqueda:', this.fechaBusqueda);
+
+    this.nutricionistaService.buscarPacientePorDni(dniLimpio).subscribe({
       next: (paciente: Paciente) => {
+        console.log('✅ Paciente encontrado:', paciente);
 
         if (!paciente.idPlanNutricional) {
           this.mensaje("Este paciente no tiene un plan nutricional asignado.");
@@ -134,10 +139,14 @@ export class NutriProgresoPacientesComponent implements OnInit {
         }
 
         const idPlan = paciente.idPlanNutricional.id;
+        console.log('📋 ID Plan:', idPlan);
+        console.log('👤 ID Usuario:', paciente.idusuario);
 
-        this.seguimientoService.obtenerResumenPorDniYFecha(this.dniBusqueda.trim(), this.fechaBusqueda)
+        // 🔑 AQUÍ: Verifica que estés usando los datos correctos
+        this.seguimientoService.obtenerResumenPorDniYFecha(dniLimpio, this.fechaBusqueda)
           .subscribe({
             next: (data: SeguimientoDTO) => {
+              console.log('✅ Seguimiento encontrado:', data);
 
               const vista = this.mapearPaciente(
                 data,
@@ -149,17 +158,21 @@ export class NutriProgresoPacientesComponent implements OnInit {
               this.vista = 'lista';
               this.paginaActual = 0;
               this.cargando = false;
-
               this.cdr.markForCheck();
             },
-            error: () => {
+            error: (error) => {
+              console.error('❌ Error en obtenerResumenPorDniYFecha:', error);
+              console.error('Status:', error.status);
+              console.error('Message:', error.message);
+
               this.mensaje("No hay seguimiento para esa fecha.");
               this.cargando = false;
               this.cdr.markForCheck();
             }
           });
       },
-      error: () => {
+      error: (error) => {
+        console.error('❌ Error en buscarPacientePorDni:', error);
         this.mensaje("No se encontró un paciente con ese DNI.");
         this.cargando = false;
         this.cdr.markForCheck();

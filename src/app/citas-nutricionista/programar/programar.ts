@@ -132,7 +132,7 @@ export class ProgramarCitasNutricionista implements OnInit {
       } else {
         this.errorMessage = 'No se encontró la información de la cita';
         setTimeout(() => {
-          this.router.navigate(['/nutricionista/listar-citas']);
+          this.router.navigate(['/nutricionista/citas/listar']);
         }, 2000);
       }
     } catch (error) {
@@ -246,7 +246,7 @@ export class ProgramarCitasNutricionista implements OnInit {
         this.isLoading = false;
 
         setTimeout(() => {
-          this.router.navigate(['/nutricionista/listar-citas']);
+          this.router.navigate(['/nutricionista/citas/listar']);
         }, 2000);
 
       } else {
@@ -311,7 +311,7 @@ export class ProgramarCitasNutricionista implements OnInit {
 
   // ✅ Método para cancelar la edición
   cancelarEdicion(): void {
-    this.router.navigate(['/nutricionista/listar-citas']);
+    this.router.navigate(['/nutricionista/citas/listar']);
   }
 
   // Getters para el template
