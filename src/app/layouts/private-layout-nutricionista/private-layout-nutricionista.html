@@ -4,10 +4,10 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="user-profile">
-        <img [src]="userAvatar" alt="Avatar" class="user-avatar">
+        <img [src]="userAvatar()" alt="Avatar" class="user-avatar">
         <div class="user-info">
           <span class="brand-name">VitalCo</span>
-          <span class="user-name">{{ userName }}</span>
+          <span class="user-name">{{ userName() }}</span>
         </div>
       </div>
     </div>

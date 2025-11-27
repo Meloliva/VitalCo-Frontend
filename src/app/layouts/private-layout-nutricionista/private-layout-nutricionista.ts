@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, signal, inject, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  signal,
+  inject,
+  OnInit,
+  OnDestroy,
+  Inject,
+  PLATFORM_ID,
+  ChangeDetectorRef
+} from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { NutricionistaService } from '../../service/nutricionista.service';
@@ -17,19 +27,43 @@ import { firstValueFrom } from 'rxjs';
   styleUrl: './private-layout-nutricionista.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PrivateLayoutNutricionista implements OnInit {
+export class PrivateLayoutNutricionista implements OnInit, OnDestroy {
 
-  userAvatar: string = '/Images/iconos/iconoSistemas/image 18.png';
-  userName: string = 'Nutricionista';
+  userAvatar = signal('/Images/iconos/iconoSistemas/image 18.png');
+  userName = signal('Nutricionista');
   citasMenuOpen = signal(false);
   recetasMenuOpen = signal(false);
 
   private router = inject(Router);
   private nutricionistaService = inject(NutricionistaService);
-  @Inject(PLATFORM_ID) private platformId = inject(PLATFORM_ID); // <-- Agregado
+  private cdr = inject(ChangeDetectorRef);
+  @Inject(PLATFORM_ID) private platformId = inject(PLATFORM_ID);
+
+  private avatarListener?: () => void;
 
   async ngOnInit() {
     await this.cargarDatosUsuario();
+    this.setupAvatarListener();
+  }
+
+  ngOnDestroy() {
+    if (isPlatformBrowser(this.platformId) && this.avatarListener) {
+      window.removeEventListener('avatarChangedNutricionista', this.avatarListener);
+    }
+  }
+
+  private setupAvatarListener(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.avatarListener = () => {
+        const newAvatar = localStorage.getItem('nutricionistaAvatar');
+        if (newAvatar) {
+          console.log('📸 Layout: Avatar de nutricionista actualizado');
+          this.userAvatar.set(newAvatar);
+          this.cdr.markForCheck();
+        }
+      };
+      window.addEventListener('avatarChangedNutricionista', this.avatarListener);
+    }
   }
 
   async cargarDatosUsuario() {
@@ -44,12 +78,15 @@ export class PrivateLayoutNutricionista implements OnInit {
       );
 
       // ✅ 3️⃣ Mostrar el nombre y la foto en el layout
-      this.userName = `${data.idusuario?.nombre || ''} ${data.idusuario?.apellido || ''}`.trim();
+      const nombreCompleto = `${data.idusuario?.nombre || ''} ${data.idusuario?.apellido || ''}`.trim();
+      this.userName.set(nombreCompleto);
+
       if (data.idusuario?.fotoPerfil) {
-        this.userAvatar = data.idusuario.fotoPerfil;
+        this.userAvatar.set(data.idusuario.fotoPerfil);
+        localStorage.setItem('nutricionistaAvatar', data.idusuario.fotoPerfil);
       }
 
-      console.log('✅ Datos cargados en layout:', this.userName, this.userAvatar);
+      console.log('✅ Datos cargados en layout:', nombreCompleto, data.idusuario?.fotoPerfil);
 
     } catch (err) {
       console.error('❌ Error al cargar datos del nutricionista en layout:', err);
@@ -59,14 +96,15 @@ export class PrivateLayoutNutricionista implements OnInit {
   toggleCitasMenu(): void {
     this.citasMenuOpen.update(value => !value);
   }
+
   toggleRecetasMenu(): void {
     this.recetasMenuOpen.update(value => !value);
   }
 
   salir(): void {
-    console.log('Cerrando sesión...');
+    console.log('🚪 Cerrando sesión...');
     try {
-      if (isPlatformBrowser(this.platformId)) { // <-- Protección
+      if (isPlatformBrowser(this.platformId)) {
         localStorage.clear();
       }
     } catch (e) {

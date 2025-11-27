@@ -137,6 +137,10 @@ export class PerfilNutricionistaComponent implements OnInit {
 
       await firstValueFrom(this.nutricionistaService.editarNutricionista(datosActualizar));
 
+      // 🔥 GUARDAR EN LOCALSTORAGE Y DISPARAR EVENTO
+      localStorage.setItem('nutricionistaAvatar', this.imagenPerfil);
+      window.dispatchEvent(new Event('avatarChangedNutricionista'));
+
       this.mostrarNotificacion('Datos actualizados correctamente');
       this.cargarDatosNutricionista();
 
@@ -187,6 +191,12 @@ export class PerfilNutricionistaComponent implements OnInit {
       const reader = new FileReader();
       reader.onload = () => {
         this.imagenPerfil = reader.result as string;
+
+        // 🔥 GUARDAR EN LOCALSTORAGE Y DISPARAR EVENTO
+        localStorage.setItem('nutricionistaAvatar', this.imagenPerfil);
+        window.dispatchEvent(new Event('avatarChangedNutricionista'));
+
+        console.log('🔥 Avatar guardado en localStorage y evento disparado');
       };
       reader.readAsDataURL(file);
     }
@@ -198,5 +208,4 @@ export class PerfilNutricionistaComponent implements OnInit {
       panelClass: error ? ['snack-error'] : ['snack-success']
     });
   }
-
 }
