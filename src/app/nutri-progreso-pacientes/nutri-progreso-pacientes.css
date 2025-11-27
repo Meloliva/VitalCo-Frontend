@@ -286,12 +286,13 @@ h1 {
   color: #666;
 }
 
-/* Comidas */
 .comidas {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 24px;
+  display: flex;
+  justify-content: center;
+  gap: 120px;
   margin-top: 24px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .comidas > div h3 {
