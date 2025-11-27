@@ -31,7 +31,6 @@
       <button class="btn-limpiar" type="button" (click)="limpiarBusqueda()">
         🧹 Borrar búsqueda
       </button>
-
     </div>
   </form>
 
@@ -44,49 +43,59 @@
   <div *ngIf="resumenCargado && datosNutricionales" class="info-paciente">
     <h3>📊 Paciente: {{ nombrePaciente }}</h3>
     <p>📅 Fecha: {{ fechaConsulta }}</p>
+    <p>✅ Cumplimiento General: {{ porcentajeCumplimiento.toFixed(1) }}%</p>
+  </div>
+
+  <!-- Gráfico Circular de Cumplimiento -->
+  <div class="grafico-circular-container" [class.visible]="resumenCargado && datosNutricionales">
+    <h3 style="text-align: center; color: #333; margin-bottom: 20px;">
+      📈 Cumplimiento del Plan Nutricional
+    </h3>
+    <div class="consulta-result" style="height: 400px;">
+      <canvas id="grafico-consulta"></canvas>
+    </div>
   </div>
 
   <!-- Tarjetas de resumen nutricional -->
   <div *ngIf="resumenCargado && datosNutricionales" class="cards-container">
     <div class="nutrient-card">
       <h4>🔥 Calorías</h4>
-      <p class="consumido">{{ datosNutricionales.totalesNutricionales.calorias || 0 }} kcal</p>
-      <p class="requerido">Requerido: {{ datosNutricionales.totalesNutricionales.requerido_calorias || 0 }} kcal</p>
+      <p class="consumido">{{ datosNutricionales.calorias.consumido || 0 }} kcal</p>
+      <p class="requerido">Requerido: {{ datosNutricionales.calorias.requerido || 0 }} kcal</p>
       <div class="progress-bar">
-        <div class="progress-fill" [style.width.%]="calcularPorcentaje(datosNutricionales.totalesNutricionales.calorias, datosNutricionales.totalesNutricionales.requerido_calorias)"></div>
+        <div class="progress-fill" [style.width.%]="datosNutricionales.calorias.porcentaje"></div>
       </div>
+      <p class="porcentaje">{{ datosNutricionales.calorias.porcentaje.toFixed(1) }}%</p>
     </div>
 
     <div class="nutrient-card">
       <h4>🥩 Proteínas</h4>
-      <p class="consumido">{{ datosNutricionales.totalesNutricionales.proteinas || 0 }} g</p>
-      <p class="requerido">Requerido: {{ datosNutricionales.totalesNutricionales.requerido_proteinas || 0 }} g</p>
+      <p class="consumido">{{ datosNutricionales.proteinas.consumido || 0 }} g</p>
+      <p class="requerido">Requerido: {{ datosNutricionales.proteinas.requerido || 0 }} g</p>
       <div class="progress-bar">
-        <div class="progress-fill" [style.width.%]="calcularPorcentaje(datosNutricionales.totalesNutricionales.proteinas, datosNutricionales.totalesNutricionales.requerido_proteinas)"></div>
+        <div class="progress-fill" [style.width.%]="datosNutricionales.proteinas.porcentaje"></div>
       </div>
+      <p class="porcentaje">{{ datosNutricionales.proteinas.porcentaje.toFixed(1) }}%</p>
     </div>
 
     <div class="nutrient-card">
       <h4>🥑 Grasas</h4>
-      <p class="consumido">{{ datosNutricionales.totalesNutricionales.grasas || 0 }} g</p>
-      <p class="requerido">Requerido: {{ datosNutricionales.totalesNutricionales.requerido_grasas || 0 }} g</p>
+      <p class="consumido">{{ datosNutricionales.grasas.consumido || 0 }} g</p>
+      <p class="requerido">Requerido: {{ datosNutricionales.grasas.requerido || 0 }} g</p>
       <div class="progress-bar">
-        <div class="progress-fill" [style.width.%]="calcularPorcentaje(datosNutricionales.totalesNutricionales.grasas, datosNutricionales.totalesNutricionales.requerido_grasas)"></div>
+        <div class="progress-fill" [style.width.%]="datosNutricionales.grasas.porcentaje"></div>
       </div>
+      <p class="porcentaje">{{ datosNutricionales.grasas.porcentaje.toFixed(1) }}%</p>
     </div>
 
     <div class="nutrient-card">
       <h4>🍞 Carbohidratos</h4>
-      <p class="consumido">{{ datosNutricionales.totalesNutricionales.carbohidratos || 0 }} g</p>
-      <p class="requerido">Requerido: {{ datosNutricionales.totalesNutricionales.requerido_carbohidratos || 0 }} g</p>
+      <p class="consumido">{{ datosNutricionales.carbohidratos.consumido || 0 }} g</p>
+      <p class="requerido">Requerido: {{ datosNutricionales.carbohidratos.requerido || 0 }} g</p>
       <div class="progress-bar">
-        <div class="progress-fill" [style.width.%]="calcularPorcentaje(datosNutricionales.totalesNutricionales.carbohidratos, datosNutricionales.totalesNutricionales.requerido_carbohidratos)"></div>
+        <div class="progress-fill" [style.width.%]="datosNutricionales.carbohidratos.porcentaje"></div>
       </div>
+      <p class="porcentaje">{{ datosNutricionales.carbohidratos.porcentaje.toFixed(1) }}%</p>
     </div>
-  </div>
-
-  <!-- Gráfico -->
-  <div class="consulta-result" style="height: 400px;">
-    <canvas id="grafico-consulta"></canvas>
   </div>
 </div>

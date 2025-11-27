@@ -5,6 +5,19 @@ import { AuthService } from './auth.service';
 import {SeguimientoDTO} from '../models/seguimiendo-paciente.model';
 import {NutricionistaRequerimientoDTO} from '../models/nutricionista-requerimiento';
 
+export interface CumplimientoNutricional {
+  consumido: number;
+  requerido: number;
+  porcentaje: number;
+}
+
+export interface VerificarCumplimientoResponse {
+  calorias: CumplimientoNutricional;
+  proteinas: CumplimientoNutricional;
+  grasas: CumplimientoNutricional;
+  carbohidratos: CumplimientoNutricional;
+  cumplio: boolean;
+}
 export interface SeguimientoResumenDTO {
   nombrePaciente: string;
   totalesNutricionales: {
@@ -52,8 +65,8 @@ export class SeguimientoService {
     );
   }
 
-  obtenerResumenPorFecha(fecha: string): Observable<SeguimientoDTO> {
-    return this.http.get<SeguimientoDTO>(
+  obtenerResumenPorFecha(fecha: string): Observable<any> {
+    return this.http.get<any>(
       `${this.apiUrl}/listarSeguimientos/${fecha}`,
       { headers: this.getHeaders() }
     );
@@ -62,4 +75,11 @@ export class SeguimientoService {
   editarPlanAlimenticio(dni: string, dto: NutricionistaRequerimientoDTO) {
     return this.http.put(`${this.apiUrl}/editarNutrientes/${dni}`, dto);
   }
+  verificarCumplimientoDiario(dni: string, fecha: string): Observable<VerificarCumplimientoResponse> {
+    return this.http.get<VerificarCumplimientoResponse>(
+      `${this.apiUrl}/cumplimiento-diario/${dni}/${fecha}`,
+      { headers: this.getHeaders() }
+    );
+  }
+
 }
