@@ -71,10 +71,12 @@ export class RecetaPacienteService {
     );
   }
 
-  // Actualizar favorito
-  actualizarFavorito(idPlanReceta: number, favorito: boolean): Observable<PlanReceta> {
-    return this.http.put<PlanReceta>(
-      `${this.apiUrl}/actualizarPlanReceta/${idPlanReceta}/favorito?favorito=${favorito}`,
+  // ✅ CORRECCIÓN AQUÍ:
+  // Ahora recibimos idPlanRecetaReceta (la relación específica)
+  // Y esperamos 'any' o la interfaz correcta del DTO de respuesta, ya que PlanReceta ya no es lo que devuelve exactamente
+  actualizarFavorito(idPlanRecetaReceta: number, favorito: boolean): Observable<any> {
+    return this.http.put<any>(
+      `${this.apiUrl}/actualizarPlanReceta/${idPlanRecetaReceta}/favorito?favorito=${favorito}`,
       {},
       { headers: this.getHeaders() }
     );
@@ -94,6 +96,7 @@ export class RecetaPacienteService {
       { headers: this.getHeaders() }
     );
   }
+
   agregarProgreso(idPlanRecetaReceta: number): Observable<any> {
     return this.http.post<any>(
       `${this.apiUrl}/agregarProgreso/${idPlanRecetaReceta}`,
