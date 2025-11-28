@@ -10,7 +10,7 @@ import { MatCard } from '@angular/material/card';
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
 import { CommonModule } from '@angular/common';
-import { RecetaPacienteService } from '../service/receta-paciente.service';
+import { RecetaPacienteService, RecetaDelDia } from '../service/receta-paciente.service';
 import { PlanReceta } from '../models/plan-receta.model';
 import { RecetaDetalleDialogComponent } from '../receta-detalle-dialog/receta-detalle-dialog';
 
@@ -30,6 +30,9 @@ interface RecetaDisplay {
   foto?: string;
   idPlanReceta?: number;
   idPlanRecetaReceta?: number;
+  // Añadidos para "Mis recetas del día"
+  seguimientoId?: number;
+  recetaId?: number;
 }
 
 @Component({
@@ -107,12 +110,15 @@ export class RecetaPaciente implements OnInit {
       });
     } else if (this.selectedTab === 2) {
       this.recetaService.listarRecetasAgregadasHoy().subscribe({
-        next: (data) => {
+        next: (data: RecetaDelDia[]) => {
           console.log('Recetas del día recibidas:', data);
+          // 🛑 CORRECCIÓN 1: Mapear correctamente los IDs de seguimiento y receta
           this.recetas = data.map(r => ({
-            id: 0,
+            id: r.recetaId, // Usar recetaId como ID principal
             nombre: r.nombre,
-            descripcion: r.descripcion
+            descripcion: r.descripcion,
+            seguimientoId: r.seguimientoId, // <- GUARDAR ESTE CAMPO
+            recetaId: r.recetaId           // <- GUARDAR ESTE CAMPO
           }));
           this.totalRecetas = this.recetas.length;
           this.cd.detectChanges(); // Forzar actualización visual
@@ -310,9 +316,32 @@ export class RecetaPaciente implements OnInit {
   }
 
   eliminarReceta(receta: RecetaDisplay) {
+    // 🛑 CORRECCIÓN 2: Verificar IDs y llamar a la API
+    if (!receta.seguimientoId || !receta.recetaId) {
+      alert('Error: No se pudo identificar la receta para eliminarla del progreso.');
+      console.error('Missing IDs for deletion:', receta);
+      return;
+    }
+
     if (!confirm(`¿Eliminar "${receta.nombre}" de tus recetas del día?`)) return;
-    this.recetas = this.recetas.filter(r => r.nombre !== receta.nombre);
-    this.totalRecetas = this.recetas.length;
-    this.cd.detectChanges();
+
+    // Llama al servicio para eliminar el registro de seguimiento en el backend
+    this.recetaService.eliminarRecetaDeSeguimiento(receta.seguimientoId, receta.recetaId).subscribe({
+      next: () => {
+        // Elimina localmente solo si el backend tuvo éxito
+        this.recetas = this.recetas.filter(r =>
+          !(r.seguimientoId === receta.seguimientoId && r.recetaId === receta.recetaId)
+        );
+        this.totalRecetas = this.recetas.length;
+        this.cd.detectChanges();
+        alert(`✅ "${receta.nombre}" eliminada del progreso del día. El progreso se actualizará.`);
+      },
+      error: (error) => {
+        console.error('Error al eliminar receta de seguimiento:', error);
+        const msg = error.error?.message || 'Error al eliminar la receta. Intente de nuevo.';
+        alert(`❌ ${msg}`);
+        // Si falla la eliminación en el backend, el frontend no se actualiza (rollback implícito)
+      }
+    });
   }
 }
