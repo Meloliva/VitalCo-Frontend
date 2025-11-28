@@ -201,21 +201,26 @@ export class PerfilPacienteComponent implements OnInit {
     const formValues = this.perfilForm.value;
     const dto: EditarPaciente = { id: this.pacienteId };
 
-    if (formValues.edad != null && formValues.edad !== this.datosOriginales.edad) {
-      dto.edad = Number(formValues.edad);
-    }
+    // Helper para limpiar números
+    const limpiarNumero = (valor: any): number | undefined => {
+      if (valor === null || valor === undefined || valor === '') return undefined;
+      const strVal = String(valor).replace(',', '.');
+      const num = Number(strVal);
+      return isNaN(num) ? undefined : num;
+    };
 
-    if (formValues.altura != null && formValues.altura !== this.datosOriginales.altura) {
-      dto.altura = Number(formValues.altura);
-    }
+    // 1. Preparamos el DTO con los cambios
+    const nuevaEdad = limpiarNumero(formValues.edad);
+    if (nuevaEdad && nuevaEdad !== this.datosOriginales.edad) dto.edad = nuevaEdad;
 
-    if (formValues.cntTrigliceridos != null && formValues.cntTrigliceridos !== this.datosOriginales.cntTrigliceridos) {
-      dto.trigliceridos = Number(formValues.cntTrigliceridos);
-    }
+    const nuevaAltura = limpiarNumero(formValues.altura);
+    if (nuevaAltura && nuevaAltura !== this.datosOriginales.altura) dto.altura = nuevaAltura;
 
-    if (formValues.peso != null && formValues.peso !== this.datosOriginales.peso) {
-      dto.peso = Number(formValues.peso);
-    }
+    const nuevoTrig = limpiarNumero(formValues.cntTrigliceridos);
+    if (nuevoTrig && nuevoTrig !== this.datosOriginales.cntTrigliceridos) dto.trigliceridos = nuevoTrig;
+
+    const nuevoPeso = limpiarNumero(formValues.peso);
+    if (nuevoPeso && nuevoPeso !== this.datosOriginales.peso) dto.peso = nuevoPeso;
 
     if (formValues.correo && formValues.correo.trim() !== this.datosOriginales.correo) {
       dto.correo = formValues.correo.trim();
@@ -225,30 +230,39 @@ export class PerfilPacienteComponent implements OnInit {
       dto.contraseña = formValues.contrasena.trim();
     }
 
-    if (Object.keys(dto).length === 1) {
+    if (Object.keys(dto).length <= 1) {
       this.mostrarNotificacion('No hay cambios para guardar');
       return;
     }
 
+    // 2. Enviamos al Backend
     this.perfilPacienteService.editarPaciente(dto).subscribe({
-      next: (paciente) => {
-        this.mostrarNotificacion('Cambios guardados exitosamente!');
+      next: (pacienteRespuesta) => {
+        this.mostrarNotificacion('¡Cambios guardados exitosamente!');
 
+        // --- CORRECCIÓN CLAVE AQUÍ ---
+        // Actualizamos datosOriginales combinando lo que teníamos + LO QUE ENVIAMOS (dto).
+        // Así aseguramos que se guarde el 47 aunque el backend devuelva el objeto viejo.
         this.datosOriginales = {
-          correo: paciente.idusuario?.correo || this.datosOriginales.correo,
-          edad: paciente.edad || this.datosOriginales.edad,
-          altura: paciente.altura || this.datosOriginales.altura,
-          cntTrigliceridos: paciente.trigliceridos || this.datosOriginales.cntTrigliceridos,
-          peso: paciente.peso || this.datosOriginales.peso,
+          ...this.datosOriginales, // Mantenemos lo que había
+          ...dto,                  // Sobrescribimos con los cambios nuevos (edad, altura, etc.)
+
+          // Solo si el backend devolvió algo útil extra (como la foto o correo actualizado), lo usamos:
+          correo: pacienteRespuesta.idusuario?.correo || dto.correo || this.datosOriginales.correo
         };
 
+        // Limpiamos contraseña
         this.perfilForm.patchValue({ contrasena: '' });
       },
       error: (err) => {
+        console.error('Error detallado:', err);
         let mensajeError = 'Error al guardar los cambios';
-        if (err.error?.message) mensajeError += ': ' + err.error.message;
+        if (err.error) {
+          if (err.error.message) mensajeError = err.error.message;
+          else if (err.error.errors) mensajeError = err.error.errors[0];
+        }
         this.mostrarNotificacion(mensajeError, true);
-      },
+      }
     });
   }
 
