@@ -11,6 +11,12 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 // Importamos el servicio de autenticación
 import { AuthService } from '../service/auth.service';
+import {
+  FacebookLoginProvider,
+  SocialAuthService,
+  SocialAuthServiceConfig,
+  SocialUser
+} from '@abacritt/angularx-social-login';
 
 @Component({
   selector: 'app-iniciarsesion',
@@ -29,6 +35,24 @@ import { AuthService } from '../service/auth.service';
   ],
   templateUrl: './iniciarsesion.html',
   styleUrl: './iniciarsesion.css',
+  providers: [
+    SocialAuthService,
+    {
+      provide: 'SocialAuthServiceConfig', // Mantenemos las comillas simples ' '
+      useValue: {
+        autoLogin: false,
+        providers: [
+          {
+            id: FacebookLoginProvider.PROVIDER_ID,
+            provider: new FacebookLoginProvider('1140767788040046') // <--- ¡TU APP ID AQUÍ!
+          }
+        ],
+        onError: (err) => {
+          console.error(err);
+        }
+      } as SocialAuthServiceConfig,
+    }
+  ]
 })
 export class Iniciarsesion implements OnInit {
   loginForm!: FormGroup;
@@ -39,7 +63,8 @@ export class Iniciarsesion implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService // Usamos AuthService
+    private authService: AuthService, // Usamos AuthService
+    private socialAuthService: SocialAuthService
   ) {}
 
   ngOnInit(): void {
@@ -106,10 +131,46 @@ export class Iniciarsesion implements OnInit {
   }
 
   loginWithFacebook(): void {
-    console.log('Login con Facebook');
+    this.isLoading = true;
+    this.socialAuthService.signIn(FacebookLoginProvider.PROVIDER_ID)
+      .then((user: SocialUser) => {
+        console.log('✅ Facebook User:', user);
+        // Facebook usa authToken
+        this.procesarLoginSocial(user.authToken, 'facebook');
+      })
+      .catch(err => {
+        console.error(err);
+        this.errorMessage = 'No se pudo conectar con Facebook (Falta AppID)';
+        this.isLoading = false;
+      });
   }
 
   loginWithGoogle(): void {
     console.log('Login con Google');
+  }
+
+  private procesarLoginSocial(token: string | undefined, proveedor: "google" | "facebook") {
+    this.authService.loginSocial(token, proveedor).subscribe({
+      next: (resp) => {
+        if (!resp || !resp.jwt) {
+          this.errorMessage = 'Error: El servidor no devolvió un token válido.';
+          this.isLoading = false;
+          return;
+        }
+
+        // Redirección exitosa
+        const roles = resp.roles || [];
+        if (roles.includes('NUTRICIONISTA')) {
+          this.router.navigate(['/nutricionista/perfil']);
+        } else {
+          this.router.navigate(['/sistema/perfil-paciente']);
+        }
+      },
+      error: (err) => {
+        console.error('Error backend:', err);
+        this.errorMessage = 'Error al autenticar con el servidor.';
+        this.isLoading = false;
+      }
+    });
   }
 }
