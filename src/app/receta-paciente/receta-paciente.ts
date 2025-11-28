@@ -197,31 +197,52 @@ export class RecetaPaciente implements OnInit {
   // --- FILTROS POR HORARIO ---
 
   onFiltroChange(nuevoValor: string | null) {
-
-    // Actualizamos manualmente la variable por seguridad (aunque ngModel lo hace)
     this.selectedFilters = nuevoValor;
 
-    // 1. Si el nuevo valor es nulo (deseleccionado), cargamos todo
+    // 1. Si se deselecciona el filtro, cargamos todo normal según la pestaña actual
     if (!nuevoValor) {
       this.cargarRecetas();
       return;
     }
 
-    // 2. Si hay un valor, filtramos usando ese valor recibido
     this.isSearching = false;
 
-    this.recetaService.listarRecetasPorHorario(nuevoValor).subscribe({
-      next: (data) => {
-        this.allRecetas = this.mapearRecetasBackend(data);
-        this.totalRecetas = this.allRecetas.length;
-        this.pageIndex = 0;
-        this.paginarRecetas();
-        this.cd.detectChanges();
-      },
-      error: (error) => {
-        console.error('Error al filtrar por horario:', error);
-      }
-    });
+    // 2. Validamos en qué pestaña estamos para aplicar el filtro correcto
+    if (this.selectedTab === 0) {
+      // --- CASO 1: Pestaña "Para ti" ---
+      // Usamos el endpoint del backend que filtra sobre el PLAN del paciente
+      this.recetaService.listarRecetasPorHorario(nuevoValor).subscribe({
+        next: (data) => {
+          this.allRecetas = this.mapearRecetasBackend(data);
+          this.actualizarVistaPaginada();
+        },
+        error: (error) => console.error('Error al filtrar plan:', error)
+      });
+
+    } else if (this.selectedTab === 1) {
+      // --- CASO 2: Pestaña "Favoritos" ---
+      // Validamos: Traemos TODOS los favoritos y filtramos localmente en memoria
+      this.recetaService.listarPlanRecetasFavoritos().subscribe({
+        next: (planes) => {
+          // Convertimos la data compleja a nuestra lista simple
+          const todosLosFavoritos = this.convertirPlanRecetasADisplay(planes);
+
+          // FILTRO MANUAL: Nos quedamos solo con los que coincidan con el horario (ej: "Desayuno")
+          this.allRecetas = todosLosFavoritos.filter(r => r.horario === nuevoValor);
+
+          this.actualizarVistaPaginada();
+        },
+        error: (error) => console.error('Error al filtrar favoritos:', error)
+      });
+    }
+  }
+
+  // Helper para no repetir código de actualización
+  private actualizarVistaPaginada() {
+    this.totalRecetas = this.allRecetas.length;
+    this.pageIndex = 0; // Reseteamos a la primera página
+    this.paginarRecetas();
+    this.cd.detectChanges();
   }
 
   // --- HELPERS Y OTROS MÉTODOS ---
