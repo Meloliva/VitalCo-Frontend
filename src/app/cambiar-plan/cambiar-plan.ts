@@ -6,6 +6,7 @@ import { Paciente } from '../models/paciente.model';
 import { CambiarPlanService } from '../service/cambiar-plan.service';
 // Importas el DTO, así que lo usamos para construir el objeto
 import { EditarPaciente } from '../models/editar-paciente.model';
+import {UserService} from '../service/userlayout-service';
 
 @Component({
   selector: 'app-cambiar-plan',
@@ -29,7 +30,8 @@ export class CambiarPlan implements OnInit {
 
   constructor(
     private cambiarPlanService: CambiarPlanService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
@@ -121,62 +123,58 @@ export class CambiarPlan implements OnInit {
 
     console.log('🔄 Procesando cambio de plan...');
 
-    // --- CRITICAL FIX (v2) ---
-    // Ahora construimos el DTO (EditarPaciente) basándonos en la
-    // interfaz que me mostraste.
-    // Asumimos que 'planSuscripcion' es el 'tipo' (string) del plan.
     const dto: EditarPaciente = {
       id: this.paciente.id,
       planSuscripcion: plan.tipo
-      // No enviamos más campos, así el backend solo debe actualizar el plan.
     };
 
     console.log('📤 Datos enviados (DTO):', dto);
 
-    // Call the service with the single 'dto' object
     this.cambiarPlanService.cambiarPlanPaciente(dto).subscribe({
       next: (updated) => {
-        console.log('✅ Respuesta del backend:', updated);
-        console.log('📋 Nuevo plan del paciente:', updated.idplan);
+        console.log('✅ Respuesta del backend (Plan cambiado):', updated);
 
-        // Actualizar el paciente completo
-        this.paciente = updated;
-        this.isProcessing = false;
-        this.planToConfirm = null;
+        // --- PASO CLAVE: Actualizar el estado global de la app ---
+        // Llamamos al servicio para que vuelva a pedir los datos del usuario (incluido el nuevo plan)
+        // y notifique al Sidebar/Layout.
+        this.userService.fetchPerfilAutenticado().subscribe({
+          next: (usuarioGlobal) => {
+            console.log('🔄 Estado global actualizado:', usuarioGlobal);
 
-        // Forzar detección de cambios
-        this.cdr.detectChanges();
+            // Una vez actualizado el estado global, actualizamos la vista local
+            this.paciente = updated;
+            this.isProcessing = false;
+            this.planToConfirm = null;
 
-        console.log('✅ Estado actualizado. Plan actual ahora:', this.paciente.idplan);
+            // Mensaje de éxito
+            this.modalMessage = `¡Plan cambiado exitosamente a ${updated.idplan.tipo}!`;
+            this.showInfoModal = true;
 
-        // Show success modal instead of alert
-        this.modalMessage = `¡Plan cambiado exitosamente a ${updated.idplan.tipo}!`;
-        this.showInfoModal = true;
-        this.cdr.detectChanges();
-
-        // Verificar si el cambio se aplicó correctamente
-        if (updated.idplan.id !== plan.id) {
-          console.warn('⚠️ El backend no cambió el plan como se esperaba');
-          console.warn('   Plan esperado:', plan.id, '- Plan recibido:', updated.idplan.id);
-        }
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            console.error('⚠️ El plan cambió, pero falló la actualización del estado global:', err);
+            // Aún así mostramos éxito porque el cambio en backend sí se hizo
+            this.isProcessing = false;
+            this.modalMessage = `¡Plan cambiado a ${updated.idplan.tipo}! (Recarga la página para ver los cambios en el menú)`;
+            this.showInfoModal = true;
+            this.cdr.detectChanges();
+          }
+        });
       },
       error: (err) => {
         console.error('❌ Error al cambiar plan:', err);
-        console.error('❌ Status:', err.status);
-        console.error('❌ Respuesta completa:', err.error);
         this.isProcessing = false;
         this.planToConfirm = null;
 
         let mensaje = 'Error al cambiar el plan. Por favor intenta nuevamente.';
 
-        // Extraer mensaje específico del backend
         if (err.error?.errors && Array.isArray(err.error.errors) && err.error.errors.length > 0) {
           mensaje = err.error.errors[0];
         } else if (err.error?.message) {
           mensaje = err.error.message;
         }
 
-        // Show error modal instead of alert
         this.modalMessage = mensaje;
         this.showInfoModal = true;
         this.cdr.detectChanges();
