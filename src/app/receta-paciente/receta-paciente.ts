@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core'; // 1. Importamos ChangeDetectorRef
+import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTabGroup, MatTab } from '@angular/material/tabs';
@@ -30,6 +30,8 @@ interface RecetaDisplay {
   foto?: string;
   idPlanReceta?: number;
   idPlanRecetaReceta?: number;
+  seguimientoId?: number;
+  recetaId?: number;
 }
 
 @Component({
@@ -58,73 +60,215 @@ export class RecetaPaciente implements OnInit {
 
   searchQuery = '';
   selectedTab = 0;
-  selectedFilters: string[] = [];
+
+  // ✅ CORRECCIÓN 1: 'selectedFilters' ahora es un string simple o null (no array)
+  // porque mat-chip-listbox sin 'multiple' devuelve un solo valor.
+  selectedFilters: string | null = null;
+
   recetas: RecetaDisplay[] = [];
   totalRecetas = 0;
   pageSize = 3;
   pageIndex = 0;
+
+  // Esta variable controla si ocultamos los filtros/títulos.
+  // Solo debe ser true cuando BUSCAMOS por texto, NO cuando filtramos por horario.
   isSearching = false;
 
+  sugerencias: string[] = [];
+  private debounceTimer: any;
   private allRecetas: RecetaDisplay[] = [];
 
   constructor(
     private recetaService: RecetaPacienteService,
     private dialog: MatDialog,
-    private cd: ChangeDetectorRef // ✅ 2. Inyectamos el detector de cambios
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    // ✅ 3. Forzamos que inicie siempre en "Para ti" y cargue los datos
     this.selectedTab = 0;
     this.cargarRecetas();
   }
 
+  // --- LÓGICA DE AUTOCOMPLETADO Y BÚSQUEDA POR TEXTO ---
+
+  autocompletar() {
+    clearTimeout(this.debounceTimer);
+    const query = this.searchQuery.trim();
+
+    if (query.length < 3) {
+      this.sugerencias = [];
+      this.cd.detectChanges();
+      return;
+    }
+
+    this.debounceTimer = setTimeout(() => {
+      this.recetaService.autocompletarRecetas(query).subscribe({
+        next: (data) => {
+          this.sugerencias = data;
+          this.cd.detectChanges();
+        },
+        error: (err) => {
+          console.error("Error en autocompletar:", err);
+          this.sugerencias = [];
+          this.cd.detectChanges();
+        }
+      });
+    }, 300);
+  }
+
+  seleccionarSugerencia(sugerencia: string) {
+    this.searchQuery = sugerencia;
+    this.sugerencias = [];
+    this.buscar();
+  }
+
+  buscar() {
+    const q = this.searchQuery.trim();
+    this.sugerencias = [];
+
+    // Si borran el texto, recargamos la vista normal
+    if (!q) {
+      this.isSearching = false;
+      this.cargarRecetas();
+      return;
+    }
+
+    // Aquí SÍ activamos modo búsqueda (oculta filtros y título)
+    this.isSearching = true;
+
+    this.recetaService.buscarRecetas(q).subscribe({
+      next: (data) => {
+        this.recetas = this.mapearRecetasBackend(data);
+        this.totalRecetas = this.recetas.length;
+        this.pageIndex = 0;
+        this.cd.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error en búsqueda:', error);
+      }
+    });
+  }
+
+  // --- CARGA DE DATOS ---
+
   cargarRecetas() {
+    // Al cargar recetas base, desactivamos modo búsqueda y limpiamos filtros
     this.isSearching = false;
-    this.selectedFilters = [];
+    this.selectedFilters = null;
 
     if (this.selectedTab === 0) {
       this.recetaService.listarPlanRecetas().subscribe({
         next: (planes) => {
-          console.log('Planes recibidos:', planes);
           this.allRecetas = this.convertirPlanRecetasADisplay(planes);
           this.totalRecetas = this.allRecetas.length;
           this.paginarRecetas();
-          this.cd.detectChanges(); // Forzar actualización visual
+          this.cd.detectChanges();
         },
         error: (error) => console.error('Error al cargar recetas:', error)
       });
     } else if (this.selectedTab === 1) {
       this.recetaService.listarPlanRecetasFavoritos().subscribe({
         next: (planes) => {
-          console.log('Favoritos recibidos:', planes);
           this.allRecetas = this.convertirPlanRecetasADisplay(planes);
           this.totalRecetas = this.allRecetas.length;
           this.paginarRecetas();
-          this.cd.detectChanges(); // Forzar actualización visual
+          this.cd.detectChanges();
         },
         error: (error) => console.error('Error al cargar favoritos:', error)
       });
     } else if (this.selectedTab === 2) {
       this.recetaService.listarRecetasAgregadasHoy().subscribe({
         next: (data) => {
-          console.log('Recetas del día recibidas:', data);
           this.recetas = data.map(r => ({
-            id: 0,
+            id: r.recetaId,
             nombre: r.nombre,
-            descripcion: r.descripcion
+            descripcion: r.descripcion,
+            seguimientoId: r.seguimientoId,
+            recetaId: r.recetaId
           }));
           this.totalRecetas = this.recetas.length;
-          this.cd.detectChanges(); // Forzar actualización visual
+          this.cd.detectChanges();
         },
         error: (error) => console.error('Error al cargar recetas del día:', error)
       });
     }
   }
 
+  // --- FILTROS POR HORARIO ---
+
+  onFiltroChange(nuevoValor: string | null) {
+    this.selectedFilters = nuevoValor;
+
+    // 1. Si se deselecciona el filtro, cargamos todo normal según la pestaña actual
+    if (!nuevoValor) {
+      this.cargarRecetas();
+      return;
+    }
+
+    this.isSearching = false;
+
+    // 2. Validamos en qué pestaña estamos para aplicar el filtro correcto
+    if (this.selectedTab === 0) {
+      // --- CASO 1: Pestaña "Para ti" ---
+      // Usamos el endpoint del backend que filtra sobre el PLAN del paciente
+      this.recetaService.listarRecetasPorHorario(nuevoValor).subscribe({
+        next: (data) => {
+          this.allRecetas = this.mapearRecetasBackend(data);
+          this.actualizarVistaPaginada();
+        },
+        error: (error) => console.error('Error al filtrar plan:', error)
+      });
+
+    } else if (this.selectedTab === 1) {
+      // --- CASO 2: Pestaña "Favoritos" ---
+      // Validamos: Traemos TODOS los favoritos y filtramos localmente en memoria
+      this.recetaService.listarPlanRecetasFavoritos().subscribe({
+        next: (planes) => {
+          // Convertimos la data compleja a nuestra lista simple
+          const todosLosFavoritos = this.convertirPlanRecetasADisplay(planes);
+
+          // FILTRO MANUAL: Nos quedamos solo con los que coincidan con el horario (ej: "Desayuno")
+          this.allRecetas = todosLosFavoritos.filter(r => r.horario === nuevoValor);
+
+          this.actualizarVistaPaginada();
+        },
+        error: (error) => console.error('Error al filtrar favoritos:', error)
+      });
+    }
+  }
+
+  // Helper para no repetir código de actualización
+  private actualizarVistaPaginada() {
+    this.totalRecetas = this.allRecetas.length;
+    this.pageIndex = 0; // Reseteamos a la primera página
+    this.paginarRecetas();
+    this.cd.detectChanges();
+  }
+
+  // --- HELPERS Y OTROS MÉTODOS ---
+
+  // Método auxiliar para transformar Receta[] (del backend) a RecetaDisplay[]
+  private mapearRecetasBackend(data: any[]): RecetaDisplay[] {
+    return data.map(r => ({
+      id: r.id,
+      nombre: r.nombre,
+      descripcion: r.descripcion,
+      horario: r.idhorario?.nombre,
+      tiempo: r.tiempo,
+      calorias: r.calorias,
+      proteinas: r.proteinas,
+      carbohidratos: r.carbohidratos,
+      grasas: r.grasas,
+      ingredientes: r.ingredientes,
+      preparacion: r.preparacion,
+      foto: r.foto,
+      // Nota: Al filtrar o buscar, el backend no devuelve la relación PlanReceta,
+      // por lo que 'favorito' e 'idPlanRecetaReceta' pueden no estar disponibles.
+    }));
+  }
+
   private convertirPlanRecetasADisplay(planes: PlanReceta[]): RecetaDisplay[] {
     const recetasDisplay: RecetaDisplay[] = [];
-
     planes.forEach(plan => {
       plan.recetas.forEach(relacion => {
         const receta = relacion.recetaDTO;
@@ -134,7 +278,6 @@ export class RecetaPaciente implements OnInit {
           idPlanRecetaReceta: relacion.idPlanRecetaReceta,
           nombre: receta.nombre,
           descripcion: receta.descripcion,
-          // Asegúrate de que el backend envíe 'favorito' en la relación
           favorito: (relacion as any).favorito || false,
           horario: receta.idhorario?.nombre,
           tiempo: receta.tiempo,
@@ -148,7 +291,6 @@ export class RecetaPaciente implements OnInit {
         });
       });
     });
-
     return recetasDisplay;
   }
 
@@ -158,84 +300,32 @@ export class RecetaPaciente implements OnInit {
     this.recetas = this.allRecetas.slice(inicio, fin);
   }
 
-  buscar() {
-    const q = this.searchQuery.trim();
-    if (!q) {
-      this.isSearching = false;
-      this.cargarRecetas();
-      return;
-    }
-
-    this.isSearching = true;
-    this.recetaService.buscarRecetas(q).subscribe({
-      next: (data) => {
-        this.recetas = data.map(r => ({
-          id: r.id,
-          nombre: r.nombre,
-          descripcion: r.descripcion,
-          horario: r.idhorario?.nombre,
-          tiempo: r.tiempo,
-          calorias: r.calorias,
-          proteinas: r.proteinas,
-          carbohidratos: r.carbohidratos,
-          grasas: r.grasas,
-          ingredientes: r.ingredientes,
-          preparacion: r.preparacion,
-          foto: r.foto
-        }));
-        this.totalRecetas = this.recetas.length;
-        this.pageIndex = 0;
-        this.cd.detectChanges();
-      },
-      error: (error) => {
-        console.error('Error en búsqueda:', error);
-      }
-    });
-  }
-
   toggleFavorito(receta: RecetaDisplay) {
     if (!receta.idPlanRecetaReceta) {
-      console.error('No hay idPlanRecetaReceta disponible para:', receta);
-      alert('No se puede actualizar: Falta ID de relación.');
+      // Si estamos en una lista filtrada, es posible que no tengamos el ID de relación
+      console.warn('Falta ID de relación para favorito.');
+      alert('Para gestionar favoritos, por favor hazlo desde la pestaña "Para ti" sin filtros activos.');
       return;
     }
 
     const nuevoEstado = !receta.favorito;
-
-    // 1. Actualización visual inmediata (Optimista)
     receta.favorito = nuevoEstado;
 
-    // Si estamos en "Favoritos" y quitamos el like, eliminamos visualmente de inmediato
     if (this.selectedTab === 1 && !nuevoEstado) {
-      // Filtramos de la lista global y actualizamos la vista paginada
       this.allRecetas = this.allRecetas.filter(r => r !== receta);
       this.totalRecetas = this.allRecetas.length;
       this.paginarRecetas();
     }
 
-    this.cd.detectChanges(); // Forzamos actualización de la vista
+    this.cd.detectChanges();
 
-    console.log(`Enviando actualización para relación ${receta.idPlanRecetaReceta}: ${nuevoEstado}`);
-
-    // 2. Llamada al Backend
     this.recetaService.actualizarFavorito(receta.idPlanRecetaReceta, nuevoEstado).subscribe({
-      next: (updated) => {
-        // Confirmación del servidor (opcional, ya actualizamos visualmente)
-        console.log('Backend confirmó actualización:', updated);
-      },
-      error: (error) => {
-        console.error('Error al actualizar favorito:', error);
-
-        // ❌ Si falla, revertimos los cambios (Rollback)
+      next: () => console.log('Favorito actualizado'),
+      error: () => {
         receta.favorito = !nuevoEstado;
-
-        // Si lo habíamos borrado de favoritos, tendríamos que volver a cargarlo o recargar todo
-        if (this.selectedTab === 1 && !nuevoEstado) {
-          this.cargarRecetas(); // Recarga completa para restaurar orden
-        }
-
+        if (this.selectedTab === 1 && !nuevoEstado) this.cargarRecetas();
         this.cd.detectChanges();
-        alert('No se pudo guardar el cambio. Verifique su conexión.');
+        alert('No se pudo guardar el cambio.');
       }
     });
   }
@@ -259,10 +349,6 @@ export class RecetaPaciente implements OnInit {
     });
   }
 
-  private obtenerIdPlanRecetaReceta(receta: RecetaDisplay): number | undefined {
-    return (receta as any).idPlanRecetaReceta;
-  }
-
   onPageChange(event: PageEvent) {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
@@ -275,44 +361,19 @@ export class RecetaPaciente implements OnInit {
     this.cargarRecetas();
   }
 
-  onFiltroChange() {
-    if (this.selectedFilters.length === 0) {
-      this.cargarRecetas();
-      return;
-    }
+  eliminarReceta(receta: RecetaDisplay) {
+    if (!receta.seguimientoId || !receta.recetaId) return;
+    if (!confirm(`¿Eliminar "${receta.nombre}" de tus recetas del día?`)) return;
 
-    const horarioSeleccionado = this.selectedFilters[0];
-
-    this.recetaService.listarRecetasPorHorario(horarioSeleccionado).subscribe({
-      next: (data) => {
-        this.allRecetas = data.map(r => ({
-          id: r.id,
-          nombre: r.nombre,
-          descripcion: r.descripcion,
-          horario: r.idhorario?.nombre,
-          tiempo: r.tiempo,
-          calorias: r.calorias,
-          proteinas: r.proteinas,
-          carbohidratos: r.carbohidratos,
-          grasas: r.grasas,
-          ingredientes: r.ingredientes,
-          preparacion: r.preparacion,
-          foto: r.foto,
-          // Nota: al filtrar se pierde el idPlanRecetaReceta si el backend solo devuelve Receta[]
-        }));
-        this.totalRecetas = this.allRecetas.length;
-        this.pageIndex = 0;
-        this.paginarRecetas();
+    this.recetaService.eliminarRecetaDeSeguimiento(receta.seguimientoId, receta.recetaId).subscribe({
+      next: () => {
+        this.recetas = this.recetas.filter(r =>
+          !(r.seguimientoId === receta.seguimientoId && r.recetaId === receta.recetaId)
+        );
+        this.totalRecetas = this.recetas.length;
         this.cd.detectChanges();
       },
-      error: (error) => console.error('Error al filtrar:', error)
+      error: () => alert('Error al eliminar la receta.')
     });
-  }
-
-  eliminarReceta(receta: RecetaDisplay) {
-    if (!confirm(`¿Eliminar "${receta.nombre}" de tus recetas del día?`)) return;
-    this.recetas = this.recetas.filter(r => r.nombre !== receta.nombre);
-    this.totalRecetas = this.recetas.length;
-    this.cd.detectChanges();
   }
 }

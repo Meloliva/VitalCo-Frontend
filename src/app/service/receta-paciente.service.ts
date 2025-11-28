@@ -104,4 +104,9 @@ export class RecetaPacienteService {
       { headers: this.getHeaders() }
     );
   }
+  filtrarRecetasPorHorario(horario: string): Observable<Receta[]> {
+    // Asegúrate de que la ruta coincida con tu RequestMapping del Controller
+    // Si tu controller tiene un prefijo (ej: /api/recetas), agrégalo antes.
+    return this.http.get<Receta[]>(`${this.apiUrl}/listarRecetasPorHorarios/${horario}`);
+  }
 }

@@ -1,10 +1,22 @@
 <div class="search-row">
-  <mat-form-field appearance="outline" class="search-field">
-    <mat-icon matPrefix class="search-icon">search</mat-icon>
-    <input #searchInput matInput placeholder="buscar"
-           [(ngModel)]="searchQuery"
-           (keyup.enter)="buscar()" />
-  </mat-form-field>
+
+  <div class="search-wrapper">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-icon matPrefix class="search-icon">search</mat-icon>
+      <input #searchInput matInput placeholder="buscar"
+             [(ngModel)]="searchQuery"
+             (keyup)="autocompletar()"
+             (keyup.enter)="buscar()"
+             autocomplete="off" /> </mat-form-field>
+
+    <div class="suggestions-dropdown" *ngIf="sugerencias && sugerencias.length > 0">
+      <div class="suggestion-item"
+           *ngFor="let sugerencia of sugerencias"
+           (click)="seleccionarSugerencia(sugerencia)">
+        {{ sugerencia }}
+      </div>
+    </div>
+  </div>
   <button mat-raised-button class="search-btn" (click)="buscar()">
     Buscar
   </button>
@@ -24,8 +36,7 @@
   <mat-chip-listbox class="chips-wrap"
                     aria-label="Filtros de horario"
                     [(ngModel)]="selectedFilters"
-                    (change)="onFiltroChange()">
-    <mat-chip-option value="Desayuno">Desayuno</mat-chip-option>
+                    (ngModelChange)="onFiltroChange($event)"> <mat-chip-option value="Desayuno">Desayuno</mat-chip-option>
     <mat-chip-option value="Almuerzo">Almuerzo</mat-chip-option>
     <mat-chip-option value="Snack">Snack</mat-chip-option>
     <mat-chip-option value="Cena">Cena</mat-chip-option>

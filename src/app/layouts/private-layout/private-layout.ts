@@ -28,14 +28,30 @@ export class PrivateLayout implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private userService: UserService,
-    private cdr: ChangeDetectorRef, // ✅ AGREGAR ESTO
+    private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit() {
+    // 1. Carga inicial rápida desde LocalStorage (para que no se vea vacío)
     this.userService.initUserFromStorage();
+
+    // 2. Suscribirse a cambios en los datos del usuario (para actualizar la UI)
     this.loadUserData();
+
     this.checkRoute();
+
+    // 🟢 NUEVO: Forzar la carga de datos frescos del backend (incluyendo el PLAN)
+    // Esto soluciona que 'Citas' no cargue si el localStorage estaba desactualizado.
+    this.userService.fetchPerfilAutenticado().subscribe({
+      next: (data) => {
+        console.log('✅ Datos actualizados desde el servidor en PrivateLayout:', data);
+        // No necesitas hacer nada más aquí, porque fetchPerfilAutenticado actualiza
+        // el BehaviorSubject y el localStorage automáticamente, lo que disparará
+        // el userSubscription de abajo.
+      },
+      error: (err) => console.error('⚠️ Error al actualizar perfil en inicio:', err)
+    });
 
     if (isPlatformBrowser(this.platformId)) {
       this.avatarListener = () => {
@@ -43,7 +59,7 @@ export class PrivateLayout implements OnInit, OnDestroy {
         if (newAvatar) {
           console.log('📸 Sidebar: Avatar actualizado');
           this.userAvatar = newAvatar;
-          this.cdr.detectChanges(); // ✅ AGREGAR ESTO
+          this.cdr.detectChanges();
         }
       };
       window.addEventListener('avatarChanged', this.avatarListener);
@@ -96,7 +112,9 @@ export class PrivateLayout implements OnInit, OnDestroy {
             this.userName = `${usuario.nombre} ${usuario.apellido}`;
             this.userAvatar = usuario.fotoPerfil ?? '/Images/iconos/iconoSistemas/image 18.png';
           }
+          // Esto recalcula si es premium cada vez que llega nueva data
           this.isPremium = this.userService.isPremium();
+          this.cdr.detectChanges();
         } else {
           this.loadFromLocalStorage();
         }
