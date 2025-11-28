@@ -36,8 +36,7 @@
   <mat-chip-listbox class="chips-wrap"
                     aria-label="Filtros de horario"
                     [(ngModel)]="selectedFilters"
-                    (change)="onFiltroChange()">
-    <mat-chip-option value="Desayuno">Desayuno</mat-chip-option>
+                    (ngModelChange)="onFiltroChange($event)"> <mat-chip-option value="Desayuno">Desayuno</mat-chip-option>
     <mat-chip-option value="Almuerzo">Almuerzo</mat-chip-option>
     <mat-chip-option value="Snack">Snack</mat-chip-option>
     <mat-chip-option value="Cena">Cena</mat-chip-option>
