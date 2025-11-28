@@ -61,8 +61,6 @@ export class RecetaPaciente implements OnInit {
   searchQuery = '';
   selectedTab = 0;
 
-  // ✅ CORRECCIÓN 1: 'selectedFilters' ahora es un string simple o null (no array)
-  // porque mat-chip-listbox sin 'multiple' devuelve un solo valor.
   selectedFilters: string | null = null;
 
   recetas: RecetaDisplay[] = [];
@@ -70,8 +68,6 @@ export class RecetaPaciente implements OnInit {
   pageSize = 3;
   pageIndex = 0;
 
-  // Esta variable controla si ocultamos los filtros/títulos.
-  // Solo debe ser true cuando BUSCAMOS por texto, NO cuando filtramos por horario.
   isSearching = false;
 
   sugerencias: string[] = [];
@@ -126,14 +122,13 @@ export class RecetaPaciente implements OnInit {
     const q = this.searchQuery.trim();
     this.sugerencias = [];
 
-    // Si borran el texto, recargamos la vista normal
+
     if (!q) {
       this.isSearching = false;
       this.cargarRecetas();
       return;
     }
 
-    // Aquí SÍ activamos modo búsqueda (oculta filtros y título)
     this.isSearching = true;
 
     this.recetaService.buscarRecetas(q).subscribe({
@@ -152,7 +147,6 @@ export class RecetaPaciente implements OnInit {
   // --- CARGA DE DATOS ---
 
   cargarRecetas() {
-    // Al cargar recetas base, desactivamos modo búsqueda y limpiamos filtros
     this.isSearching = false;
     this.selectedFilters = null;
 
@@ -199,7 +193,7 @@ export class RecetaPaciente implements OnInit {
   onFiltroChange(nuevoValor: string | null) {
     this.selectedFilters = nuevoValor;
 
-    // 1. Si se deselecciona el filtro, cargamos todo normal según la pestaña actual
+
     if (!nuevoValor) {
       this.cargarRecetas();
       return;
@@ -207,10 +201,7 @@ export class RecetaPaciente implements OnInit {
 
     this.isSearching = false;
 
-    // 2. Validamos en qué pestaña estamos para aplicar el filtro correcto
     if (this.selectedTab === 0) {
-      // --- CASO 1: Pestaña "Para ti" ---
-      // Usamos el endpoint del backend que filtra sobre el PLAN del paciente
       this.recetaService.listarRecetasPorHorario(nuevoValor).subscribe({
         next: (data) => {
           this.allRecetas = this.mapearRecetasBackend(data);
@@ -220,14 +211,12 @@ export class RecetaPaciente implements OnInit {
       });
 
     } else if (this.selectedTab === 1) {
-      // --- CASO 2: Pestaña "Favoritos" ---
-      // Validamos: Traemos TODOS los favoritos y filtramos localmente en memoria
+
       this.recetaService.listarPlanRecetasFavoritos().subscribe({
         next: (planes) => {
-          // Convertimos la data compleja a nuestra lista simple
+
           const todosLosFavoritos = this.convertirPlanRecetasADisplay(planes);
 
-          // FILTRO MANUAL: Nos quedamos solo con los que coincidan con el horario (ej: "Desayuno")
           this.allRecetas = todosLosFavoritos.filter(r => r.horario === nuevoValor);
 
           this.actualizarVistaPaginada();
@@ -237,17 +226,14 @@ export class RecetaPaciente implements OnInit {
     }
   }
 
-  // Helper para no repetir código de actualización
   private actualizarVistaPaginada() {
     this.totalRecetas = this.allRecetas.length;
-    this.pageIndex = 0; // Reseteamos a la primera página
+    this.pageIndex = 0;
     this.paginarRecetas();
     this.cd.detectChanges();
   }
 
-  // --- HELPERS Y OTROS MÉTODOS ---
 
-  // Método auxiliar para transformar Receta[] (del backend) a RecetaDisplay[]
   private mapearRecetasBackend(data: any[]): RecetaDisplay[] {
     return data.map(r => ({
       id: r.id,
@@ -262,8 +248,7 @@ export class RecetaPaciente implements OnInit {
       ingredientes: r.ingredientes,
       preparacion: r.preparacion,
       foto: r.foto,
-      // Nota: Al filtrar o buscar, el backend no devuelve la relación PlanReceta,
-      // por lo que 'favorito' e 'idPlanRecetaReceta' pueden no estar disponibles.
+
     }));
   }
 
@@ -302,7 +287,6 @@ export class RecetaPaciente implements OnInit {
 
   toggleFavorito(receta: RecetaDisplay) {
     if (!receta.idPlanRecetaReceta) {
-      // Si estamos en una lista filtrada, es posible que no tengamos el ID de relación
       console.warn('Falta ID de relación para favorito.');
       alert('Para gestionar favoritos, por favor hazlo desde la pestaña "Para ti" sin filtros activos.');
       return;
