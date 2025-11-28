@@ -3,6 +3,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable, map, tap } from 'rxjs';
 import { UserService } from './userlayout-service';
 import { isPlatformBrowser } from '@angular/common';
+import { SocialUser } from '@abacritt/angularx-social-login';
 
 interface AuthResponseDTO {
   jwt: string;
@@ -74,6 +75,38 @@ export class AuthService {
       localStorage.removeItem('userRole');
     }
   }
+
+  loginSocial(token: string | undefined, proveedor: "google" | "facebook"): Observable<AuthResponseDTO> {
+    console.log(`🔄 Enviando token de ${proveedor} al backend...`);
+
+    // Asumimos que tu backend tendrá este endpoint: /api/auth/social-login
+    return this.http.post<AuthResponseDTO>(
+      `${this.apiUrl}/authenticate/social`, // Ajusta la ruta según tu Backend
+      { token, proveedor },
+      { observe: 'response' }
+    ).pipe(
+      map((resp: HttpResponse<AuthResponseDTO>) => {
+        const body = resp.body as AuthResponseDTO | null;
+        const token = body?.jwt;
+        const roles = body?.roles || [];
+
+        // Guardamos el token igual que en el login normal
+        if (token && isPlatformBrowser(this.platformId)) {
+          localStorage.setItem('token', token);
+          if (roles.length > 0) {
+            localStorage.setItem('roles', JSON.stringify(roles));
+            localStorage.setItem('userRole', roles[0].replace('ROLE_', ''));
+          }
+        }
+        return body || { jwt: '', roles: [] };
+      }),
+      tap(() => {
+        // Cargar datos del perfil automáticamente
+        this.userService.fetchPerfilAutenticado().subscribe();
+      })
+    );
+  }
+
 
   getToken(): string | null {
     if (isPlatformBrowser(this.platformId)) { // <-- Protección SSR
