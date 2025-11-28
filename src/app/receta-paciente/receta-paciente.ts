@@ -10,7 +10,7 @@ import { MatCard } from '@angular/material/card';
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
 import { CommonModule } from '@angular/common';
-import { RecetaPacienteService, RecetaDelDia } from '../service/receta-paciente.service';
+import { RecetaPacienteService } from '../service/receta-paciente.service';
 import { PlanReceta } from '../models/plan-receta.model';
 import { RecetaDetalleDialogComponent } from '../receta-detalle-dialog/receta-detalle-dialog';
 
@@ -30,7 +30,7 @@ interface RecetaDisplay {
   foto?: string;
   idPlanReceta?: number;
   idPlanRecetaReceta?: number;
-  // Añadidos para "Mis recetas del día"
+  // Añadidos para "Mis recetas del día" y autocompletar
   seguimientoId?: number;
   recetaId?: number;
 }
@@ -68,18 +68,56 @@ export class RecetaPaciente implements OnInit {
   pageIndex = 0;
   isSearching = false;
 
+  // 🟢 NUEVO: Lista de sugerencias para autocompletar
+  sugerencias: string[] = [];
+  private debounceTimer: any;
+
   private allRecetas: RecetaDisplay[] = [];
 
   constructor(
     private recetaService: RecetaPacienteService,
     private dialog: MatDialog,
-    private cd: ChangeDetectorRef // ✅ 2. Inyectamos el detector de cambios
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     // ✅ 3. Forzamos que inicie siempre en "Para ti" y cargue los datos
     this.selectedTab = 0;
     this.cargarRecetas();
+  }
+
+  // 🟢 NUEVO MÉTODO: Maneja la lógica de autocompletar con debounce
+  autocompletar() {
+    clearTimeout(this.debounceTimer);
+    const query = this.searchQuery.trim();
+
+    if (query.length < 3) {
+      this.sugerencias = [];
+      this.cd.detectChanges();
+      return;
+    }
+
+    // Retrasar la búsqueda 300ms (debounce)
+    this.debounceTimer = setTimeout(() => {
+      this.recetaService.autocompletarRecetas(query).subscribe({
+        next: (data) => {
+          this.sugerencias = data;
+          this.cd.detectChanges();
+        },
+        error: (err) => {
+          console.error("Error en autocompletar:", err);
+          this.sugerencias = [];
+          this.cd.detectChanges();
+        }
+      });
+    }, 300);
+  }
+
+  // 🟢 NUEVO MÉTODO: Selecciona una sugerencia y realiza la búsqueda
+  seleccionarSugerencia(sugerencia: string) {
+    this.searchQuery = sugerencia;
+    this.sugerencias = []; // Ocultar sugerencias
+    this.buscar();
   }
 
   cargarRecetas() {
@@ -110,15 +148,14 @@ export class RecetaPaciente implements OnInit {
       });
     } else if (this.selectedTab === 2) {
       this.recetaService.listarRecetasAgregadasHoy().subscribe({
-        next: (data: RecetaDelDia[]) => {
+        next: (data) => {
           console.log('Recetas del día recibidas:', data);
-          // 🛑 CORRECCIÓN 1: Mapear correctamente los IDs de seguimiento y receta
           this.recetas = data.map(r => ({
-            id: r.recetaId, // Usar recetaId como ID principal
+            id: r.recetaId,
             nombre: r.nombre,
             descripcion: r.descripcion,
-            seguimientoId: r.seguimientoId, // <- GUARDAR ESTE CAMPO
-            recetaId: r.recetaId           // <- GUARDAR ESTE CAMPO
+            seguimientoId: r.seguimientoId,
+            recetaId: r.recetaId
           }));
           this.totalRecetas = this.recetas.length;
           this.cd.detectChanges(); // Forzar actualización visual
@@ -166,6 +203,10 @@ export class RecetaPaciente implements OnInit {
 
   buscar() {
     const q = this.searchQuery.trim();
+
+    // 🟢 Limpiar sugerencias al buscar
+    this.sugerencias = [];
+
     if (!q) {
       this.isSearching = false;
       this.cargarRecetas();
@@ -316,7 +357,6 @@ export class RecetaPaciente implements OnInit {
   }
 
   eliminarReceta(receta: RecetaDisplay) {
-    // 🛑 CORRECCIÓN 2: Verificar IDs y llamar a la API
     if (!receta.seguimientoId || !receta.recetaId) {
       alert('Error: No se pudo identificar la receta para eliminarla del progreso.');
       console.error('Missing IDs for deletion:', receta);
