@@ -91,6 +91,12 @@
       <p>No hay información detallada disponible para esta receta.</p>
     </div>
 
+    <!-- ✅ NUEVO: Mensaje informativo cuando no se puede agregar -->
+    <div class="mensaje-info" *ngIf="!puedeAgregarAProgreso() && !agregando && !mostrarExito && !mensajeError">
+      <mat-icon>info</mat-icon>
+      <p>Para agregar esta receta a tu progreso, accede desde la pestaña "Para ti" sin filtros activos.</p>
+    </div>
+
     <!-- Mensaje de éxito -->
     <div class="mensaje-exito" *ngIf="mostrarExito">
       <mat-icon>check_circle</mat-icon>
@@ -117,7 +123,8 @@
       mat-raised-button
       (click)="agregarAProgreso()"
       [disabled]="agregando || !puedeAgregarAProgreso()"
-      class="btn-agregar">
+      class="btn-agregar"
+      [title]="!puedeAgregarAProgreso() ? 'Esta receta no está disponible para agregar en este momento' : 'Agregar receta a tu progreso diario'">
       <mat-icon *ngIf="!agregando">add_circle</mat-icon>
       <mat-spinner *ngIf="agregando" diameter="20"></mat-spinner>
       {{ agregando ? 'Agregando...' : 'Agregar a Progreso' }}

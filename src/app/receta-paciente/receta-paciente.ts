@@ -28,6 +28,7 @@ interface RecetaDisplay {
   ingredientes?: string;
   preparacion?: string;
   foto?: string;
+  cantidadPorcion?:number;
   idPlanReceta?: number;
   idPlanRecetaReceta?: number;
   seguimientoId?: number;
@@ -315,21 +316,52 @@ export class RecetaPaciente implements OnInit {
   }
 
   verReceta(receta: RecetaDisplay) {
+    console.log('🔍 Abriendo receta:', receta);
+    console.log('🆔 idPlanRecetaReceta disponible:', receta.idPlanRecetaReceta);
+
     const dialogRef = this.dialog.open(RecetaDetalleDialogComponent, {
       width: '700px',
       maxWidth: '95vw',
       maxHeight: '90vh',
       data: {
-        ...receta,
-        idPlanRecetaReceta: (receta as any).idPlanRecetaReceta
+        id: receta.id,
+        nombre: receta.nombre,
+        descripcion: receta.descripcion,
+        horario: receta.horario,
+        tiempo: receta.tiempo,
+        calorias: receta.calorias,
+        proteinas: receta.proteinas,
+        carbohidratos: receta.carbohidratos,
+        grasas: receta.grasas,
+        ingredientes: receta.ingredientes,
+        preparacion: receta.preparacion,
+        foto: receta.foto,
+        cantidadPorcion: receta.cantidadPorcion,
+        idPlanRecetaReceta: receta.idPlanRecetaReceta,
+        idPlanReceta: receta.idPlanReceta
       },
       panelClass: 'receta-dialog'
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result === true && this.selectedTab === 2) {
-        this.cargarRecetas();
+      if (result === true) {
+        if (this.selectedTab === 2) {
+          this.cargarRecetas();
+        }
+        else {
+          console.log('✅ Receta agregada al progreso');
+        }
       }
+    });
+  }
+
+  private logRecetaDebug(receta: RecetaDisplay, contexto: string) {
+    console.log(`📊 ${contexto}:`, {
+      nombre: receta.nombre,
+      id: receta.id,
+      idPlanReceta: receta.idPlanReceta,
+      idPlanRecetaReceta: receta.idPlanRecetaReceta,
+      tieneRelacion: !!receta.idPlanRecetaReceta
     });
   }
 

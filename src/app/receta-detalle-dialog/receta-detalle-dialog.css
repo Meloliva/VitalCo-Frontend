@@ -176,6 +176,35 @@
   margin-bottom: 12px;
 }
 
+/* ✅ NUEVO: Mensaje informativo azul */
+.mensaje-info {
+  background: #E0F2FE;
+  border: 1px solid #0EA5E9;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  animation: slideIn 0.3s ease-out;
+}
+
+.mensaje-info mat-icon {
+  color: #0EA5E9;
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.mensaje-info p {
+  color: #075985;
+  font-weight: 500;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
 .mensaje-exito {
   background: #d1fae5;
   border: 1px solid #00BF61;
@@ -258,6 +287,7 @@ mat-dialog-actions {
 .btn-agregar[disabled] {
   background-color: #9ca3af !important;
   color: #e5e7eb !important;
+  cursor: not-allowed;
 }
 
 .btn-cancelar {
@@ -280,5 +310,9 @@ mat-dialog-actions {
 @media (max-width: 600px) {
   .nutrientes-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .mensaje-info p {
+    font-size: 13px;
   }
 }
