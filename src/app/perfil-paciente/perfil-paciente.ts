@@ -93,6 +93,8 @@ export class PerfilPacienteComponent implements OnInit {
 
         const tipoPlan = paciente.idplan.tipo;
         this.planActual = tipoPlan ? tipoPlan.replace('Plan ', '') : 'Free';
+
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('❌ Error al cargar el perfil del paciente:', err);
