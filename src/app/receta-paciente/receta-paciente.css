@@ -208,20 +208,31 @@
   margin-bottom: 24px;
 }
 
-.search-field {
+.search-wrapper {
+  position: relative;
   flex-grow: 1;
-  margin-right: 24px; /* ⬅️ espacio extra entre input y botón */
+  margin-right: 24px;
+}
+
+.search-field {
+  width: 100%;
+  margin-right: 0 !important;
+}
+
+/* Ajuste del botón de búsqueda y campo de entrada */
+.search-field ::ng-deep .search-icon {
+  color: #10B981 !important;
 }
 
 .search-btn {
   background: #10B981 !important;
   color: white !important;
-  border-radius: 18px !important; /* más redondeado */
+  border-radius: 18px !important;
   font-weight: 600 !important;
-  padding: 10px 42px !important; /* ⬅️ más ancho */
+  padding: 10px 42px !important;
   font-size: 14px !important;
   text-transform: none !important;
-  box-shadow: none !important;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25) !important;
   transition: all 0.2s ease !important;
   white-space: nowrap;
   height: 56px;
@@ -232,12 +243,44 @@
 
 .search-btn:hover {
   background: #059669 !important;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25) !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35) !important;
 }
 
+/* 4. Estilos limpios para la lista desplegable de autocompletar */
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  max-height: 250px;
+  overflow-y: auto;
+  margin-top: -5px;
+}
 
+/* 5. Estilo de cada ítem de autocompletar */
+.suggestion-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  color: #374151;
+  font-size: 14px;
+  border-bottom: 1px solid #f3f4f6;
+  transition: all 0.2s ease;
+}
 
+.suggestion-item:last-child {
+  border-bottom: none;
+}
 
+.suggestion-item:hover {
+  background-color: #d1fae5; /* Verde muy suave */
+  color: #059669; /* Verde oscuro del tema */
+}
 
 /* ============================================
    RESPONSIVE
@@ -333,63 +376,4 @@
     width: 100px;
     height: 100px;
   }
-}
-
-/* --- CAMBIOS EN LA ZONA DE BÚSQUEDA --- */
-
-/* 1. Ajustamos el contenedor principal de la fila */
-.search-row {
-  display: flex;
-  align-items: flex-start; /* Alineación superior para evitar deformaciones si la lista se abre */
-  justify-content: space-between;
-  margin-bottom: 24px;
-}
-
-/* 2. NUEVO: Wrapper que contiene el input y las sugerencias */
-.search-wrapper {
-  position: relative; /* ¡CLAVE! Esto hace que los hijos absolutos se guíen por este ancho */
-  flex-grow: 1;       /* Ocupa todo el espacio disponible */
-  margin-right: 24px; /* El margen derecho ahora va aquí, no en el input */
-}
-
-/* 3. Ajustamos el search-field original */
-.search-field {
-  width: 100%;       /* Ocupa el 100% de su padre (el search-wrapper) */
-  margin-right: 0 !important; /* Quitamos el margen que movimos al wrapper */
-}
-
-/* 4. Estilos limpios para la lista desplegable */
-.suggestions-dropdown {
-  position: absolute;
-  top: 100%;          /* Se ubica justo debajo del wrapper */
-  left: 0;
-  width: 100%;        /* ¡IMPORTANTE! Ocupa exactamente el mismo ancho que el wrapper (el input) */
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-top: none;   /* Opcional: para que parezca unido al input */
-  border-radius: 0 0 12px 12px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  z-index: 50;
-  max-height: 250px;
-  overflow-y: auto;
-  margin-top: -5px;   /* Ajuste visual para subirlo un poco si el mat-form-field deja hueco */
-}
-
-/* 5. Estilo de cada ítem */
-.suggestion-item {
-  padding: 12px 16px;
-  cursor: pointer;
-  color: #374151;
-  font-size: 14px;
-  border-bottom: 1px solid #f3f4f6;
-  transition: all 0.2s ease;
-}
-
-.suggestion-item:last-child {
-  border-bottom: none;
-}
-
-.suggestion-item:hover {
-  background-color: #f0fdf4; /* Un verde muy suave al pasar el mouse, a juego con tu tema */
-  color: #10B981;
 }

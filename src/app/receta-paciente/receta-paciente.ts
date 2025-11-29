@@ -75,6 +75,10 @@ export class RecetaPaciente implements OnInit {
   private debounceTimer: any;
   private allRecetas: RecetaDisplay[] = [];
 
+  // ✅ NUEVAS PROPIEDADES MAESTRAS PARA EL FILTRADO LOCAL
+  private planRecetasMaster: RecetaDisplay[] = [];
+  private favRecetasMaster: RecetaDisplay[] = [];
+
   constructor(
     private recetaService: RecetaPacienteService,
     private dialog: MatDialog,
@@ -131,9 +135,11 @@ export class RecetaPaciente implements OnInit {
     }
 
     this.isSearching = true;
+    this.selectedFilters = null; // Limpiar filtros al buscar
 
     this.recetaService.buscarRecetas(q).subscribe({
       next: (data) => {
+        // Al buscar, la lista de recetas es el resultado mapeado
         this.recetas = this.mapearRecetasBackend(data);
         this.totalRecetas = this.recetas.length;
         this.pageIndex = 0;
@@ -149,12 +155,14 @@ export class RecetaPaciente implements OnInit {
 
   cargarRecetas() {
     this.isSearching = false;
-    this.selectedFilters = null;
+    this.selectedFilters = null; // Quitar filtro al cambiar de pestaña
 
     if (this.selectedTab === 0) {
       this.recetaService.listarPlanRecetas().subscribe({
         next: (planes) => {
-          this.allRecetas = this.convertirPlanRecetasADisplay(planes);
+          // ✅ ALMACENAR EN LISTA MAESTRA Y TRABAJAR CON UNA COPIA FILTRABLE
+          this.planRecetasMaster = this.convertirPlanRecetasADisplay(planes);
+          this.allRecetas = [...this.planRecetasMaster];
           this.totalRecetas = this.allRecetas.length;
           this.paginarRecetas();
           this.cd.detectChanges();
@@ -164,7 +172,9 @@ export class RecetaPaciente implements OnInit {
     } else if (this.selectedTab === 1) {
       this.recetaService.listarPlanRecetasFavoritos().subscribe({
         next: (planes) => {
-          this.allRecetas = this.convertirPlanRecetasADisplay(planes);
+          // ✅ ALMACENAR EN LISTA MAESTRA Y TRABAJAR CON UNA COPIA FILTRABLE
+          this.favRecetasMaster = this.convertirPlanRecetasADisplay(planes);
+          this.allRecetas = [...this.favRecetasMaster];
           this.totalRecetas = this.allRecetas.length;
           this.paginarRecetas();
           this.cd.detectChanges();
@@ -194,37 +204,25 @@ export class RecetaPaciente implements OnInit {
   onFiltroChange(nuevoValor: string | null) {
     this.selectedFilters = nuevoValor;
 
+    if (this.selectedTab === 2) return; // No hay filtros en la pestaña 2
+
+    this.isSearching = false; // Desactivar la búsqueda por texto
+
+    // Elegir la lista maestra
+    const masterList = this.selectedTab === 0 ? this.planRecetasMaster : this.favRecetasMaster;
 
     if (!nuevoValor) {
-      this.cargarRecetas();
-      return;
+      // Si no hay filtro seleccionado, mostrar la lista maestra completa
+      this.allRecetas = [...masterList];
+    } else {
+      // ✅ FILTRADO LOCAL: Aplicar el filtro de horario sobre la lista maestra
+      const filtroHorarioNormalizado = nuevoValor.toLowerCase();
+      this.allRecetas = masterList.filter(r =>
+        r.horario && r.horario.toLowerCase() === filtroHorarioNormalizado.toLowerCase()
+      );
     }
 
-    this.isSearching = false;
-
-    if (this.selectedTab === 0) {
-      this.recetaService.listarRecetasPorHorario(nuevoValor).subscribe({
-        next: (data) => {
-          this.allRecetas = this.mapearRecetasBackend(data);
-          this.actualizarVistaPaginada();
-        },
-        error: (error) => console.error('Error al filtrar plan:', error)
-      });
-
-    } else if (this.selectedTab === 1) {
-
-      this.recetaService.listarPlanRecetasFavoritos().subscribe({
-        next: (planes) => {
-
-          const todosLosFavoritos = this.convertirPlanRecetasADisplay(planes);
-
-          this.allRecetas = todosLosFavoritos.filter(r => r.horario === nuevoValor);
-
-          this.actualizarVistaPaginada();
-        },
-        error: (error) => console.error('Error al filtrar favoritos:', error)
-      });
-    }
+    this.actualizarVistaPaginada();
   }
 
   private actualizarVistaPaginada() {
@@ -249,7 +247,6 @@ export class RecetaPaciente implements OnInit {
       ingredientes: r.ingredientes,
       preparacion: r.preparacion,
       foto: r.foto,
-
     }));
   }
 
