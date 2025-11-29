@@ -153,6 +153,27 @@
             </button>
           </div>
         </div>
+
+        <!-- NUEVA SECCIÓN: Plan Nutricional -->
+        <div class="form-row">
+          <label class="form-label">Plan Nutricional</label>
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-select formControlName="planNutricional" placeholder="Selecciona tu plan nutricional">
+              <mat-option *ngFor="let plan of planesNutricionales" [value]="plan.id">
+                {{ plan.objetivo }} - {{ plan.duracion }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row" *ngIf="planNutricionalActual">
+          <label class="form-label">Objetivo Actual</label>
+          <div class="plan-actions">
+            <span class="plan-badge objetivo-badge">
+              {{ planNutricionalActual }}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
 

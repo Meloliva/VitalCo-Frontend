@@ -13,6 +13,7 @@ import { Paciente } from '../models/paciente.model';
 import { PerfilPacienteService } from '../service/perfil-paciente.service';
 import { EditarPaciente } from '../models/editar-paciente.model';
 import { Router } from '@angular/router';
+import { PacienteService, PlanNutricionalDTO } from '../service/paciente.service';
 
 @Component({
   standalone: true,
@@ -37,11 +38,17 @@ export class PerfilPacienteComponent implements OnInit {
   datosOriginales: any = {};
   fotoPerfilUrl: string | null = null;
 
+  // Nuevas propiedades para plan nutricional
+  planesNutricionales: PlanNutricionalDTO[] = [];
+  planNutricionalActual: string = '';
+  idPlanNutricionalActual: number = 0;
+
   constructor(
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private userService: UserService,
     private perfilPacienteService: PerfilPacienteService,
+    private pacienteService: PacienteService,
     private router: Router,
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object
@@ -51,6 +58,7 @@ export class PerfilPacienteComponent implements OnInit {
     this.iniciarFormulario();
 
     if (isPlatformBrowser(this.platformId)) {
+      this.cargarPlanesNutricionales();
       this.cargarPerfilPaciente();
     }
   }
@@ -64,6 +72,19 @@ export class PerfilPacienteComponent implements OnInit {
       correo: ['', [Validators.required, Validators.email]],
       contrasena: ['', [Validators.minLength(6)]],
       peso: ['', [Validators.required, Validators.min(1)]],
+      planNutricional: ['']
+    });
+  }
+
+  private cargarPlanesNutricionales(): void {
+    this.pacienteService.listarPlanesNutricionales().subscribe({
+      next: (planes) => {
+        this.planesNutricionales = planes;
+        console.log('✅ Planes nutricionales cargados:', planes);
+      },
+      error: (err) => {
+        console.error('❌ Error al cargar planes nutricionales:', err);
+      }
     });
   }
 
@@ -82,6 +103,12 @@ export class PerfilPacienteComponent implements OnInit {
           peso: paciente.peso || null,
         };
 
+        // Guardar plan nutricional actual
+        if (paciente.idPlanNutricional) {
+          this.idPlanNutricionalActual = paciente.idPlanNutricional.id;
+          this.planNutricionalActual = `${paciente.idPlanNutricional.objetivo} - ${paciente.idPlanNutricional.duracion}`;
+        }
+
         this.perfilForm.patchValue({
           correo: this.datosOriginales.correo,
           sexo: this.normalizarGenero(paciente.idusuario.genero),
@@ -89,6 +116,7 @@ export class PerfilPacienteComponent implements OnInit {
           altura: this.datosOriginales.altura,
           cntTrigliceridos: this.datosOriginales.cntTrigliceridos,
           peso: this.datosOriginales.peso,
+          planNutricional: this.idPlanNutricionalActual
         });
 
         const tipoPlan = paciente.idplan.tipo;
@@ -203,7 +231,6 @@ export class PerfilPacienteComponent implements OnInit {
     const formValues = this.perfilForm.value;
     const dto: EditarPaciente = { id: this.pacienteId };
 
-    // Helper para limpiar números
     const limpiarNumero = (valor: any): number | undefined => {
       if (valor === null || valor === undefined || valor === '') return undefined;
       const strVal = String(valor).replace(',', '.');
@@ -211,7 +238,6 @@ export class PerfilPacienteComponent implements OnInit {
       return isNaN(num) ? undefined : num;
     };
 
-    // 1. Preparamos el DTO con los cambios
     const nuevaEdad = limpiarNumero(formValues.edad);
     if (nuevaEdad && nuevaEdad !== this.datosOriginales.edad) dto.edad = nuevaEdad;
 
@@ -232,28 +258,37 @@ export class PerfilPacienteComponent implements OnInit {
       dto.contraseña = formValues.contrasena.trim();
     }
 
+    // Verificar si cambió el plan nutricional
+    const planNutricionalSeleccionado = formValues.planNutricional;
+    if (planNutricionalSeleccionado && planNutricionalSeleccionado !== this.idPlanNutricionalActual) {
+      dto.planSuscripcion = planNutricionalSeleccionado.toString();
+      console.log('🔄 Cambiando plan nutricional a:', planNutricionalSeleccionado);
+    }
+
     if (Object.keys(dto).length <= 1) {
       this.mostrarNotificacion('No hay cambios para guardar');
       return;
     }
 
-    // 2. Enviamos al Backend
     this.perfilPacienteService.editarPaciente(dto).subscribe({
       next: (pacienteRespuesta) => {
         this.mostrarNotificacion('¡Cambios guardados exitosamente!');
 
-        // --- CORRECCIÓN CLAVE AQUÍ ---
-        // Actualizamos datosOriginales combinando lo que teníamos + LO QUE ENVIAMOS (dto).
-        // Así aseguramos que se guarde el 47 aunque el backend devuelva el objeto viejo.
         this.datosOriginales = {
-          ...this.datosOriginales, // Mantenemos lo que había
-          ...dto,                  // Sobrescribimos con los cambios nuevos (edad, altura, etc.)
-
-          // Solo si el backend devolvió algo útil extra (como la foto o correo actualizado), lo usamos:
+          ...this.datosOriginales,
+          ...dto,
           correo: pacienteRespuesta.idusuario?.correo || dto.correo || this.datosOriginales.correo
         };
 
-        // Limpiamos contraseña
+        // Actualizar plan nutricional actual si cambió
+        if (planNutricionalSeleccionado && planNutricionalSeleccionado !== this.idPlanNutricionalActual) {
+          this.idPlanNutricionalActual = planNutricionalSeleccionado;
+          const planEncontrado = this.planesNutricionales.find(p => p.id === planNutricionalSeleccionado);
+          if (planEncontrado) {
+            this.planNutricionalActual = `${planEncontrado.objetivo} - ${planEncontrado.duracion}`;
+          }
+        }
+
         this.perfilForm.patchValue({ contrasena: '' });
       },
       error: (err) => {
@@ -331,5 +366,9 @@ export class PerfilPacienteComponent implements OnInit {
 
   get peso() {
     return this.perfilForm.get('peso');
+  }
+
+  get planNutricional() {
+    return this.perfilForm.get('planNutricional');
   }
 }
