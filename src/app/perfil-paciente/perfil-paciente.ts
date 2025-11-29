@@ -37,8 +37,6 @@ export class PerfilPacienteComponent implements OnInit {
   pacienteId!: number;
   datosOriginales: any = {};
   fotoPerfilUrl: string | null = null;
-
-  // Nuevas propiedades para plan nutricional
   planesNutricionales: PlanNutricionalDTO[] = [];
   planNutricionalActual: string = '';
   idPlanNutricionalActual: number = 0;
@@ -102,8 +100,6 @@ export class PerfilPacienteComponent implements OnInit {
           cntTrigliceridos: paciente.trigliceridos || null,
           peso: paciente.peso || null,
         };
-
-        // Guardar plan nutricional actual
         if (paciente.idPlanNutricional) {
           this.idPlanNutricionalActual = paciente.idPlanNutricional.id;
           this.planNutricionalActual = `${paciente.idPlanNutricional.objetivo} - ${paciente.idPlanNutricional.duracion}`;
@@ -258,7 +254,6 @@ export class PerfilPacienteComponent implements OnInit {
       dto.contraseña = formValues.contrasena.trim();
     }
 
-    // Verificar si cambió el plan nutricional
     const planNutricionalSeleccionado = formValues.planNutricional;
     if (planNutricionalSeleccionado && planNutricionalSeleccionado !== this.idPlanNutricionalActual) {
       dto.planSuscripcion = planNutricionalSeleccionado.toString();
@@ -280,7 +275,6 @@ export class PerfilPacienteComponent implements OnInit {
           correo: pacienteRespuesta.idusuario?.correo || dto.correo || this.datosOriginales.correo
         };
 
-        // Actualizar plan nutricional actual si cambió
         if (planNutricionalSeleccionado && planNutricionalSeleccionado !== this.idPlanNutricionalActual) {
           this.idPlanNutricionalActual = planNutricionalSeleccionado;
           const planEncontrado = this.planesNutricionales.find(p => p.id === planNutricionalSeleccionado);
