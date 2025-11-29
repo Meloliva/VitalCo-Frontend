@@ -53,7 +53,7 @@
 <div class="recetas-area">
   <div class="recetas-list" *ngIf="recetas.length > 0">
 
-    <!-- ⬇️⬇️⬇️ REEMPLAZA DESDE AQUÍ ⬇️⬇️⬇️ -->
+    <!-- ⬇⬇⬇ REEMPLAZA DESDE AQUÍ ⬇⬇⬇ -->
     <mat-card class="receta-card" *ngFor="let receta of recetas"
               [class.solo-eliminar]="selectedTab === 2">
 
@@ -82,7 +82,7 @@
         <div class="receta-info" *ngIf="selectedTab !== 2 && receta.horario">
           <span class="horario-badge">{{ receta.horario }}</span>
           <span *ngIf="receta.calorias">🔥 {{ receta.calorias }} kcal</span>
-          <span *ngIf="receta.tiempo">⏱️ {{ receta.tiempo }} min</span>
+          <span *ngIf="receta.tiempo">⏱ {{ receta.tiempo }} min</span>
         </div>
       </div>
 
@@ -121,7 +121,4 @@
     (page)="onPageChange($event)"
     showFirstLastButtons>
   </mat-paginator>
-   </div>
-
-
-
+</div>
