@@ -1,101 +1,143 @@
 <div class="consultar-main">
-  <h2 style="text-align: center; color: #333; margin-bottom: 30px;">
-    Consultar Progreso de Paciente
-  </h2>
+  <h2 class="titulo-pagina">Consultar Progreso de Paciente</h2>
 
-  <!-- Formulario de búsqueda -->
-  <form class="consulta-form" (submit)="buscar($event)">
-    <div class="form-row">
-      <label>Fecha de consulta:</label>
-      <input
-        type="date"
-        [(ngModel)]="fechaConsulta"
-        name="fechaConsulta"
-        [max]="'2099-12-31'"
-        required>
-
-      <label>DNI del Paciente:</label>
-      <input
-        type="text"
-        [(ngModel)]="dni"
-        name="dni"
-        placeholder="Ingrese DNI (8 dígitos)"
-        maxlength="8"
-        pattern="[0-9]{8}"
-        required>
-
-      <button class="btn-buscar" type="submit" [disabled]="cargando">
-        <span *ngIf="!cargando">🔍 Buscar</span>
-        <span *ngIf="cargando">⏳ Buscando...</span>
-      </button>
-      <button class="btn-limpiar" type="button" (click)="limpiarBusqueda()">
-        🧹 Borrar búsqueda
-      </button>
-    </div>
-  </form>
-
-  <!-- Mensaje de error -->
-  <div *ngIf="errorMensaje" class="error-mensaje">
-    ⚠️ {{ errorMensaje }}
-  </div>
-
-  <!-- Información del paciente -->
-  <div *ngIf="resumenCargado && datosNutricionales" class="info-paciente">
-    <h3>📊 Paciente: {{ nombrePaciente }}</h3>
-    <p>📅 Fecha: {{ fechaConsulta }}</p>
-    <p>✅ Cumplimiento General: {{ porcentajeCumplimiento.toFixed(1) }}%</p>
-  </div>
-
-  <!-- Gráfico Circular de Cumplimiento -->
-  <div class="grafico-circular-container" [class.visible]="resumenCargado && datosNutricionales">
-    <h3 style="text-align: center; color: #333; margin-bottom: 20px;">
-      📈 Cumplimiento del Plan Nutricional
-    </h3>
-    <div class="consulta-result" style="height: 400px;">
-      <canvas id="grafico-consulta"></canvas>
+  <div class="card-busqueda">
+    <form class="consulta-form" (submit)="buscar($event)">
+      <div class="form-group">
+        <label>Fecha</label>
+        <input type="date" [(ngModel)]="fechaConsulta" name="fechaConsulta" [max]="'2099-12-31'" required>
+      </div>
+      <div class="form-group">
+        <label>DNI Paciente</label>
+        <input type="text" [(ngModel)]="dni" name="dni" placeholder="8 dígitos" maxlength="8" pattern="[0-9]{8}" required>
+      </div>
+      <div class="form-actions">
+        <button class="btn-buscar" type="submit" [disabled]="cargando">
+          {{ cargando ? 'Buscando...' : 'Buscar' }}
+        </button>
+        <button class="btn-limpiar" type="button" (click)="limpiarBusqueda()" [disabled]="cargando">
+          Limpiar
+        </button>
+      </div>
+    </form>
+    <div *ngIf="errorMensaje" class="alert-error">
+      ⚠️ {{ errorMensaje }}
     </div>
   </div>
 
-  <!-- Tarjetas de resumen nutricional -->
-  <div *ngIf="resumenCargado && datosNutricionales" class="cards-container">
-    <div class="nutrient-card">
-      <h4>🔥 Calorías</h4>
-      <p class="consumido">{{ datosNutricionales.calorias.consumido || 0 }} kcal</p>
-      <p class="requerido">Requerido: {{ datosNutricionales.calorias.requerido || 0 }} kcal</p>
-      <div class="progress-bar">
-        <div class="progress-fill" [style.width.%]="datosNutricionales.calorias.porcentaje"></div>
+  <div *ngIf="resumenCargado && datosNutricionales" class="resultados-container animate-fade-in">
+
+    <div class="info-paciente">
+      <div class="info-texto">
+        <h3>{{ nombrePaciente }}</h3>
+        <p>Resultados del <strong>{{ fechaConsulta | date:'longDate' }}</strong></p>
       </div>
-      <p class="porcentaje">{{ datosNutricionales.calorias.porcentaje.toFixed(1) }}%</p>
+      <div class="badge-cumplimiento" [class.alto]="porcentajeCumplimiento >= 80">
+        {{ porcentajeCumplimiento.toFixed(0) }}% Cumplimiento Total
+      </div>
     </div>
 
-    <div class="nutrient-card">
-      <h4>🥩 Proteínas</h4>
-      <p class="consumido">{{ datosNutricionales.proteinas.consumido || 0 }} g</p>
-      <p class="requerido">Requerido: {{ datosNutricionales.proteinas.requerido || 0 }} g</p>
-      <div class="progress-bar">
-        <div class="progress-fill" [style.width.%]="datosNutricionales.proteinas.porcentaje"></div>
+    <div class="dashboard-grid">
+
+      <div class="card-dashboard card-circular">
+        <h4>Resumen Diario</h4>
+        <div class="chart-wrapper-circular">
+          <canvas id="grafico-consulta"></canvas>
+          <div class="centro-texto">
+            <strong>{{ porcentajeCumplimiento.toFixed(0) }}%</strong>
+            <span>Logrado</span>
+          </div>
+        </div>
       </div>
-      <p class="porcentaje">{{ datosNutricionales.proteinas.porcentaje.toFixed(1) }}%</p>
+
+      <div class="card-dashboard card-lineal">
+        <div class="header-grafica">
+          <h4>Progreso del Plan</h4>
+
+          <select class="select-plan" [(ngModel)]="planSeleccionado" (change)="actualizarGraficoAvance()">
+            <option *ngFor="let plan of planesDisponibles; let i = index" [ngValue]="plan">
+
+              {{ plan.nombrePlanNutricional }}
+
+              [
+              <ng-container *ngIf="i === 0">
+                ACTUAL / Desde {{ plan.fechainicio | date:'dd/MM/yy' }}
+              </ng-container>
+              <ng-container *ngIf="i > 0">
+                {{ plan.fechainicio | date:'dd/MM/yy' }} - {{ plan.fechafin | date:'dd/MM/yy' }}
+              </ng-container>
+              ]
+
+            </option>
+          </select>
+
+        </div>
+
+        <div class="chart-wrapper-lineal">
+          <canvas id="chartAvance"></canvas>
+        </div>
+      </div>
     </div>
 
-    <div class="nutrient-card">
-      <h4>🥑 Grasas</h4>
-      <p class="consumido">{{ datosNutricionales.grasas.consumido || 0 }} g</p>
-      <p class="requerido">Requerido: {{ datosNutricionales.grasas.requerido || 0 }} g</p>
-      <div class="progress-bar">
-        <div class="progress-fill" [style.width.%]="datosNutricionales.grasas.porcentaje"></div>
+    <div class="row gx-4 mb-4" *ngIf="datosNutricionales?.calorias as c">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <h6 class="mb-0 text-dark">Calorías</h6>
+          <div class="macro-val">{{ c.consumido || 0 }} <small>kcal</small></div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="macro-meta">Meta: {{ c.requerido || 0 }}</div>
+        </div>
+        <div class="progress" role="progressbar" aria-label="Calorias" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar-fill" [style.width.%]="c.porcentaje"></div>
+        </div>
       </div>
-      <p class="porcentaje">{{ datosNutricionales.grasas.porcentaje.toFixed(1) }}%</p>
     </div>
 
-    <div class="nutrient-card">
-      <h4>🍞 Carbohidratos</h4>
-      <p class="consumido">{{ datosNutricionales.carbohidratos.consumido || 0 }} g</p>
-      <p class="requerido">Requerido: {{ datosNutricionales.carbohidratos.requerido || 0 }} g</p>
-      <div class="progress-bar">
-        <div class="progress-fill" [style.width.%]="datosNutricionales.carbohidratos.porcentaje"></div>
+    <div class="row gx-4 mb-4" *ngIf="datosNutricionales?.proteinas as p">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <h6 class="mb-0 text-dark">Proteínas</h6>
+          <div class="macro-val">{{ p.consumido || 0 }} <small>g</small></div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="macro-meta">Meta: {{ p.requerido || 0 }}</div>
+        </div>
+        <div class="progress" role="progressbar" aria-label="Proteinas" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar-fill" [style.width.%]="p.porcentaje"></div>
+        </div>
       </div>
-      <p class="porcentaje">{{ datosNutricionales.carbohidratos.porcentaje.toFixed(1) }}%</p>
     </div>
+
+    <div class="row gx-4 mb-4" *ngIf="datosNutricionales?.grasas as g">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <h6 class="mb-0 text-dark">Grasas</h6>
+          <div class="macro-val">{{ g.consumido || 0 }} <small>g</small></div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="macro-meta">Meta: {{ g.requerido || 0 }}</div>
+        </div>
+        <div class="progress" role="progressbar" aria-label="Grasas" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar-fill" [style.width.%]="g.porcentaje"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row gx-4 mb-4" *ngIf="datosNutricionales?.carbohidratos as ca">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <h6 class="mb-0 text-dark">Carbohidratos</h6>
+          <div class="macro-val">{{ ca.consumido || 0 }} <small>g</small></div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="macro-meta">Meta: {{ ca.requerido || 0 }}</div>
+        </div>
+        <div class="progress" role="progressbar" aria-label="Carbohidratos" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar-fill" [style.width.%]="ca.porcentaje"></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>

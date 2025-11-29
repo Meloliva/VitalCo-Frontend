@@ -1,23 +1,31 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
-import {SeguimientoDTO} from '../models/seguimiendo-paciente.model';
-import {NutricionistaRequerimientoDTO} from '../models/nutricionista-requerimiento';
+import { SeguimientoDTO } from '../models/seguimiendo-paciente.model';
+import { NutricionistaRequerimientoDTO } from '../models/nutricionista-requerimiento';
+
+// Interfaces para gráficas
+export interface HistorialSemanalDTO {
+  fecha: string;
+  caloriasConsumidas: number;
+  metaCalorias: number;
+}
 
 export interface CumplimientoNutricional {
-  consumido: number;
-  requerido: number;
-  porcentaje: number;
+  consumido?: number;
+  requerido?: number;
+  porcentaje?: number;
 }
 
 export interface VerificarCumplimientoResponse {
-  calorias: CumplimientoNutricional;
-  proteinas: CumplimientoNutricional;
-  grasas: CumplimientoNutricional;
-  carbohidratos: CumplimientoNutricional;
-  cumplio: boolean;
+  calorias?: CumplimientoNutricional;
+  proteinas?: CumplimientoNutricional;
+  grasas?: CumplimientoNutricional;
+  carbohidratos?: CumplimientoNutricional;
+  cumplio?: boolean;
 }
+
 export interface SeguimientoResumenDTO {
   nombrePaciente: string;
   totalesNutricionales: {
@@ -57,7 +65,26 @@ export class SeguimientoService {
     });
   }
 
-  // Obtener resumen de seguimiento por DNI y fecha
+  // ✅ NUEVO: Listar Historial de Planes para el Dropdown
+  listarPlanes(dni: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/historialPlanes/${dni}`, { headers: this.getHeaders() });
+  }
+
+  // ✅ NUEVO: Obtener Historial Filtrado para la Gráfica
+  obtenerHistorialFiltrado(dni: string, fechaInicio?: string, fechaFin?: string, objetivo?: string): Observable<HistorialSemanalDTO[]> {
+    let params = new HttpParams().set('dni', dni);
+
+    if (fechaInicio) params = params.set('fechaInicio', fechaInicio);
+    if (fechaFin) params = params.set('fechaFin', fechaFin);
+    if (objetivo) params = params.set('objetivo', objetivo);
+
+    return this.http.get<HistorialSemanalDTO[]>(
+      `${this.apiUrl}/historial`,
+      { headers: this.getHeaders(), params }
+    );
+  }
+
+  // Métodos existentes mantenidos
   obtenerResumenPorDniYFecha(dni: string, fecha: string): Observable<SeguimientoResumenDTO> {
     return this.http.get<SeguimientoResumenDTO>(
       `${this.apiUrl}/resumenSeguimientoNutriPaci/${dni}/${fecha}`,
@@ -75,11 +102,11 @@ export class SeguimientoService {
   editarPlanAlimenticio(dni: string, dto: NutricionistaRequerimientoDTO) {
     return this.http.put(`${this.apiUrl}/editarNutrientes/${dni}`, dto);
   }
+
   verificarCumplimientoDiario(dni: string, fecha: string): Observable<VerificarCumplimientoResponse> {
     return this.http.get<VerificarCumplimientoResponse>(
       `${this.apiUrl}/cumplimiento-diario/${dni}/${fecha}`,
       { headers: this.getHeaders() }
     );
   }
-
 }
