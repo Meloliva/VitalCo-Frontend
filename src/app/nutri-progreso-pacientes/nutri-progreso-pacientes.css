@@ -126,7 +126,7 @@ h1 {
   }
 }
 
-/* ✅ ESTILOS PARA MAT-SELECT */
+/* ESTILOS PARA MAT-SELECT */
 ::ng-deep .mat-mdc-select {
   width: 100%;
   background: #e0f8e7 !important;
@@ -170,7 +170,7 @@ h1 {
   background: #c8e6c9 !important;
 }
 
-/* ✅ Badge para mostrar plan actual */
+/* Badge para mostrar plan actual */
 .plan-badge-nutri {
   background-color: #c8e6c9;
   color: #2e7d32;

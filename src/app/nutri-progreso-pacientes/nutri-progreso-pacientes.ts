@@ -109,7 +109,6 @@ export class NutriProgresoPacientesComponent implements OnInit {
     this.cargarPlanesNutricionales();
   }
 
-  // ✅ Cargar planes nutricionales disponibles
   private cargarPlanesNutricionales(): void {
     this.pacienteService.listarPlanesNutricionales().subscribe({
       next: (planes) => {
@@ -245,7 +244,6 @@ export class NutriProgresoPacientesComponent implements OnInit {
       carbohidratos: p.carbohidratos.meta
     };
 
-    // ✅ Establecer plan nutricional actual
     this.planNutricionalSeleccionado = p.idPlanNutricional;
     const planActual = this.planesNutricionales.find(plan => plan.id === p.idPlanNutricional);
     this.planNutricionalActual = planActual
