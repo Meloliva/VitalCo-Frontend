@@ -8,12 +8,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSelectModule } from '@angular/material/select';
 
 import { NutricionistaRequerimientoDTO } from '../models/nutricionista-requerimiento';
 import { SeguimientoDTO } from '../models/seguimiendo-paciente.model';
 
 import { SeguimientoService } from '../service/seguimiento.service';
 import { NutricionistaService, UsuarioDTO } from '../service/nutricionista.service';
+import { PacienteService, PlanNutricionalDTO } from '../service/paciente.service';
 import { Paciente } from '../models/paciente.model';
 
 interface PacienteVista {
@@ -46,7 +48,8 @@ interface PacienteVista {
     MatButtonModule,
     MatIconModule,
     MatPaginatorModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatSelectModule
   ],
   templateUrl: './nutri-progreso-pacientes.html',
   styleUrls: ['./nutri-progreso-pacientes.css']
@@ -64,6 +67,11 @@ export class NutriProgresoPacientesComponent implements OnInit {
   paginaActual = 0;
   itemsPorPagina = 5;
 
+  // ✅ Planes nutricionales disponibles
+  planesNutricionales: PlanNutricionalDTO[] = [];
+  planNutricionalSeleccionado: number = 0;
+  planNutricionalActual: string = '';
+
   metasEditadas = {
     calorias: 0,
     proteinas: 0,
@@ -71,7 +79,6 @@ export class NutriProgresoPacientesComponent implements OnInit {
     carbohidratos: 0
   };
 
-  // ✅ Para validar que no sean menores a lo consumido
   minimoPermitido = {
     calorias: 0,
     proteinas: 0,
@@ -91,6 +98,7 @@ export class NutriProgresoPacientesComponent implements OnInit {
   constructor(
     private seguimientoService: SeguimientoService,
     private nutricionistaService: NutricionistaService,
+    private pacienteService: PacienteService,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef
   ) {}
@@ -98,6 +106,20 @@ export class NutriProgresoPacientesComponent implements OnInit {
   ngOnInit() {
     const hoy = new Date();
     this.fechaBusqueda = hoy.toISOString().split('T')[0];
+    this.cargarPlanesNutricionales();
+  }
+
+  // ✅ Cargar planes nutricionales disponibles
+  private cargarPlanesNutricionales(): void {
+    this.pacienteService.listarPlanesNutricionales().subscribe({
+      next: (planes) => {
+        this.planesNutricionales = planes;
+        console.log('✅ Planes nutricionales cargados:', planes);
+      },
+      error: (err) => {
+        console.error('❌ Error al cargar planes nutricionales:', err);
+      }
+    });
   }
 
   get pacientesPaginados(): PacienteVista[] {
@@ -142,7 +164,6 @@ export class NutriProgresoPacientesComponent implements OnInit {
         console.log('📋 ID Plan:', idPlan);
         console.log('👤 ID Usuario:', paciente.idusuario);
 
-        // 🔑 AQUÍ: Verifica que estés usando los datos correctos
         this.seguimientoService.obtenerResumenPorDniYFecha(dniLimpio, this.fechaBusqueda)
           .subscribe({
             next: (data: SeguimientoDTO) => {
@@ -224,7 +245,13 @@ export class NutriProgresoPacientesComponent implements OnInit {
       carbohidratos: p.carbohidratos.meta
     };
 
-    // ✅ Establecer los mínimos permitidos (lo ya consumido)
+    // ✅ Establecer plan nutricional actual
+    this.planNutricionalSeleccionado = p.idPlanNutricional;
+    const planActual = this.planesNutricionales.find(plan => plan.id === p.idPlanNutricional);
+    this.planNutricionalActual = planActual
+      ? `${planActual.objetivo} - ${planActual.duracion}`
+      : 'No definido';
+
     this.minimoPermitido = {
       calorias: p.calorias.actual,
       proteinas: p.proteinas.actual,
@@ -232,7 +259,6 @@ export class NutriProgresoPacientesComponent implements OnInit {
       carbohidratos: p.carbohidratos.actual
     };
 
-    // ✅ Limpiar errores previos
     this.erroresValidacion = {
       calorias: '',
       proteinas: '',
@@ -244,7 +270,6 @@ export class NutriProgresoPacientesComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  // ✅ Validar campo individual
   validarCampo(campo: 'calorias' | 'proteinas' | 'grasas' | 'carbohidratos') {
     const valor = this.metasEditadas[campo];
     const minimo = this.minimoPermitido[campo];
@@ -258,7 +283,6 @@ export class NutriProgresoPacientesComponent implements OnInit {
     }
   }
 
-  // ✅ Validar todos los campos antes de guardar
   validarTodos(): boolean {
     const camposValidos = this.validarCampo('calorias') &&
       this.validarCampo('proteinas') &&
@@ -275,14 +299,13 @@ export class NutriProgresoPacientesComponent implements OnInit {
   guardar() {
     if (!this.pacienteActual) return;
 
-    // ✅ Validar antes de guardar
     if (!this.validarTodos()) {
       this.cdr.markForCheck();
       return;
     }
 
     const dto: NutricionistaRequerimientoDTO = {
-      idPlanNutricional: this.pacienteActual.idPlanNutricional,
+      idPlanNutricional: this.planNutricionalSeleccionado,
       caloriasDiaria: this.metasEditadas.calorias,
       proteinasDiaria: this.metasEditadas.proteinas,
       grasasDiaria: this.metasEditadas.grasas,
@@ -294,17 +317,17 @@ export class NutriProgresoPacientesComponent implements OnInit {
     this.seguimientoService.editarPlanAlimenticio(this.pacienteActual.dni, dto)
       .subscribe({
         next: () => {
-          // ✅ Actualizar los datos en el array y en pacienteActual
           if (this.pacientes.length > 0) {
             this.pacientes[0].calorias.meta = this.metasEditadas.calorias;
             this.pacientes[0].proteinas.meta = this.metasEditadas.proteinas;
             this.pacientes[0].grasas.meta = this.metasEditadas.grasas;
             this.pacientes[0].carbohidratos.meta = this.metasEditadas.carbohidratos;
+            this.pacientes[0].idPlanNutricional = this.planNutricionalSeleccionado;
 
             this.pacienteActual = { ...this.pacientes[0] };
           }
 
-          this.mensaje("Metas nutricionales actualizadas.");
+          this.mensaje("Metas nutricionales y plan actualizados.");
           this.vista = 'detalle';
           this.cargando = false;
           this.cdr.markForCheck();

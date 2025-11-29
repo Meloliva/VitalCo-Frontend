@@ -65,8 +65,9 @@ h1 {
 }
 
 .campo-edicion {
-  margin-bottom: 20px;
-  text-align: center;
+  margin-bottom: 24px;
+  text-align: left;
+  position: relative;
 }
 
 /* Inputs */
@@ -80,15 +81,108 @@ h1 {
   outline: none;
   font-family: 'Poppins', sans-serif;
   box-sizing: border-box;
+  transition: all 0.3s ease;
 }
 
 .input-verde:focus {
   border-color: #00bf61;
+  box-shadow: 0 0 5px rgba(0, 191, 97, 0.3);
 }
 
 .input-verde:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  background: #f0f0f0;
+}
+
+/* Input con error */
+.input-error {
+  border-color: #d32f2f !important;
+  background-color: #ffebee !important;
+}
+
+.input-error:focus {
+  box-shadow: 0 0 5px rgba(211, 47, 47, 0.3) !important;
+}
+
+/* Mensaje de error */
+.error-texto {
+  display: block;
+  color: #d32f2f;
+  font-size: 12px;
+  margin-top: 6px;
+  font-weight: 500;
+  animation: slideIn 0.2s ease-in-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ✅ ESTILOS PARA MAT-SELECT */
+::ng-deep .mat-mdc-select {
+  width: 100%;
+  background: #e0f8e7 !important;
+  border: 2px solid #16a34a;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+}
+
+::ng-deep .mat-mdc-select-trigger {
+  background: transparent !important;
+}
+
+::ng-deep .mat-mdc-select-value {
+  color: #333 !important;
+}
+
+::ng-deep .mat-mdc-select-arrow {
+  color: #16a34a !important;
+}
+
+/* Panel del dropdown */
+::ng-deep .mat-mdc-select-panel {
+  background: white !important;
+  border: 2px solid #16a34a;
+  border-radius: 10px;
+  margin-top: 8px;
+}
+
+::ng-deep .mat-mdc-option {
+  font-family: 'Poppins', sans-serif !important;
+  padding: 12px 16px !important;
+}
+
+::ng-deep .mat-mdc-option:hover {
+  background: #e0f8e7 !important;
+}
+
+::ng-deep .mat-mdc-option.mat-mdc-option-active {
+  background: #c8e6c9 !important;
+}
+
+/* ✅ Badge para mostrar plan actual */
+.plan-badge-nutri {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+  border: 1px solid #4caf50;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: center;
+  display: inline-block;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Botones */
@@ -123,17 +217,37 @@ h1 {
 }
 
 .btn-verde-guardar {
-  background-color: #00a854; /* verde */
-  color: white;              /* texto blanco */
-  padding: 12px 20px;        /* alto del botón */
-  width: 80%;                /* lo hace largo (puedes subir a 90%) */
-  max-width: 400px;          /* límite opcional */
+  background-color: #00a854;
+  color: white;
+  padding: 14px 32px;
+  width: 100%;
+  max-width: 350px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   display: block;
-  margin: 40px auto 20px auto; /* arriba - derecha - abajo - izquierda */
-  font-weight: bold;
+  margin: 32px auto 0;
+  font-weight: 600;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 168, 84, 0.2);
+}
+
+.btn-verde-guardar:hover:not(:disabled) {
+  background-color: #00843d;
+  box-shadow: 0 4px 12px rgba(0, 168, 84, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-verde-guardar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-verde-guardar:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .btn-volver {
@@ -381,137 +495,7 @@ h1 {
     width: 100%;
     max-width: 100%;
   }
-}
-/* ========================================
-   VALIDACIÓN - ESTILOS ADICIONALES
-   ======================================== */
 
-.campo-edicion {
-  margin-bottom: 24px;
-  text-align: left;
-  position: relative;
-}
-
-.campo-edicion label {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 8px;
-}
-
-/* Input con error */
-.input-error {
-  border-color: #d32f2f !important;
-  background-color: #ffebee !important;
-}
-
-.input-error:focus {
-  box-shadow: 0 0 5px rgba(211, 47, 47, 0.3) !important;
-}
-
-/* Mensaje de error */
-.error-texto {
-  display: block;
-  color: #d32f2f;
-  font-size: 12px;
-  margin-top: 6px;
-  font-weight: 500;
-  animation: slideIn 0.2s ease-in-out;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Info del mínimo permitido */
-.info-minimo {
-  display: block;
-  color: #1976d2;
-  font-size: 11px;
-  margin-top: 4px;
-  font-style: italic;
-}
-
-/* Input normal (sin error) */
-.input-verde {
-  width: 100%;
-  background: #e0f8e7;
-  border: 2px solid #16a34a;
-  border-radius: 10px;
-  padding: 12px 16px;
-  font-size: 14px;
-  outline: none;
-  font-family: 'Poppins', sans-serif;
-  box-sizing: border-box;
-  transition: all 0.3s ease;
-}
-
-.input-verde:focus {
-  border-color: #00bf61;
-  box-shadow: 0 0 5px rgba(0, 191, 97, 0.3);
-}
-
-.input-verde:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  background: #f0f0f0;
-}
-
-/* Botón guardar mejorado */
-.btn-verde-guardar {
-  background-color: #00a854;
-  color: white;
-  padding: 14px 32px;
-  width: 100%;
-  max-width: 350px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  display: block;
-  margin: 32px auto 0;
-  font-weight: 600;
-  font-size: 16px;
-  font-family: 'Poppins', sans-serif;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 168, 84, 0.2);
-}
-
-.btn-verde-guardar:hover:not(:disabled) {
-  background-color: #00843d;
-  box-shadow: 0 4px 12px rgba(0, 168, 84, 0.3);
-  transform: translateY(-2px);
-}
-
-.btn-verde-guardar:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.btn-verde-guardar:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-/* Tarjeta de edición */
-.tarjeta-edicion {
-  max-width: 500px;
-  margin: 0 auto;
-  background: #ffffff;
-  border: 2px solid #16a34a;
-  border-radius: 16px;
-  padding: 32px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
   .campo-edicion {
     margin-bottom: 20px;
   }
@@ -529,9 +513,5 @@ h1 {
     font-size: 14px;
     max-width: 100%;
     margin: 24px auto 0;
-  }
-
-  .tarjeta-edicion {
-    padding: 20px;
   }
 }

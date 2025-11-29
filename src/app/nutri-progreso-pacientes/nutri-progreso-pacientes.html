@@ -54,7 +54,6 @@
 
       <div *ngFor="let p of pacientesPaginados" class="tarjeta-paciente">
         <div class="info-paciente">
-          <!-- ✅ Mostrar foto si existe -->
           <div class="avatar" *ngIf="p.foto">
             <img [src]="p.foto" [alt]="p.nombre" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"/>
           </div>
@@ -62,7 +61,6 @@
             <span>{{ (p.nombre.charAt(0) + p.apellido.charAt(0)).toUpperCase() }}</span>
           </div>
           <div>
-            <!-- ✅ Mostrar nombre completo -->
             <h3>{{ p.nombre }} {{ p.apellido }}</h3>
             <p>{{ p.calorias.actual }} / {{ p.calorias.meta }} kcal</p>
             <small>DNI: {{ p.dni }}</small>
@@ -178,10 +176,11 @@
       <mat-icon>arrow_back</mat-icon> Volver
     </button>
 
-    <h1>Editar Macronutrientes</h1>
+    <h1>Editar Plan del Paciente</h1>
     <p class="subtitulo">{{ pacienteActual.nombre }} {{ pacienteActual.apellido }}</p>
 
     <div class="tarjeta tarjeta-edicion">
+
       <!-- CALORÍAS -->
       <div class="campo-edicion">
         <label>Calorías Diarias</label>
@@ -252,6 +251,27 @@
         <small class="error-texto" *ngIf="erroresValidacion.carbohidratos">
           ⚠️ {{ erroresValidacion.carbohidratos }}
         </small>
+      </div>
+      <!-- ✅ NUEVO: SELECTOR DE PLAN NUTRICIONAL -->
+      <div class="campo-edicion">
+        <label>Plan Nutricional</label>
+        <mat-select
+          class="input-verde"
+          [(ngModel)]="planNutricionalSeleccionado"
+          [disabled]="cargando"
+        >
+          <mat-option *ngFor="let plan of planesNutricionales" [value]="plan.id">
+            {{ plan.objetivo }} - {{ plan.duracion }}
+          </mat-option>
+        </mat-select>
+      </div>
+
+      <!-- ✅ MOSTRAR PLAN ACTUAL -->
+      <div class="campo-edicion" *ngIf="planNutricionalActual">
+        <label>Objetivo Actual</label>
+        <div class="plan-badge-nutri">
+          {{ planNutricionalActual }}
+        </div>
       </div>
 
       <!-- BOTÓN GUARDAR -->
