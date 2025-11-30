@@ -95,63 +95,98 @@
     </div>
 
     <!-- Macros -->
-    <div class="row gx-4 mb-4" *ngIf="datosNutricionales.calorias as c">
-      <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-1">
-          <h6 class="mb-0 text-dark">Calorías</h6>
-          <div class="macro-val">{{ c.consumido || 0 }} <small>kcal</small></div>
-        </div>
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <div class="macro-meta">Meta: {{ c.requerido || 0 }}</div>
-        </div>
-        <div class="progress" role="progressbar">
-          <div class="progress-bar-fill" [style.width.%]="Math.min(c.porcentaje || 0, 100)"></div>
-        </div>
-      </div>
-    </div>
+    <!-- Reemplaza la sección de macros (desde línea ~115 hasta ~215) -->
 
-    <div class="row gx-4 mb-4" *ngIf="datosNutricionales.proteinas as p">
-      <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-1">
-          <h6 class="mb-0 text-dark">Proteínas</h6>
-          <div class="macro-val">{{ p.consumido || 0 }} <small>g</small></div>
-        </div>
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <div class="macro-meta">Meta: {{ p.requerido || 0 }}</div>
-        </div>
-        <div class="progress" role="progressbar">
-          <div class="progress-bar-fill" [style.width.%]="Math.min(p.porcentaje || 0, 100)"></div>
-        </div>
-      </div>
-    </div>
+    <div class="macros-section">
+      <h4 class="macros-title">Resumen Nutricional</h4>
 
-    <div class="row gx-4 mb-4" *ngIf="datosNutricionales.grasas as g">
-      <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-1">
-          <h6 class="mb-0 text-dark">Grasas</h6>
-          <div class="macro-val">{{ g.consumido || 0 }} <small>g</small></div>
-        </div>
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <div class="macro-meta">Meta: {{ g.requerido || 0 }}</div>
-        </div>
-        <div class="progress" role="progressbar">
-          <div class="progress-bar-fill" [style.width.%]="Math.min(g.porcentaje || 0, 100)"></div>
-        </div>
-      </div>
-    </div>
+      <!-- Grid de Macros -->
+      <div class="macros-grid">
 
-    <div class="row gx-4 mb-4" *ngIf="datosNutricionales.carbohidratos as ca">
-      <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-1">
-          <h6 class="mb-0 text-dark">Carbohidratos</h6>
-          <div class="macro-val">{{ ca.consumido || 0 }} <small>g</small></div>
+        <!-- Calorías -->
+        <div class="macro-card" *ngIf="datosNutricionales.calorias as c">
+          <div class="macro-icon calorias-icon">🔥</div>
+          <div class="macro-content">
+            <div class="macro-label">Calorías</div>
+            <div class="macro-value">
+              {{ c.consumido || 0 }} <span class="macro-unit">kcal</span>
+            </div>
+            <div class="macro-meta">Meta: {{ c.requerido || 0 }} kcal</div>
+            <div class="progress-container">
+              <div class="progress-bar"
+                   [style.width.%]="Math.min(c.porcentaje || 0, 100)"
+                   [class.progress-high]="(c.porcentaje || 0) > 100"
+                   [class.progress-good]="(c.porcentaje || 0) >= 80 && (c.porcentaje || 0) <= 100"
+                   [class.progress-low]="(c.porcentaje || 0) < 80">
+              </div>
+            </div>
+            <div class="macro-percentage">{{ (c.porcentaje || 0).toFixed(0) }}%</div>
+          </div>
         </div>
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <div class="macro-meta">Meta: {{ ca.requerido || 0 }}</div>
+
+        <!-- Proteínas -->
+        <div class="macro-card" *ngIf="datosNutricionales.proteinas as p">
+          <div class="macro-icon proteinas-icon">💪</div>
+          <div class="macro-content">
+            <div class="macro-label">Proteínas</div>
+            <div class="macro-value">
+              {{ p.consumido || 0 }} <span class="macro-unit">g</span>
+            </div>
+            <div class="macro-meta">Meta: {{ p.requerido || 0 }} g</div>
+            <div class="progress-container">
+              <div class="progress-bar"
+                   [style.width.%]="Math.min(p.porcentaje || 0, 100)"
+                   [class.progress-high]="(p.porcentaje || 0) > 100"
+                   [class.progress-good]="(p.porcentaje || 0) >= 80 && (p.porcentaje || 0) <= 100"
+                   [class.progress-low]="(p.porcentaje || 0) < 80">
+              </div>
+            </div>
+            <div class="macro-percentage">{{ (p.porcentaje || 0).toFixed(0) }}%</div>
+          </div>
         </div>
-        <div class="progress" role="progressbar">
-          <div class="progress-bar-fill" [style.width.%]="Math.min(ca.porcentaje || 0, 100)"></div>
+
+        <!-- Grasas -->
+        <div class="macro-card" *ngIf="datosNutricionales.grasas as g">
+          <div class="macro-icon grasas-icon">🥑</div>
+          <div class="macro-content">
+            <div class="macro-label">Grasas</div>
+            <div class="macro-value">
+              {{ g.consumido || 0 }} <span class="macro-unit">g</span>
+            </div>
+            <div class="macro-meta">Meta: {{ g.requerido || 0 }} g</div>
+            <div class="progress-container">
+              <div class="progress-bar"
+                   [style.width.%]="Math.min(g.porcentaje || 0, 100)"
+                   [class.progress-high]="(g.porcentaje || 0) > 100"
+                   [class.progress-good]="(g.porcentaje || 0) >= 80 && (g.porcentaje || 0) <= 100"
+                   [class.progress-low]="(g.porcentaje || 0) < 80">
+              </div>
+            </div>
+            <div class="macro-percentage">{{ (g.porcentaje || 0).toFixed(0) }}%</div>
+          </div>
         </div>
+
+        <!-- Carbohidratos -->
+        <div class="macro-card" *ngIf="datosNutricionales.carbohidratos as ca">
+          <div class="macro-icon carbohidratos-icon">🌾</div>
+          <div class="macro-content">
+            <div class="macro-label">Carbohidratos</div>
+            <div class="macro-value">
+              {{ ca.consumido || 0 }} <span class="macro-unit">g</span>
+            </div>
+            <div class="macro-meta">Meta: {{ ca.requerido || 0 }} g</div>
+            <div class="progress-container">
+              <div class="progress-bar"
+                   [style.width.%]="Math.min(ca.porcentaje || 0, 100)"
+                   [class.progress-high]="(ca.porcentaje || 0) > 100"
+                   [class.progress-good]="(ca.porcentaje || 0) >= 80 && (ca.porcentaje || 0) <= 100"
+                   [class.progress-low]="(ca.porcentaje || 0) < 80">
+              </div>
+            </div>
+            <div class="macro-percentage">{{ (ca.porcentaje || 0).toFixed(0) }}%</div>
+          </div>
+        </div>
+
       </div>
     </div>
 
