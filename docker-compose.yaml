@@ -1,0 +1,23 @@
+version:  '3.9'
+services:
+  app:
+    image: melanieoliva/vital-co-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    networks:
+      - my-network-name
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "720M"
+networks:
+  my-network-name:
+    name: springcloud
+
+
+
+
