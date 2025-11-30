@@ -65,9 +65,45 @@
   transition: background 0.3s;
 }
 
-.btn-buscar { background-color: #00BF61; color: white; }
-.btn-buscar:hover { background-color: #009e50; }
-.btn-limpiar { background-color: #f3f4f6; color: #555; }
+.btn-buscar {
+  background-color: #28a745;
+  color: white;
+}
+.btn-buscar:hover {
+  background-color: #218838;
+}
+.btn-buscar:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.btn-limpiar {
+  background-color: #f3f4f6;
+  color: #555;
+}
+
+/* ✅ ALERTAS MEJORADAS */
+.alert-error, .alert-forbidden {
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+}
+
+.alert-error {
+  background-color: #fee;
+  color: #c33;
+  border-left: 4px solid #c33;
+}
+
+.alert-forbidden {
+  background-color: #fff3cd;
+  color: #856404;
+  border-left: 4px solid #ffc107;
+}
 
 /* Info Paciente */
 .info-paciente {
@@ -81,7 +117,10 @@
   border: 1px solid #eee;
 }
 
-.info-paciente h3 { margin: 0; color: #00BF61; }
+.info-paciente h3 {
+  margin: 0;
+  color: #28a745;
+}
 
 .badge-cumplimiento {
   background: #e0f2f1;
@@ -91,12 +130,15 @@
   font-weight: 600;
   font-size: 0.9rem;
 }
-.badge-cumplimiento.alto { background: #dcedc8; color: #33691e; }
+.badge-cumplimiento.alto {
+  background: #dcedc8;
+  color: #33691e;
+}
 
 /* Dashboard Grid */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 300px 1fr; /* Columna izquierda fija, derecha flexible */
+  grid-template-columns: 300px 1fr;
   gap: 20px;
   margin-bottom: 30px;
 }
@@ -109,7 +151,11 @@
   border: 1px solid #eee;
 }
 
-.card-dashboard h4 { margin-top: 0; margin-bottom: 15px; color: #444; }
+.card-dashboard h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #444;
+}
 
 /* Gráfico Circular */
 .chart-wrapper-circular {
@@ -121,12 +167,20 @@
 
 .centro-texto {
   position: absolute;
-  top: 50%; left: 50%;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
 }
-.centro-texto strong { display: block; font-size: 1.5rem; color: #00BF61; }
-.centro-texto span { font-size: 0.8rem; color: #888; }
+.centro-texto strong {
+  display: block;
+  font-size: 1.5rem;
+  color: #28a745;
+}
+.centro-texto span {
+  font-size: 0.8rem;
+  color: #888;
+}
 
 /* Gráfico Lineal */
 .header-grafica {
@@ -151,35 +205,176 @@
   width: 100%;
 }
 
-/* Macros Grid */
+/* ✅ LOADING SPINNER PARA GRÁFICO */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 250px;
+  color: #888;
+}
+
+/* ✅ MACROS GRID - ESTILO MEJORADO CON COLORES */
 .macros-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
 .macro-card {
   background: white;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-  border: 1px solid #eee;
-  text-align: center;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border-left: 4px solid #ddd;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.macro-header { font-weight: 600; color: #555; margin-bottom: 5px; }
-.macro-val { font-size: 1.4rem; font-weight: 700; color: #333; }
-.macro-val small { font-size: 0.9rem; font-weight: normal; color: #888; }
-.macro-meta { font-size: 0.85rem; color: #999; margin-bottom: 8px; }
+.macro-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
 
-.progress-bg { background: #eee; height: 6px; border-radius: 3px; overflow: hidden; }
-.progress-bar { background: #00BF61; height: 100%; }
+/* Colores específicos por nutriente */
+.macro-card.calorias { border-left-color: #ff9800; }
+.macro-card.proteinas { border-left-color: #2196f3; }
+.macro-card.grasas { border-left-color: #f44336; }
+.macro-card.carbohidratos { border-left-color: #4caf50; }
+
+.macro-header {
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.macro-icon {
+  font-size: 1.2rem;
+}
+
+.macro-valores {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+
+.macro-val {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.macro-val small {
+  font-size: 1rem;
+  font-weight: normal;
+  color: #888;
+  margin-left: 4px;
+}
+
+.macro-meta {
+  font-size: 0.9rem;
+  color: #999;
+}
+
+/* Barra de progreso mejorada */
+.progress-wrapper {
+  margin-top: 10px;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.progress-bg {
+  background: #f0f0f0;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  transition: width 0.6s ease-out;
+  border-radius: 4px;
+}
+
+/* Colores de barras según nutriente */
+.macro-card.calorias .progress-bar-fill { background: #ff9800; }
+.macro-card.proteinas .progress-bar-fill { background: #2196f3; }
+.macro-card.grasas .progress-bar-fill { background: #f44336; }
+.macro-card.carbohidratos .progress-bar-fill { background: #4caf50; }
+
+/* Animación de entrada */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 /* Responsive Mobile */
 @media (max-width: 768px) {
   .dashboard-grid {
-    grid-template-columns: 1fr; /* Una sola columna en móviles */
+    grid-template-columns: 1fr;
   }
-  .consulta-form { flex-direction: column; align-items: stretch; }
-  .form-actions { flex-direction: row; }
+
+  .consulta-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-actions {
+    flex-direction: row;
+  }
+
+  .macros-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .info-paciente {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+}
+.loading-spinner {
+  text-align: center;
+  padding: 20px;
+  color: #00BF61;
+  font-weight: 600;
+}
+
+.alert-forbidden {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.alert-error {
+  background-color: #fff3cd;
+  border: 1px solid #ffc107;
+  color: #856404;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 10px;
 }

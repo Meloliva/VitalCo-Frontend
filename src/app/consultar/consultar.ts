@@ -33,6 +33,11 @@ export class Consultar implements AfterViewInit, OnDestroy {
   cargando: boolean = false;
   porcentajeCumplimiento: number = 0;
 
+  // ✅ NUEVAS PROPIEDADES FALTANTES
+  esForbidden: boolean = false;
+  cargandoHistorial: boolean = false;
+  Math = Math; // ✅ Exponer Math para usarlo en el template
+
   // Gráficos
   private chartCircular: any;
   private chartAvance: any;
@@ -50,11 +55,16 @@ export class Consultar implements AfterViewInit, OnDestroy {
   }
 
   destruirGraficas() {
-    if (this.chartCircular) this.chartCircular.destroy();
-    if (this.chartAvance) this.chartAvance.destroy();
+    if (this.chartCircular) {
+      this.chartCircular.destroy();
+      this.chartCircular = null;
+    }
+    if (this.chartAvance) {
+      this.chartAvance.destroy();
+      this.chartAvance = null;
+    }
   }
 
-  // --- LÓGICA PRINCIPAL: BUSCAR ---
   buscar(event: Event): void {
     event.preventDefault();
 
@@ -67,9 +77,8 @@ export class Consultar implements AfterViewInit, OnDestroy {
     this.errorMensaje = '';
     this.resumenCargado = false;
     this.datosNutricionales = null;
-    this.destruirGraficas();
+    this.esForbidden = false; // ✅ Resetear estado
 
-    // 1. Obtener Datos del Día (Circular)
     this.seguimientoService.verificarCumplimientoDiario(this.dni, this.fechaConsulta)
       .subscribe({
         next: (datos) => {
@@ -77,10 +86,8 @@ export class Consultar implements AfterViewInit, OnDestroy {
             this.mensajeError('No hay datos para esta fecha.');
             return;
           }
-          // Guardamos datos
-          this.datosNutricionales = datos;
 
-          // Calculamos porcentaje promedio seguro (evitando undefined)
+          this.datosNutricionales = datos;
           const pCal = datos.calorias?.porcentaje || 0;
           const pPro = datos.proteinas?.porcentaje || 0;
           const pGra = datos.grasas?.porcentaje || 0;
@@ -90,7 +97,6 @@ export class Consultar implements AfterViewInit, OnDestroy {
           this.resumenCargado = true;
           this.cargando = false;
 
-          // 2. Obtener Nombre del Paciente
           this.seguimientoService.obtenerResumenPorDniYFecha(this.dni, this.fechaConsulta)
             .subscribe({
               next: (resumen) => {
@@ -104,61 +110,118 @@ export class Consultar implements AfterViewInit, OnDestroy {
             });
         },
         error: (err) => {
-          console.error(err);
-          this.mensajeError('No se encontraron datos para este DNI y fecha.');
+          console.error('Error al obtener cumplimiento:', err);
+
+          // ✅ Detectar error 403 (Forbidden)
+          if (err.status === 403) {
+            this.esForbidden = true;
+            this.mensajeError('No tienes permisos para ver el progreso de este paciente.');
+          } else {
+            this.mensajeError('No se encontraron datos para este DNI y fecha.');
+          }
         }
       });
   }
 
   iniciarVisualizacion() {
-    this.cdr.detectChanges(); // Renderizar HTML
+    this.cdr.detectChanges();
 
     setTimeout(() => {
-      // 1. Renderizar Gráfico Circular (Día)
+      console.log('🔍 Iniciando visualización...');
+      this.destruirGraficas();
       this.renderizarGraficoCircular(this.porcentajeCumplimiento);
-
-      // 2. Cargar Historial de Planes (Para el Dropdown)
       this.cargarPlanesHistorial();
-    }, 100);
+    }, 200);
   }
 
-  // --- HISTORIAL DE PLANES ---
   cargarPlanesHistorial() {
+    console.log('📊 Cargando planes historial para DNI:', this.dni);
+    this.cargandoHistorial = true; // ✅ Activar spinner
+
     this.seguimientoService.listarPlanes(this.dni).subscribe({
       next: (planes) => {
-        this.planesDisponibles = planes;
+        console.log('✅ Planes recibidos:', planes);
+
+        // ✅ Adaptar PlanAlimenticioDTO al formato esperado
+        this.planesDisponibles = planes.map((plan: any, index: number) => ({
+          id: plan.id,
+          nombrePlanNutricional: plan.nombrePlanNutricional || 'Plan Nutricional',
+          fechainicio: plan.fechainicio || plan.fechaCreacion,
+          fechafin: index === 0 ? null : plan.fechafin,
+          calorias: plan.caloriasDiaria,
+          proteinas: plan.proteinasDiaria,
+          grasas: plan.grasasDiaria,
+          carbohidratos: plan.carbohidratosDiaria
+        }));
+
+        this.cargandoHistorial = false; // ✅ Desactivar spinner
+
         if (planes.length > 0) {
-          // Seleccionar el plan que coincide con la fecha de consulta, o el actual
-          // Por simplicidad, seleccionamos el más reciente (index 0) o el que abarca la fecha
-          this.planSeleccionado = planes[0];
-          this.actualizarGraficoAvance();
+          this.planSeleccionado = this.planesDisponibles[0];
+          console.log('📅 Plan seleccionado:', this.planSeleccionado);
+
+          this.cdr.detectChanges();
+          setTimeout(() => {
+            this.actualizarGraficoAvance();
+          }, 100);
+        } else {
+          console.warn('⚠️ No hay planes disponibles');
         }
+      },
+      error: (err) => {
+        console.error('❌ Error al cargar planes:', err);
+        this.cargandoHistorial = false; // ✅ Desactivar spinner en error
       }
     });
   }
 
   actualizarGraficoAvance() {
-    if (!this.planSeleccionado) return;
+    if (!this.planSeleccionado) {
+      console.warn('⚠️ No hay plan seleccionado');
+      return;
+    }
+
+    console.log('📈 Actualizando gráfico de avance...');
 
     const fechaInicio = this.planSeleccionado.fechainicio;
-    // Si no tiene fecha fin (es actual), usamos hoy
     const fechaFin = this.planSeleccionado.fechafin || new Date().toISOString().split('T')[0];
 
-    // Destruir anterior si existe
-    if (this.chartAvance) this.chartAvance.destroy();
+    console.log(`📅 Rango: ${fechaInicio} - ${fechaFin}`);
+
+    if (this.chartAvance) {
+      this.chartAvance.destroy();
+      this.chartAvance = null;
+    }
 
     this.seguimientoService.obtenerHistorialFiltrado(this.dni, fechaInicio, fechaFin)
       .subscribe({
         next: (historial) => {
-          this.renderizarGraficoLineal(historial);
+          console.log('✅ Historial recibido:', historial);
+
+          if (!historial || historial.length === 0) {
+            console.warn('⚠️ Historial vacío');
+            return;
+          }
+
+          setTimeout(() => {
+            this.renderizarGraficoLineal(historial);
+          }, 50);
+        },
+        error: (err) => {
+          console.error('❌ Error al obtener historial:', err);
         }
       });
   }
 
-  // --- RENDERIZADO DE GRÁFICAS ---
   renderizarGraficoCircular(porcentaje: number) {
     const canvas = document.getElementById('grafico-consulta') as HTMLCanvasElement;
-    if (!canvas) return;
+
+    if (!canvas) {
+      console.error('❌ Canvas circular no encontrado');
+      return;
+    }
+
+    console.log('✅ Renderizando gráfico circular:', porcentaje);
 
     const cumplido = Math.min(Math.max(porcentaje, 0), 100);
 
@@ -183,15 +246,26 @@ export class Consultar implements AfterViewInit, OnDestroy {
 
   renderizarGraficoLineal(historial: HistorialSemanalDTO[]) {
     const canvas = document.getElementById('chartAvance') as HTMLCanvasElement;
-    if (!canvas) return;
+
+    if (!canvas) {
+      console.error('❌ Canvas lineal no encontrado - Verificando DOM...');
+      return;
+    }
+
+    console.log('✅ Canvas encontrado, renderizando gráfico lineal con', historial.length, 'puntos');
 
     const ctx = canvas.getContext('2d');
-    const gradient = ctx!.createLinearGradient(0, 0, 0, 300);
+    if (!ctx) {
+      console.error('❌ No se pudo obtener contexto 2D');
+      return;
+    }
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
     gradient.addColorStop(0, 'rgba(0, 191, 97, 0.2)');
     gradient.addColorStop(1, 'rgba(0, 191, 97, 0.0)');
 
     const labels = historial.map(h => {
-      const d = new Date(h.fecha + 'T00:00:00'); // Corregir zona horaria
+      const d = new Date(h.fecha + 'T00:00:00');
       return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
     });
 
@@ -207,7 +281,7 @@ export class Consultar implements AfterViewInit, OnDestroy {
             backgroundColor: gradient,
             fill: true,
             tension: 0.4,
-            pointRadius: 2,
+            pointRadius: 3,
             pointHoverRadius: 6
           },
           {
@@ -216,7 +290,7 @@ export class Consultar implements AfterViewInit, OnDestroy {
             borderColor: '#FF6384',
             borderDash: [5, 5],
             pointRadius: 0,
-            borderWidth: 1,
+            borderWidth: 2,
             fill: false
           }
         ]
@@ -234,6 +308,8 @@ export class Consultar implements AfterViewInit, OnDestroy {
         }
       }
     });
+
+    console.log('✅ Gráfico lineal renderizado exitosamente');
   }
 
   mensajeError(msg: string) {
@@ -249,6 +325,10 @@ export class Consultar implements AfterViewInit, OnDestroy {
     this.resumenCargado = false;
     this.datosNutricionales = null;
     this.errorMensaje = '';
+    this.nombrePaciente = '';
+    this.planesDisponibles = [];
+    this.planSeleccionado = null;
+    this.esForbidden = false;
     this.destruirGraficas();
   }
 }
