@@ -5,12 +5,13 @@ import { Plan } from '../models/plan.model';
 import { Paciente } from '../models/paciente.model';
 import {EditarPaciente} from '../models/editar-paciente.model';
 import {catchError} from 'rxjs/operators';
+import {environment} from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CambiarPlanService {
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = environment.apiURL;
 
   constructor(private http: HttpClient) {}
 

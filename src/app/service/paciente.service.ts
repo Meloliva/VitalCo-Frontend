@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import {environment} from '../../environments/environment';
 
 export interface RolDTO {
   id: number;
@@ -71,7 +72,7 @@ export interface RegistroPacienteRequest {
   providedIn: 'root'
 })
 export class PacienteService {
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = environment.apiURL;
 
   constructor(private http: HttpClient) {}
 

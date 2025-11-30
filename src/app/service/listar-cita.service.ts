@@ -5,6 +5,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CitaDTO } from './nutricionista.service'; // Reusamos el CitaDTO
 import { getLocalStorageItem } from '../utils/browser-utils';
+import {environment} from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ import { getLocalStorageItem } from '../utils/browser-utils';
 export class ListarCitaService {
 
   // 🚨 Nota: La URL base de la API debe ser coherente
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = environment.apiURL;
 
   constructor(private http: HttpClient) { }
 

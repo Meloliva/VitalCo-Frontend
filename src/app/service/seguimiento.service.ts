@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+<<<<<<< HEAD
 import { SeguimientoDTO } from '../models/seguimiendo-paciente.model';
 import { NutricionistaRequerimientoDTO } from '../models/nutricionista-requerimiento';
 
@@ -25,6 +26,10 @@ export interface VerificarCumplimientoResponse {
   carbohidratos?: CumplimientoNutricional;
   cumplio?: boolean;
 }
+=======
+import {SeguimientoDTO} from '../models/seguimiendo-paciente.model';
+import {environment} from '../../environments/environment';
+>>>>>>> luz
 
 export interface SeguimientoResumenDTO {
   nombrePaciente: string;
@@ -50,7 +55,7 @@ export interface SeguimientoResumenDTO {
   providedIn: 'root'
 })
 export class SeguimientoService {
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = environment.apiURL;
 
   constructor(
     private http: HttpClient,

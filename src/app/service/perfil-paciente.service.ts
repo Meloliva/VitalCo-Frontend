@@ -5,12 +5,13 @@ import { catchError } from 'rxjs/operators';
 import { Paciente } from '../models/paciente.model';
 import { Usuario } from '../models/usuario.model';
 import { EditarPaciente } from '../models/editar-paciente.model';
+import {environment} from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PerfilPacienteService {
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = environment.apiURL;
 
   constructor(private http: HttpClient) {}
 
