@@ -3,12 +3,13 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { VerificarCodigo } from '../models/verificar-codigo.model';
 import { RestablecerCuenta } from '../models/reestablecer-cuenta.model';
+import {environment} from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RecuperarPasswordService {
-  private baseUrl = 'http://localhost:8080/api'; // ajustar base según tu backend
+  private baseUrl = environment.apiURL; // ajustar base según tu backend
   constructor(private http: HttpClient) {}
 
   // Llama a POST /recuperarCuenta?correo=...

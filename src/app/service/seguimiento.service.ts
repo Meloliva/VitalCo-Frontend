@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import {SeguimientoDTO} from '../models/seguimiendo-paciente.model';
+import {environment} from '../../environments/environment';
 
 export interface SeguimientoResumenDTO {
   nombrePaciente: string;
@@ -28,7 +29,7 @@ export interface SeguimientoResumenDTO {
   providedIn: 'root'
 })
 export class SeguimientoService {
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = environment.apiURL;
 
   constructor(
     private http: HttpClient,

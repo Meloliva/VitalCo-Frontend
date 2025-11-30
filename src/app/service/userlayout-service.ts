@@ -5,12 +5,13 @@ import { tap, catchError, map } from 'rxjs/operators';
 import { Usuario } from '../models/usuario.model';
 import { Paciente } from '../models/paciente.model';
 import { Nutricionista } from '../models/nutricionista.model';
+import {environment} from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = environment.apiURL;
   private currentUserSubject = new BehaviorSubject<Usuario | Paciente | Nutricionista | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 

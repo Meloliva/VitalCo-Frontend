@@ -4,13 +4,14 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CitaDTO, NutricionistaDTO } from './nutricionista.service'; // Usando tus imports
-import { getLocalStorageItem } from '../utils/browser-utils'; // Para obtener el token
+import { getLocalStorageItem } from '../utils/browser-utils';
+import {environment} from '../../environments/environment'; // Para obtener el token
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProgramarCitaService {
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = environment.apiURL;
 
   constructor(private http: HttpClient) {}
 

@@ -1,7 +1,9 @@
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable, map, tap } from 'rxjs';
 import { UserService } from './userlayout-service';
+import {environment} from '../../environments/environment';
+
 
 interface AuthResponseDTO {
   jwt: string;
@@ -12,7 +14,8 @@ interface AuthResponseDTO {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = environment.apiURL;
+
 
   constructor(private http: HttpClient, private userService: UserService) {}
 
