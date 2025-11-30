@@ -5,23 +5,11 @@
     <form class="consulta-form" (submit)="buscar($event)">
       <div class="form-group">
         <label>Fecha</label>
-        <input
-          type="date"
-          [(ngModel)]="fechaConsulta"
-          name="fechaConsulta"
-          [max]="'2099-12-31'"
-          required>
+        <input type="date" [(ngModel)]="fechaConsulta" name="fechaConsulta" [max]="'2099-12-31'" required>
       </div>
       <div class="form-group">
         <label>DNI Paciente</label>
-        <input
-          type="text"
-          [(ngModel)]="dni"
-          name="dni"
-          placeholder="8 dígitos"
-          maxlength="8"
-          pattern="[0-9]{8}"
-          required>
+        <input type="text" [(ngModel)]="dni" name="dni" placeholder="8 dígitos" maxlength="8" pattern="[0-9]{8}" required>
       </div>
       <div class="form-actions">
         <button class="btn-buscar" type="submit" [disabled]="cargando">
@@ -33,18 +21,21 @@
       </div>
     </form>
 
-    <!-- ✅ ALERTA DE ERROR NORMAL -->
+    <!-- ✅ Mensaje de error normal (sin 403) -->
     <div *ngIf="errorMensaje && !esForbidden" class="alert-error">
       ⚠️ {{ errorMensaje }}
     </div>
 
-    <!-- ✅ ALERTA 403 FORBIDDEN -->
+    <!-- ✅ Mensaje de error 403 (Forbidden) -->
     <div *ngIf="esForbidden" class="alert-forbidden">
-      🚫 No puedes acceder al seguimiento de este paciente. El paciente no ha tenido una cita aceptada contigo.
+      🚫 {{ errorMensaje }}
+      <p style="margin-top: 10px; font-size: 0.9rem;">
+        Solo puedes consultar el progreso de pacientes con citas aceptadas.
+      </p>
     </div>
   </div>
 
-  <!-- ✅ CONTENIDO SOLO SI NO HAY ERROR FORBIDDEN -->
+  <!-- ✅ CLAVE: Solo mostrar resultados SI NO hay error 403 -->
   <div *ngIf="resumenCargado && datosNutricionales && !esForbidden" class="resultados-container animate-fade-in">
 
     <div class="info-paciente">
@@ -59,7 +50,6 @@
 
     <div class="dashboard-grid">
 
-      <!-- Gráfico Circular -->
       <div class="card-dashboard card-circular">
         <h4>Resumen Diario</h4>
         <div class="chart-wrapper-circular">
@@ -71,7 +61,6 @@
         </div>
       </div>
 
-      <!-- Gráfico Lineal -->
       <div class="card-dashboard card-lineal">
         <div class="header-grafica">
           <h4>Progreso del Plan</h4>
@@ -95,9 +84,8 @@
           </select>
         </div>
 
-        <!-- ✅ LOADING SPINNER PARA GRÁFICO -->
         <div *ngIf="cargandoHistorial" class="loading-spinner">
-          <span>Cargando historial...</span>
+          Cargando historial...
         </div>
 
         <div *ngIf="!cargandoHistorial" class="chart-wrapper-lineal">
@@ -106,113 +94,65 @@
       </div>
     </div>
 
-    <!-- ✅ MACROS GRID MEJORADO CON COLORES -->
-    <div class="macros-grid">
-
-      <!-- CALORÍAS -->
-      <div class="macro-card calorias">
-        <div class="macro-header">
-          <span class="macro-icon">🔥</span>
-          Calorías
+    <!-- Macros -->
+    <div class="row gx-4 mb-4" *ngIf="datosNutricionales.calorias as c">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <h6 class="mb-0 text-dark">Calorías</h6>
+          <div class="macro-val">{{ c.consumido || 0 }} <small>kcal</small></div>
         </div>
-        <div class="macro-valores">
-          <div class="macro-val">
-            {{ datosNutricionales?.calorias?.consumido || 0 }}
-            <small>kcal</small>
-          </div>
-          <div class="macro-meta">
-            Meta: {{ datosNutricionales?.calorias?.requerido || 0 }}
-          </div>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="macro-meta">Meta: {{ c.requerido || 0 }}</div>
         </div>
-        <div class="progress-wrapper">
-          <div class="progress-info">
-            <span>Progreso</span>
-            <span><strong>{{ (datosNutricionales?.calorias?.porcentaje || 0).toFixed(0) }}%</strong></span>
-          </div>
-          <div class="progress-bg">
-            <div class="progress-bar-fill" [style.width.%]="Math.min(datosNutricionales?.calorias?.porcentaje || 0, 100)"></div>
-          </div>
+        <div class="progress" role="progressbar">
+          <div class="progress-bar-fill" [style.width.%]="Math.min(c.porcentaje || 0, 100)"></div>
         </div>
       </div>
+    </div>
 
-      <!-- PROTEÍNAS -->
-      <div class="macro-card proteinas">
-        <div class="macro-header">
-          <span class="macro-icon">💪</span>
-          Proteínas
+    <div class="row gx-4 mb-4" *ngIf="datosNutricionales.proteinas as p">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <h6 class="mb-0 text-dark">Proteínas</h6>
+          <div class="macro-val">{{ p.consumido || 0 }} <small>g</small></div>
         </div>
-        <div class="macro-valores">
-          <div class="macro-val">
-            {{ datosNutricionales?.proteinas?.consumido || 0 }}
-            <small>g</small>
-          </div>
-          <div class="macro-meta">
-            Meta: {{ datosNutricionales?.proteinas?.requerido || 0 }}
-          </div>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="macro-meta">Meta: {{ p.requerido || 0 }}</div>
         </div>
-        <div class="progress-wrapper">
-          <div class="progress-info">
-            <span>Progreso</span>
-            <span><strong>{{ (datosNutricionales?.proteinas?.porcentaje || 0).toFixed(0) }}%</strong></span>
-          </div>
-          <div class="progress-bg">
-            <div class="progress-bar-fill" [style.width.%]="Math.min(datosNutricionales?.proteinas?.porcentaje || 0, 100)"></div>
-          </div>
+        <div class="progress" role="progressbar">
+          <div class="progress-bar-fill" [style.width.%]="Math.min(p.porcentaje || 0, 100)"></div>
         </div>
       </div>
+    </div>
 
-      <!-- GRASAS -->
-      <div class="macro-card grasas">
-        <div class="macro-header">
-          <span class="macro-icon">🥑</span>
-          Grasas
+    <div class="row gx-4 mb-4" *ngIf="datosNutricionales.grasas as g">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <h6 class="mb-0 text-dark">Grasas</h6>
+          <div class="macro-val">{{ g.consumido || 0 }} <small>g</small></div>
         </div>
-        <div class="macro-valores">
-          <div class="macro-val">
-            {{ datosNutricionales?.grasas?.consumido || 0 }}
-            <small>g</small>
-          </div>
-          <div class="macro-meta">
-            Meta: {{ datosNutricionales?.grasas?.requerido || 0 }}
-          </div>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="macro-meta">Meta: {{ g.requerido || 0 }}</div>
         </div>
-        <div class="progress-wrapper">
-          <div class="progress-info">
-            <span>Progreso</span>
-            <span><strong>{{ (datosNutricionales?.grasas?.porcentaje || 0).toFixed(0) }}%</strong></span>
-          </div>
-          <div class="progress-bg">
-            <div class="progress-bar-fill" [style.width.%]="Math.min(datosNutricionales?.grasas?.porcentaje || 0, 100)"></div>
-          </div>
+        <div class="progress" role="progressbar">
+          <div class="progress-bar-fill" [style.width.%]="Math.min(g.porcentaje || 0, 100)"></div>
         </div>
       </div>
+    </div>
 
-      <!-- CARBOHIDRATOS -->
-      <div class="macro-card carbohidratos">
-        <div class="macro-header">
-          <span class="macro-icon">🌾</span>
-          Carbohidratos
+    <div class="row gx-4 mb-4" *ngIf="datosNutricionales.carbohidratos as ca">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <h6 class="mb-0 text-dark">Carbohidratos</h6>
+          <div class="macro-val">{{ ca.consumido || 0 }} <small>g</small></div>
         </div>
-        <div class="macro-valores">
-          <div class="macro-val">
-            {{ datosNutricionales?.carbohidratos?.consumido || 0 }}
-            <small>g</small>
-          </div>
-          <div class="macro-meta">
-            Meta: {{ datosNutricionales?.carbohidratos?.requerido || 0 }}
-          </div>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="macro-meta">Meta: {{ ca.requerido || 0 }}</div>
         </div>
-        <div class="progress-wrapper">
-          <div class="progress-info">
-            <span>Progreso</span>
-            <span><strong>{{ (datosNutricionales?.carbohidratos?.porcentaje || 0).toFixed(0) }}%</strong></span>
-          </div>
-          <div class="progress-bg">
-            <div class="progress-bar-fill" [style.width.%]="Math.min(datosNutricionales?.carbohidratos?.porcentaje || 0, 100)"></div>
-          </div>
+        <div class="progress" role="progressbar">
+          <div class="progress-bar-fill" [style.width.%]="Math.min(ca.porcentaje || 0, 100)"></div>
         </div>
       </div>
-
     </div>
 
   </div>

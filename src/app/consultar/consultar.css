@@ -378,3 +378,26 @@
   border-radius: 8px;
   margin-top: 10px;
 }
+.alert-error {
+  background-color: #fff3cd;
+  border: 1px solid #ffc107;
+  color: #856404;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+.alert-forbidden {
+  background-color: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+.alert-forbidden p {
+  margin-bottom: 0;
+}

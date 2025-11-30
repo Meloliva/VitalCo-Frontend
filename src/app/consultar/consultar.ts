@@ -77,7 +77,7 @@ export class Consultar implements AfterViewInit, OnDestroy {
     this.errorMensaje = '';
     this.resumenCargado = false;
     this.datosNutricionales = null;
-    this.esForbidden = false; // ✅ Resetear estado
+    this.esForbidden = false;
 
     this.seguimientoService.verificarCumplimientoDiario(this.dni, this.fechaConsulta)
       .subscribe({
@@ -110,14 +110,17 @@ export class Consultar implements AfterViewInit, OnDestroy {
             });
         },
         error: (err) => {
-          console.error('Error al obtener cumplimiento:', err);
+          console.error('Error completo:', err);
+          this.cargando = false;
 
-          // ✅ Detectar error 403 (Forbidden)
-          if (err.status === 403) {
+          // ✅ Mejorar detección de error 403
+          if (err.status === 403 || err.error?.error?.includes('cita')) {
             this.esForbidden = true;
-            this.mensajeError('No tienes permisos para ver el progreso de este paciente.');
+            this.mensajeError('No tienes citas aceptadas con este paciente.');
+          } else if (err.status === 404) {
+            this.mensajeError('Paciente no encontrado.');
           } else {
-            this.mensajeError('No se encontraron datos para este DNI y fecha.');
+            this.mensajeError(err.error?.error || 'No se encontraron datos para este DNI y fecha.');
           }
         }
       });
