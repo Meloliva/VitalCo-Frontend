@@ -165,7 +165,7 @@ export const routes: Routes = [
             loadComponent: () => import('./recetas-nutricionista/listar/listar').then(m => m.ListarRecetasNutricionista)
           },
           {
-            path: 'editar/:id',
+            path: 'editar',
             loadComponent: () =>
               import('./recetas-nutricionista/registrar/registrar')
                 .then(m => m.RegistrarRecetaNutricionista)

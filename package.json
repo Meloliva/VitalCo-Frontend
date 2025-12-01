@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:VitalCoFrontend": "node dist/VitalCoFrontend/server/server.mjs"
+    "serve:ssr:VitalCoFrontend": "node dist/VitalCoFrontend/server/server.mjs",
+    "build:prod": "ng build --configuration production --optimization=true"
   },
   "prettier": {
     "printWidth": 100,

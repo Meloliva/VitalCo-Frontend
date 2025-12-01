@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 
 import emailjs from 'emailjs-com';
 
-import { environment } from '../environments/environment';
+import { environment } from '../environments-correo/environment';
 
 @Injectable({
   providedIn: 'root'

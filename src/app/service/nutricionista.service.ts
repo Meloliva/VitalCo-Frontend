@@ -3,6 +3,8 @@ import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { getLocalStorageItem } from '../utils/browser-utils';
 import { Paciente } from '../models/paciente.model';
+import {environment} from '../../environments/environment';
+
 
 /* ================================
    📦 INTERFACES (DTOs)
@@ -118,7 +120,7 @@ export interface PacienteResumeDTO {
   providedIn: 'root',
 })
 export class NutricionistaService {
-  private readonly apiUrl = 'http://localhost:8080/api';
+  private readonly apiUrl = environment.apiURL;
 
   constructor(private http: HttpClient) {}
 

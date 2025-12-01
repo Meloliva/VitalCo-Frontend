@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { PlanReceta } from '../models/plan-receta.model';
 import { Receta } from '../models/receta.model';
 import { AuthService } from './auth.service';
+import {environment} from '../../environments/environment';
 
 export interface RecetaDelDia {
   seguimientoId: number;
@@ -16,7 +17,7 @@ export interface RecetaDelDia {
   providedIn: 'root'
 })
 export class RecetaPacienteService {
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = environment.apiURL;
 
   constructor(
     private http: HttpClient,
