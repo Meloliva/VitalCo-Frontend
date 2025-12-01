@@ -3,7 +3,6 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { SeguimientoDTO } from '../models/seguimiendo-paciente.model';
-import {environment} from '../../environments/environment';
 import { NutricionistaRequerimientoDTO } from '../models/nutricionista-requerimiento';
 import {environment} from '../../environments/environment';
 
