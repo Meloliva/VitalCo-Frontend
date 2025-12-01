@@ -16,8 +16,6 @@ interface AuthResponseDTO {
 })
 export class AuthService {
   private apiUrl = environment.apiURL;
-
-
   constructor(
     private http: HttpClient,
     private userService: UserService,

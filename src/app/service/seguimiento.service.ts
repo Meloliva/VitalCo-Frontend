@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { SeguimientoDTO } from '../models/seguimiendo-paciente.model';
 import {environment} from '../../environments/environment';
 import { NutricionistaRequerimientoDTO } from '../models/nutricionista-requerimiento';
+import {environment} from '../../environments/environment';
 
 // Interfaces para gráficas
 export interface HistorialSemanalDTO {
