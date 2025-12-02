@@ -191,9 +191,9 @@ export class RecetaPaciente implements OnInit {
 
   // --- FILTROS POR HORARIO ---
 
+
   onFiltroChange(nuevoValor: string | null) {
     this.selectedFilters = nuevoValor;
-
 
     if (!nuevoValor) {
       this.cargarRecetas();
@@ -203,23 +203,21 @@ export class RecetaPaciente implements OnInit {
     this.isSearching = false;
 
     if (this.selectedTab === 0) {
-      this.recetaService.listarRecetasPorHorario(nuevoValor).subscribe({
-        next: (data) => {
-          this.allRecetas = this.mapearRecetasBackend(data);
+      // ✅ Cargar todas las recetas y filtrar localmente
+      this.recetaService.listarPlanRecetas().subscribe({
+        next: (planes) => {
+          const todasLasRecetas = this.convertirPlanRecetasADisplay(planes);
+          this.allRecetas = todasLasRecetas.filter(r => r.horario === nuevoValor);
           this.actualizarVistaPaginada();
         },
         error: (error) => console.error('Error al filtrar plan:', error)
       });
 
     } else if (this.selectedTab === 1) {
-
       this.recetaService.listarPlanRecetasFavoritos().subscribe({
         next: (planes) => {
-
           const todosLosFavoritos = this.convertirPlanRecetasADisplay(planes);
-
           this.allRecetas = todosLosFavoritos.filter(r => r.horario === nuevoValor);
-
           this.actualizarVistaPaginada();
         },
         error: (error) => console.error('Error al filtrar favoritos:', error)
