@@ -68,12 +68,15 @@ export class ListarRecetasNutricionista implements OnInit {
     this.actualizarRecetasPaginadas();
   }
 
+  // ✅ ACTUALIZADO: Ahora usa query params en lugar de route params
   editar(id: number | undefined): void {
     if (!id) {
       console.warn("⚠️ ID de receta no válido");
       return;
     }
     console.log("✏️ Editando receta:", id);
-    this.router.navigate(['/nutricionista/recetas-nutricionista/editar', id]);
+    this.router.navigate(['/nutricionista/recetas-nutricionista/editar'], {
+      queryParams: { id: id }
+    });
   }
 }

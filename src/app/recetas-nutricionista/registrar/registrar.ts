@@ -47,20 +47,21 @@ export class RegistrarRecetaNutricionista implements OnInit {
     private nutricionistaService: NutricionistaService,
     private route: ActivatedRoute,
     private router: Router,
-    private cdr: ChangeDetectorRef // ✅ Inyectado para detectar cambios
+    private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
     this.inicializarFormulario();
     await this.cargarHorarios();
 
-    // 🔍 Detectar si venimos de editar
-    this.idEditar = Number(this.route.snapshot.paramMap.get("id"));
-
-    if (this.idEditar) {
-      this.modoEditar = true;
-      this.cargarReceta(this.idEditar);
-    }
+    // ✅ CAMBIO: Ahora lee desde queryParams en vez de paramMap
+    this.route.queryParams.subscribe(params => {
+      if (params['id']) {
+        this.idEditar = Number(params['id']);
+        this.modoEditar = true;
+        this.cargarReceta(this.idEditar);
+      }
+    });
   }
 
   async cargarReceta(id: number) {
@@ -134,7 +135,7 @@ export class RegistrarRecetaNutricionista implements OnInit {
 
       this.procesandoImagen = true;
       this.imagenPreview = null;
-      this.cdr.detectChanges(); // ✅ Forzar actualización
+      this.cdr.detectChanges();
 
       try {
         this.archivoBase64 = await this.procesarImagen(file);
@@ -143,13 +144,13 @@ export class RegistrarRecetaNutricionista implements OnInit {
         console.log("✅ Imagen procesada correctamente");
         console.log("📦 Tamaño en KB:", (this.archivoBase64.length / 1024).toFixed(2));
 
-        this.cdr.detectChanges(); // ✅ Forzar actualización después de cargar
+        this.cdr.detectChanges();
       } catch (error) {
         console.error("❌ Error al procesar imagen:", error);
         alert("Error al procesar la imagen");
       } finally {
         this.procesandoImagen = false;
-        this.cdr.detectChanges(); // ✅ Forzar actualización final
+        this.cdr.detectChanges();
       }
     }
   }
