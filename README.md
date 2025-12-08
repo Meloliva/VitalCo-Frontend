@@ -1,64 +1,6 @@
-<<<<<<< HEAD
-# VitalCoFrontend
+PROYECTO DESPLEGADO EN AWS:
+http://52.14.13.14:4200/inicio
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.6.
-
-## Development server
-
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-=======
 INFORMACION DEL PROYECTO
 
 VitalCo es una aplicación móvil destinada a personas con niveles altos de triglicéridos, creada para ofrecer un monitoreo integral y guía alimentaria personalizada. La aplicación permite a los usuarios llevar un registro detallado de sus comidas, analizar sus niveles de colesterol y recibir recetas generadas por IA según sus preferencias. VitalCo se sincroniza con dispositivos de salud como relojes inteligentes para medir signos vitales en tiempo real y mejorar la experiencia del usuario. Además, ofrece un foro para interactuar con especialistas y cuenta con una suscripción premium que proporciona acceso a planes personalizados, recetas exclusivas, consejos y consultas en línea con nutricionistas.
@@ -115,4 +57,3 @@ La versión premium de VitalCo ofrece planes alimentarios personalizados, receta
 CONCLUSION
 
 El desarrollo de VitalCo ha sido una experiencia de aprendizaje y crecimiento para todo el equipo, permitiéndonos aplicar conocimientos técnicos y habilidades en la creación de una herramienta útil para el cuidado de la salud. Esta aplicación no solo refleja nuestra dedicación, sino también nuestro compromiso de brindar una solución eficaz y accesible para personas que buscan mejorar su bienestar cardiovascular.
->>>>>>> 9277efbe0e5568046d106c11689c6b57ca09a53e
