@@ -3,7 +3,7 @@ http://52.14.13.14:4200/inicio
 
 INFORMACION DEL PROYECTO
 
-VitalCo es una aplicación móvil destinada a personas con niveles altos de triglicéridos, creada para ofrecer un monitoreo integral y guía alimentaria personalizada. La aplicación permite a los usuarios llevar un registro detallado de sus comidas, analizar sus niveles de colesterol y recibir recetas generadas por IA según sus preferencias. VitalCo se sincroniza con dispositivos de salud como relojes inteligentes para medir signos vitales en tiempo real y mejorar la experiencia del usuario. Además, ofrece un foro para interactuar con especialistas y cuenta con una suscripción premium que proporciona acceso a planes personalizados, recetas exclusivas, consejos y consultas en línea con nutricionistas.
+VitalCo es una aplicación web destinada a personas con niveles altos de triglicéridos, creada para ofrecer un monitoreo integral y guía alimentaria personalizada. La aplicación permite a los usuarios llevar un registro detallado de sus comidas, analizar sus niveles de colesterol y recibir recetas generadas sus preferencias. Además, ofrece un foro para interactuar con especialistas y cuenta con una suscripción premium que proporciona acceso a planes personalizados, recetas exclusivas, consejos y consultas en línea con nutricionistas.
 
 AUTORES
 
