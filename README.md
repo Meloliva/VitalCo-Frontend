@@ -1,6 +1,19 @@
 PROYECTO DESPLEGADO EN AWS:
 http://52.14.13.14:4200/inicio
 
+Product Backlog y Sprint 1:
+https://trello.com/b/oMB1GY1m/vitalco
+
+SPRINT 2:
+https://trello.com/b/U5zAKzFg/vitalco-sprint-2
+
+SPRINT 3:
+https://trello.com/b/tJFb5Bxb/vitalco-sprint-3
+
+SPRINT 4:
+https://trello.com/b/nmyBW30B/sprint-4
+
+
 INFORMACION DEL PROYECTO
 
 VitalCo es una aplicación web destinada a personas con niveles altos de triglicéridos, creada para ofrecer un monitoreo integral y guía alimentaria personalizada. La aplicación permite a los usuarios llevar un registro detallado de sus comidas, analizar sus niveles de colesterol y recibir recetas generadas sus preferencias. Además, ofrece un foro para interactuar con especialistas y cuenta con una suscripción premium que proporciona acceso a planes personalizados, recetas exclusivas, consejos y consultas en línea con nutricionistas.
